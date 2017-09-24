@@ -1,5 +1,5 @@
 Package: hhsurveydata
-Title: Household survey data processing tools
+Title: Data processing tools for DHS and other household surveys
 Version: 0.1.0
 Authors@R: person("Jeff", "Eaton", email = "jeffrey.eaton@imperial.ac.uk", role = c("aut", "cre"))
 Description: This package includes tools for processing and analysing data from household
