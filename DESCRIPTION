@@ -1,9 +1,14 @@
-Package: survmx
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.3.0)
-License: What license is it under?
+Package: hhsurveydata
+Title: Household survey data processing tools
+Version: 0.1.0
+Authors@R: person("Jeff", "Eaton", email = "jeffrey.eaton@imperial.ac.uk", role = c("aut", "cre"))
+Description: This package includes tools for processing and analysing data from household
+    surveys. Initially developed for for processing and analysis of demographic and HIV
+    indicators from Demographic and Health Surveys (DHS) and Multiple Indicator Cluster
+    Surveys (MICS).
+Depends: R (>= 3.2.0),
+Imports: survival (>= 2.39)
+Suggests: foreign, survey
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
