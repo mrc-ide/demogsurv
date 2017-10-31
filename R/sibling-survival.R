@@ -116,7 +116,7 @@ create_sib_data <- function(ir, country, survyear, strata="v022"){
 }
 
 
-create_mics_sib_data <- function(mm, country, survyear, strata=c("HH7", "HH6")){
+create_mics_sib_data <- function(mm, country, survyear, strata=c("hh7", "hh6")){
 
   ## HH1      "Cluster number"
   ## HH2      "Household number"
@@ -147,18 +147,19 @@ create_mics_sib_data <- function(mm, country, survyear, strata=c("HH7", "HH6")){
   ## windex5r "Rural wealth index quintile"
 
   sib <- do.call(data.frame, mm)
+  names(sib) <- tolower(names(sib))  # some inconsistency in capitalisation of variable names
 
   sib$country <- country
   sib$survyear <- survyear
   sib$stratum <- do.call(paste, sib[strata])
 
-  sib$intvcmc <- sib$WDOI
-  sib$intvy <- floor(sib$WDOI/12 + 1900)
-  sib$sex <- factor(sib$MM5, c("Male", "Female"), c("male", "female"))
-  sib$sibdob <- sib$MM7C
-  sib$sibdod <- sib$MM8C
+  sib$intvcmc <- sib$wdoi
+  sib$intvy <- floor(sib$wdoi/12 + 1900)
+  sib$sex <- factor(as.integer(sib$mm5), 1:2, c("male", "female"))
+  sib$sibdob <- sib$mm7c
+  sib$sibdod <- sib$mm8c
 
-  sib$deaths <- as.integer(factor(sib$MM6, c("Yes", "No")) == "No")
+  sib$deaths <- as.integer(factor(as.integer(sib$mm6), 1:2) == 2)
 
   sib$weight <- sib$wmweight
 
