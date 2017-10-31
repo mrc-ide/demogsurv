@@ -168,9 +168,12 @@ create_mics_sib_data <- function(mm, country, survyear, strata=c("hh7", "hh6")){
 
 
 
-## Calculate age-specific mortality rates in period preceding survey.
-## Interval 'period' defined in the months before the survey.
-## Should replicate mortality rates reported in DHS reports.
+#' Calculate age-specific mortality rates in period preceding survey.
+#' Interval 'period' defined in the months before the survey.
+#' Should replicate mortality rates reported in DHS reports.
+#'
+#' @importFrom survival Surv
+#' @importFrom survival survSplit
 calc_dhs_mx <- function(sib, period=c(0, 84)){
 
   ## drop if missing survival status or sex
@@ -181,9 +184,9 @@ calc_dhs_mx <- function(sib, period=c(0, 84)){
   sib$agecens <- with(sib, pmin(v008-period[1], mm8+1, na.rm=TRUE) - mm4)  # add 1 to DOD to go to month end
   sib$agestart <- sib$v008 - period[2] - sib$mm4
 
-  sibspl <- survival::survSplit(Surv(agestart, agecens, deaths)~.,
-                              subset(sib, agecens > agestart),
-                              cut=3:10*5*12, episode="agegr")
+  sibspl <- survSplit(Surv(agestart, agecens, deaths)~.,
+                      subset(sib, agecens > agestart),
+                      cut=3:10*5*12, episode="agegr")
 
   sibspl$agegr <- factor(sibspl$agegr, 2:8, 3:9*5)
   sibspl <- subset(sibspl, !is.na(agegr))
@@ -205,8 +208,10 @@ calc_dhs_35q15 <- function(mx){
 }
 
 
-## Create episode dataset split by period, age group, and time preceding survey indicator
-
+#' Create episode dataset split by period, age group, and time preceding survey indicator (TIPS)
+#'
+#' @importFrom survival Surv
+#' @importFrom survival survSplit
 create_tips_data <- function(dat, period=do.call(seq.int, as.list(range(dat$intvy)+c(-16, 1))), agegr = 3:12*5, tips = 0:15, dobvar="sibdob", dodvar="sibdod"){
 
   ## drop if missing survival status or sex
@@ -218,7 +223,7 @@ create_tips_data <- function(dat, period=do.call(seq.int, as.list(range(dat$intv
   dat$tcens <- pmin(dat[[dodvar]]+1, dat$intvcmc, na.rm=TRUE) # episode ends at either date of death or interview
   dat$tipsstart <- with(dat, tstart - intvcmc)
   dat$tipscens <- with(dat, tcens - intvcmc)
-  dat <- survival::survSplit(Surv(tipsstart, tipscens, deaths)~., subset(dat, tipscens > tipsstart), cut=-tips*12, episode="tips", start="tipsstart", end="tipscens")
+  dat <- survSplit(Surv(tipsstart, tipscens, deaths)~., subset(dat, tipscens > tipsstart), cut=-tips*12, episode="tips", start="tipsstart", end="tipscens")
   dat$tips <- c(NA, rev(tips[-length(tips)]), NA)[dat$tips]
   dat <- subset(dat, !is.na(tips))
 
@@ -226,14 +231,14 @@ create_tips_data <- function(dat, period=do.call(seq.int, as.list(range(dat$intv
   dat$tcens <- with(dat, tipscens + intvcmc)
 
   ## define time episode and split
-  dat <- survival::survSplit(Surv(tstart, tcens, deaths)~., subset(dat, tcens > tstart), cut=(period-1900)*12, episode="period", start="tstart", end="tcens")
+  dat <- survSplit(Surv(tstart, tcens, deaths)~., subset(dat, tcens > tstart), cut=(period-1900)*12, episode="period", start="tstart", end="tcens")
   dat$period <- c(NA, period[-length(period)], NA)[dat$period]
   dat <- subset(dat, !is.na(period))
 
   ## split into age groups
   dat$agestart <- dat$tstart - dat[[dobvar]]
   dat$agecens <- dat$tcens - dat[[dobvar]]
-  dat <- survival::survSplit(Surv(agestart, agecens, deaths)~., dat, cut=agegr*12, episode="agegr", start="agestart", end="agecens")
+  dat <- survSplit(Surv(agestart, agecens, deaths)~., dat, cut=agegr*12, episode="agegr", start="agestart", end="agecens")
   dat$agegr <- c(NA, agegr[-length(agegr)], NA)[dat$agegr]
   dat <- subset(dat, !is.na(agegr))
 
