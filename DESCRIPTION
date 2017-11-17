@@ -8,7 +8,10 @@ Description: This package includes tools for processing and analysing data from 
     Surveys (MICS).
 Depends: R (>= 3.2.0),
 Imports: survival (>= 2.39)
-Suggests: foreign, survey
+Suggests: foreign, survey,
+    knitr,
+    rmarkdown
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: knitr

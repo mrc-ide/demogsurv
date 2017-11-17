@@ -199,7 +199,7 @@ calc_dhs_mx <- function(sib, period=c(0, 84)){
 }
 
 ## Calculate 35q15 from output of calc_dhs_mx().
-## Shoudl replicate 35q15 reported in DHS reports.
+## Should replicate 35q15 reported in DHS reports.
 calc_dhs_35q15 <- function(mx){
   qx <- aggregate(cbind(px=exp(-5*mx)) ~ survyear+sex+country, mx, prod)
   qx$qx <- 1-qx$px
