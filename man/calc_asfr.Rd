@@ -45,11 +45,8 @@ the standard fertility indicator produced in DHS reports.
 The return is a \code{data.frame}, but
 }
 \examples{
-irfl_zip <- tempfile()
-download.file("https://dhsprogram.com/customcf/legacy/data/sample_download_dataset.cfm?Filename=ZZIR62FL.ZIP&Tp=1&Ctry_Code=zz&survey_id=0&doctype=dhs", irfl_zip)
-
-ir <- rdhs::read_dhs_flat(irfl_zip)
-ir <- haven::as_factor(ir)
+data(zzir62fl)
+ir <- zzir62fl
 
 ## Replicate DHS Table 5.1
 ## ASFR and TFR in 3 years preceding survey by residence
@@ -60,11 +57,11 @@ calc_tfr(ir, ~1)
 
 ## Replicate DHS Table 5.2
 ## TFR by resdience, region, education, and wealth quintile
-calc_tfr(ir, ~v102) # residence
-calc_tfr(ir, ~v101) # region
-calc_tfr(ir, ~v106) # education
-calc_tfr(ir, ~v190) # wealth
-calc_tfr(ir)        # total
+calc_tfr(ir, ~v102)  # residence
+calc_tfr(ir, ~v101)  # region
+calc_tfr(ir, ~v106)  # education
+calc_tfr(ir, ~v190)  # wealth
+calc_tfr(ir)         # total
 
 ## Calculate annual TFR estimates for 10 years preceding survey
 tfr_ann <- calc_tfr(ir, tips=0:9)
