@@ -79,7 +79,7 @@ cov2cor(vcov(tfr_cal$tfr))
 ## Generate estimates split by period and TIPS 
 calc_tfr(ir, period = c(2010, 2013, 2015), tips=0:5)
 
-## ASFR estiamtes by birth cohort
+## ASFR estimates by birth cohort
 asfr_coh <- calc_asfr(ir, cohort=c(1980, 1985, 1990, 1995), tips=NULL)
 reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 

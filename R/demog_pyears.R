@@ -7,7 +7,6 @@
   gsub("-Inf", "+", val)
 }
 
-
 #' Events and person-years from episode data for demographic analysis
 #' 
 #' This is a wrapper for the \code{\link[survival]{pyears}} function

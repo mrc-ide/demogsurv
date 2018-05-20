@@ -64,7 +64,7 @@
 #' ## Generate estimates split by period and TIPS 
 #' calc_tfr(ir, period = c(2010, 2013, 2015), tips=0:5)
 #' 
-#' ## ASFR estiamtes by birth cohort
+#' ## ASFR estimates by birth cohort
 #' asfr_coh <- calc_asfr(ir, cohort=c(1980, 1985, 1990, 1995), tips=NULL)
 #' reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 #' 
@@ -97,11 +97,12 @@ calc_asfr <- function(data,
     by <- ~1
   
   vars <- unique(unlist(lapply(c(by, strata, clusters), all.vars)))
-  f <- survey::make.formula(vars)
-  mf <- model.frame(f, data=data, na.action=na.pass,
-                    id=id, weights=weights, dob=dob, intv=intv)
-  
-  births <- reshape(model.frame(survey::make.formula(bvars), data, na.action=na.pass, id=id),
+  f <- formula(paste("~", paste(vars, collapse = "+")))
+  mf <- model.frame(formula = f, data = data, na.action = na.pass,
+                    id = id, weights = weights, dob = dob, intv = intv)
+
+  births <- reshape(model.frame(paste("~", paste(bvars, collapse="+")),
+                                data, na.action=na.pass, id=id),
                     idvar="(id)", timevar="bidx",
                     varying=bvars, v.names="bcmc", direction="long")
   births <- subset(births, !is.na(bcmc))
@@ -116,58 +117,28 @@ calc_asfr <- function(data,
   des <- survey::svydesign(ids=clusters, strata=strata, data=aggr$data, weights=~1)
   class(des) <- c("svypyears", class(des))
 
-  f <- by
-  byvars <- all.vars(by)
+  ## construct interaction of all factor levels that appear
+  byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
+                     names(des$variables))
+  byf <- do.call("interaction", c(des$variables[byvar], drop=TRUE))
+  des <- update(des, byf = byf)
 
-  if(exists("agegr", des$variables)) {
-    byvars <- c(byvars, "agegr")
-    if(length(levels(des$variables$agegr)) > 1)
-      if(f[[2]] == 1)
-        f <- update(f, ~agegr)
-      else
-        f <- update(f, ~agegr:.)
-  }
-
-  if(exists("period", des$variables)) {
-    byvars <- c(byvars, "period")
-    if(length(levels(des$variables$period)) > 1)
-      if(f[[2]] == 1)
-        f <- update(f, ~period)
-      else
-        f <- update(f, ~period:.)
-  }
-
-  if(exists("cohort", des$variables)) {
-    byvars <- c(byvars, "cohort")
-    if(length(levels(des$variables$cohort)) > 1)
-      if(f[[2]] == 1)
-        f <- update(f, ~cohort)
-      else
-        f <- update(f, ~cohort:.)
-  }
-
-  if(exists("tips", des$variables)) {
-    byvars <- c(byvars, "tips")
-    if(length(levels(des$variables$tips)) > 1)
-      if(f[[2]] == 1)
-        f <- update(f, ~tips)
-      else
-        f <- update(f, ~tips:.)
-  }
+  ## fit model
+  mod <- survey::svyglm(event ~ -1 + byf + offset(log(pyears)),
+                        des, family=quasipoisson)
   
-  f <- update(f, event~-1+.+offset(log(pyears)))
+  ## prediction for all factor levels that appear
+  val <- data.frame(des$variables[c(byvar, "byf")])[!duplicated(byf),]
+  val <- val[order(val$byf), ]
+  val$pyears <- 1
   
-  mod <- survey::svyglm(f, des, family=quasipoisson)
+  val$asfr <- predict(mod, val, type="response", vcov=TRUE)
+  val$se_asfr <- sqrt(diag(vcov(val$asfr)))
+  val[c("byf", "pyears")] <- NULL
 
-  ## All values of factor combinations that appear
-  pred <- unique(model.frame(des)[byvars])
-  pred$pyears <- 1
+  rownames(val) <- NULL
   
-  pred$asfr <- predict(mod, pred, type="response", vcov=TRUE)
-  pred$se_asfr <- sqrt(diag(vcov(pred$asfr)))
-  pred$pyears <- NULL
-  
-  return(pred)
+  return(val)
 }
 
 #' @export
@@ -192,40 +163,21 @@ calc_tfr <- function(data,
   g[[1]] <- quote(calc_asfr)
   asfr <- eval(g)
 
-  vars <- setdiff(names(asfr), c("agegr", "asfr", "se_asfr"))
+  mf <- asfr[setdiff(names(asfr), c("asfr", "se_asfr"))]
+  dfmm <- .mm_aggr(mf, agegr)
+  mm <- dfmm$mm
 
-  mf <- asfr[vars]
-  mf <- mf[vapply(lapply(mf, unique), length, numeric(1)) > 1]
-
-  if(length(mf))
-    f <- paste("~ -1", paste(names(mf), collapse=":"), sep="+")
-  else
-    f <- "~1"
-
-  ## Drop factors with single level
-  nlevels <- vapply(lapply(mf, levels), length, numeric(1))
-  
-  mm <- model.matrix(formula(f), mf[nlevels > 1])
-
-  ## Drop columns with no predictions
-  mm <- mm[ , colSums(mm) > 0]
-  
-  mu <- 5 * t(mm) %*% asfr$asfr
-  v <- 25 * t(mm) %*% vcov(asfr$asfr) %*% mm
+  mu <- drop(asfr$asfr %*% mm)
+  v <- t(mm) %*% vcov(asfr$asfr) %*% mm
   class(mu) <- "svystat"
   attr(mu, "var") <-  v
   attr(mu, "statistic") <- "tfr"
 
-  tfr <- if(length(vars))
-           ## use asfr because we might have dropped vars from mf above
-           unique(asfr[vars])
-         else
-           data.frame(total = "total")
+  val <- dfmm$df
+  val$tfr <- mu
+  val$se_tfr <- sqrt(diag(v))
+
+  rownames(val) <- NULL
   
-  tfr$tfr <- mu
-  tfr$se_tfr <- sqrt(diag(v))
-
-  tfr
+  val
 }
-
-
