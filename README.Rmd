@@ -1,0 +1,196 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# hhsurveydata
+
+The goal of hhsurveydata is to:
+
+* Calculate common demographic indicators from household survey data, including child mortality, adult mortality, and fertility.
+* Stratify indicators according to arbitrary age groups, calendar periods, birth cohorts, time before survey, or other survey variables (region, residence, wealth category, education, etc.).
+* Efficiently prepare event / person-year datasets from survey data for other model-based analysis.
+* Provide standard error estimates for all indicators via Taylor linearization or jackknife.
+* Calculate sample covariance for indicators estimated from a single complex survey (e.g. time-series of child mortality estimates).
+* Default parameters are specified for analysis of [DHS recode datasets](https://dhsprogram.com/data/) without fuss, but funciton implementation is flexible for use with other survey data.
+
+For analysis of DHS data, the package interacts well with [`rdhs`](https://ojwatson.github.io/rdhs/). See the vignette *TO BE COMPLETED* for an example.
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/mrc-ide/hhsurveydata) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("mrc-ide/hhsurveydata")
+```
+
+The package will be released on [CRAN](https://CRAN.R-project.org) in due course.
+
+
+## Example
+
+Load example datasets created from [DHS Model Datasets](https://dhsprogram.com/data/model-datasets.cfm).
+```{r}
+data(zzbr) # Births recode (child mortality)
+data(zzir) # Individuals recode (fertility, adult mortality)
+```
+
+### Child mortality 
+
+By default, the function `calc_nqx` calculates U5MR by periods 0-4, 5-9, and 10-14 
+years before the survey. Before calculating mortality rates, create a binary variable
+indicator whether a death occurred and a variable givine the date of death, placed 
+0.5 months in the month the death occurred.
+
+```{r u5mr}
+zzbr$death <- zzbr$b5 == "no"      # b5: child is alive ("yes" or "no")
+zzbr$dod <- zzbr$b3 + zzbr$b7 + 0.5
+u5mr <- calc_nqx(zzbr)
+u5mr
+```
+
+Note that `calc_nqx()` does **not** reproduce child mortality estimates 
+produced in DHS reports. `calc_nqx()` conducts a standard demographic rate 
+calculation based on observed events and person years within each age group
+and then converts the cumulative hazard to survival probabilities. The standard
+DHS indicator uses a rule-based approach to allocate child deaths and person 
+years across age groups and proceeds by calculating direct probabilities of death 
+in each age group (see [Rutstein and Rojas 2006](http://dhsprogram.com/pubs/pdf/DHSG1/Guide_to_DHS_Statistics_29Oct2012_DHSG1.pdf)). 
+A function `calc_dhs_u5mr()` will reproduce the DHS calculation, but is not 
+yet fully implemented.
+
+Use the argument `by=` to specify factor variables by which to stratify the rate
+calculation.
+
+```{r u5mr by}
+calc_nqx(zzbr, by=~v102) # by urban/rural residence
+calc_nqx(zzbr, by=~v190, tips=c(0, 10)) # by wealth quintile, 0-9 years before
+calc_nqx(zzbr, by=~v101+v102, tips=c(0, 10)) # by region and residence
+```
+
+The column `nqx` is stored as class `svystat` from the  `survey` package. The 
+sample covariance or correlation matrix of the estimates can be obtained using 
+`vcov()`.
+
+```{r sample covariance}
+vcov(u5mr$nqx)  # sample covariance
+cov2cor(vcov(u5mr$nqx))  # sample correlation
+```
+
+Standard error estimation can be done via Taylor linearisation or unstratified 
+jackknife. Results are very similar if unstratified design-based estimates are used.
+
+```{r varmethod}
+calc_nqx(zzbr, varmethod = "lin") # default is linearization
+
+## Compare unstratified standard error estiamtes for linearization and jackknife
+calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
+calc_nqx(zzbr, strata=NULL, varmethod = "jk1")  # unstratififed jackknife
+```
+
+To calculate different child mortality indicators (neonatal, infant, etc.), specify
+different age groups over which to aggregate.
+
+```{r NN PNN infant}
+calc_nqx(zzbr, agegr=c(0, 1)/12)  # neonatal
+calc_nqx(zzbr, agegr=c(1, 3, 5, 12)/12) # postneonatal
+calc_nqx(zzbr, agegr=c(0, 1, 3, 5, 12)/12) # infant (1q0)
+calc_nqx(zzbr, agegr=c(12, 24, 36, 48, 60)/12) # child (4q1)
+calc_nqx(zzbr, agegr=c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12) # u5mr (5q0)
+```
+
+Calculate annual ~5~q~0~ by calendar year (rather than years preceding survey).
+
+```{r annual 5q0}
+calc_nqx(zzbr, period=2005:2015, tips=NULL)
+```
+
+### Adult mortality
+
+The function `calc_nqx()` can also used to calculate adult mortality indicators 
+such as ~35~q~15~. First, the convenience function `reshape_sib_data()` transforms 
+respondent-level data to a dataset with one row for each sibling reported. Then 
+define a binary variable for whether the sibling is alive or dead.
+
+```{r reshape sib}
+zzsib <- reshape_sib_data(zzir)
+zzsib$death <- factor(zzsib$mm2, c("dead", "alive")) == "dead"
+```
+
+Calculate ~35~q~15~ for the seven year period before the survey.
+```{r sib death, warning=FALSE}
+calc_nqx(zzsib, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
+```
+
+Calculate ~35~q~15~ by sex, replicating Table MM2.2.
+```{r 35q15 by sex, warning=FALSE}
+zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
+calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
+```
+
+The above calculation does not exactly match the example tables. Female ~35~q~15~ 
+should be 175 rather than 176. This will be reviewed as they should match, and 
+additional functionality including functions for producing ASMRs, MMR, and PM
+will be added in future.
+
+### Fertility
+
+The functions `calc_asfr()` and `calc_tfr()` calculate age-specific fertility 
+rates and total fertility rate, respectively. The default calculation is by 
+five-year age groups for three years before the survey, exactly reproducing 
+the estimates produced in DHS reports.
+
+```{r fertility}
+## Replicate DHS Table 5.1.
+## Total ASFR and TFR in 3 years preceding survey
+calc_asfr(zzir, tips=c(0, 3))
+calc_tfr(zzir)
+
+## ASFR and TFR by urban/rural residence
+reshape2::dcast(calc_asfr(zzir, ~v025, tips=c(0, 3)), agegr ~ v025, value.var = "asfr")
+calc_tfr(zzir, by=~v025)
+```
+
+Replicate fertility estimates stratified by various sociodemographic characteristics.
+
+```{r table52}
+## Replicate DHS Table 5.2
+calc_tfr(zzir, ~v102)  # residence
+calc_tfr(zzir, ~v101)  # region
+calc_tfr(zzir, ~v106)  # education
+calc_tfr(zzir, ~v190)  # wealth quintile
+calc_tfr(zzir)  # total
+```
+
+Generate estimates stratified by both calendar period and time preceding survey.
+```{r caltips}
+calc_tfr(zzir, period = c(2010, 2013, 2015), tips=0:5)
+```
+
+Calculate ASFR by birth cohort.
+```{r asfrcoh}
+asfr_coh <- calc_asfr(zzir, cohort=c(1980, 1985, 1990, 1995), tips=NULL)
+reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
+```
+
+## To Do
+
+* Refactor jackknife code and implement for ASFR and TFR calculation.
+* Implement stratified jackknife.
+* Implement DHS child mortality calculation with rule-based allocation across age intervals.
+* Calculate multiple aggregations of nqx and sample correlation of these (e.g. NN, PN, 1q0, 4q1, 5q0).
+* Extend fertility calculation to accomodate birth list (long) data.
+* Document everything...
+* Settle on a better package name. I kind of like 'demogr' (demographic rates / demography R), but this is very close to demogR. 'demogrates' is an option.
+* Develop, test, and create examples for non-DHS household surveys, e.g. MICS, WFS.
+* Extend interface to allow specification of formula, variable name, or vectors.

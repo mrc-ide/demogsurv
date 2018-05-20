@@ -8,8 +8,17 @@ Description: This package includes tools for processing and analysing data from 
     indicators from Demographic and Health Surveys (DHS) and Multiple Indicator Cluster
     Surveys (MICS).
 Depends: R (>= 3.2.0),
-Imports: survival (>= 2.39)
-Suggests: foreign, survey
+Imports:
+    survival (>= 2.39),
+    survey (>= 2.33),
+    reshape2 (>= 1.4.3)
+Suggests: 
+    foreign,
+    knitr,
+    rmarkdown,
+    testthat
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
