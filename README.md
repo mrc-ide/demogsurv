@@ -3,23 +3,22 @@
 
 # hhsurveydata
 
-The goal of hhsurveydata is to …
+The goal of hhsurveydata is to:
 
   - Calculate common demographic indicators from household survey data,
     including child mortality, adult mortality, and fertility.
   - Stratify indicators according to arbitrary age groups, calendar
-    periods, birth cohorts, calendar periods, time before survey, or
-    other survey variables (region, residence, wealth category,
-    educatation, etc.).
+    periods, birth cohorts, time before survey, or other survey
+    variables (region, residence, wealth category, education, etc.).
   - Efficiently prepare event / person-year datasets from survey data
     for other model-based analysis.
   - Provide standard error estimates for all indicators via Taylor
     linearization or jackknife.
   - Calculate sample covariance for indicators estimated from a single
     complex survey (e.g. time-series of child mortality estimates).
-  - Default parameters for analysis of [DHS recode
-    datasets](https://dhsprogram.com/data/) without fuss, but flexible
-    implementation for use with other survey data.
+  - Default parameters are specified for analysis of [DHS recode
+    datasets](https://dhsprogram.com/data/) without fuss, but funciton
+    implementation is flexible for use with other survey data.
 
 For analysis of DHS data, the package interacts well with
 [`rdhs`](https://ojwatson.github.io/rdhs/). See the vignette *TO BE
@@ -54,8 +53,9 @@ zzir <- zzir62fl
 
 By default, the function `calc_nqx` calculates U5MR by periods 0-4, 5-9,
 and 10-14 years before the survey. Before calculating mortality rates,
-create variables for whether a death occurred and the date of death,
-placed on average 0.5 months in the month the death occurred.
+create a binary variable indicator whether a death occurred and a
+variable givine the date of death, placed 0.5 months in the month the
+death occurred.
 
 ``` r
 zzbr$death <- zzbr$b5 == "no"      # b5: child is alive ("yes" or "no")
@@ -73,8 +73,8 @@ produced in DHS reports. `calc_nqx()` conducts a standard demographic
 rate calculation based on observed events and person years within each
 age group and then converts the cumulative hazard to survival
 probabilities. The standard DHS indicator uses a rule-based approach to
-allocating child deaths and person years across age groups and proceeds
-by calculatind direct probabilities of death in each age group (see
+allocate child deaths and person years across age groups and proceeds by
+calculating direct probabilities of death in each age group (see
 [Rutstein and
 Rojas 2006](http://dhsprogram.com/pubs/pdf/DHSG1/Guide_to_DHS_Statistics_29Oct2012_DHSG1.pdf)).
 A function `calc_dhs_u5mr()` will reproduce the DHS calculation, but is
@@ -147,9 +147,9 @@ calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
 #> 3   0-4 0.1408711 0.006507844 0.1280208 0.1535320
 calc_nqx(zzbr, strata=NULL, varmethod = "jk1")  # unstratififed jackknife
 #>    tips       nqx          se      ci_l      ci_u
-#> 1 10-14 0.2212304 0.011976980 0.1973986 0.2443546
-#> 2   5-9 0.1937855 0.008367844 0.1772169 0.2100205
-#> 3   0-4 0.1408711 0.006507844 0.1280208 0.1535320
+#> 1 10-14 0.2212304 0.012088926 0.1971571 0.2445818
+#> 2   5-9 0.1937855 0.008408382 0.1771422 0.2100923
+#> 3   0-4 0.1408711 0.006539720 0.1279620 0.1535891
 ```
 
 To calculate different child mortality indicators (neonatal, infant,
@@ -183,8 +183,8 @@ calc_nqx(zzbr, agegr=c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12) # u5mr (5q0)
 #> 3   0-4 0.1408711 0.006432798 0.1281701 0.1533871
 ```
 
-Calculate annual <sub>5</sub>q~0 by calendar year (rather than years
-preceding survey).
+Calculate annual <sub>5</sub>q<sub>0</sub> by calendar year (rather than
+years preceding survey).
 
 ``` r
 calc_nqx(zzbr, period=2005:2015, tips=NULL)
@@ -202,6 +202,43 @@ calc_nqx(zzbr, period=2005:2015, tips=NULL)
 ```
 
 ### Adult mortality
+
+The function `calc_nqx()` can also used to calculate adult mortality
+indicators such as <sub>35</sub>q<sub>15</sub>. First, the convenience
+function `reshape_sib_data()` transforms respondent-level data to a
+dataset with one row for each sibling reported. Then define a binary
+variable for whether the sibling is alive or dead.
+
+``` r
+zzsib <- reshape_sib_data(zzir)
+zzsib$death <- factor(zzsib$mm2, c("dead", "alive")) == "dead"
+```
+
+Calculate <sub>35</sub>q<sub>15</sub> for the seven year period before
+the
+survey.
+
+``` r
+calc_nqx(zzsib, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
+#>   tips       nqx          se      ci_l      ci_u
+#> 1  0-7 0.1766998 0.008637983 0.1595944 0.1934571
+```
+
+Calculate <sub>35</sub>q<sub>15</sub> by sex, replicating Table
+MM2.2.
+
+``` r
+zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
+calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
+#>      sex tips       nqx         se      ci_l      ci_u
+#> 1 female  0-7 0.1758983 0.01336771 0.1492771 0.2016864
+#> 2   male  0-7 0.1772981 0.01264042 0.1521465 0.2017035
+```
+
+The above calculation does not exactly match the example tables. Female
+<sub>35</sub>q<sub>15</sub> should be 175 rather than 176. This will be
+reviewed as they should match, and additional functionality including
+functions for producing ASMRs, MMR, and PM will be added in future.
 
 ### Fertility
 

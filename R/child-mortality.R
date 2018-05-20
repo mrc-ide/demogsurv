@@ -121,7 +121,8 @@ calc_nqx <- function(data,
     lest <- drop(mx %*% mm)
     lv <- t(mm) %*% vcov(mx) %*% mm
     est <- 1 - exp(-lest)
-    v <- diag(c(exp(-lest))) %*% lv %*% diag(c(exp(-lest)))
+    dF <- diag(exp(-lest), length(lest))
+    v <- dF %*% lv %*% dF
     
   } else if(varmethod == "jk1") {
 
