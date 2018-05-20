@@ -105,7 +105,7 @@ calc_asfr <- function(data,
                                 data, na.action=na.pass, id=id),
                     idvar="(id)", timevar="bidx",
                     varying=bvars, v.names="bcmc", direction="long")
-  births <- subset(births, !is.na(bcmc))
+  births <- births[!is.na(births$bcmc), ]
   births$bcmc <- births$bcmc + births$bidx * birth_displace
   
   epis <- tmerge(mf, mf, id=`(id)`, tstart=`(dob)`, tstop=`(intv)`)

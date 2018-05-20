@@ -12,6 +12,9 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
+  [![Travis build status](https://travis-ci.org/mrc-ide/hhsurveydata.svg?branch=master)](https://travis-ci.org/mrc-ide/hhsurveydata)
+  [![Coverage status](https://codecov.io/gh/mrc-ide/hhsurveydata/branch/master/graph/badge.svg)](https://codecov.io/github/mrc-ide/hhsurveydata?branch=master)
+  
 # hhsurveydata
 
 The goal of hhsurveydata is to:

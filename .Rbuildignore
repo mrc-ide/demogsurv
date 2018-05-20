@@ -4,3 +4,5 @@
 ^analysis$
 ^dev$
 ^README\.Rmd$
+^\.travis\.yml$
+^codecov\.yml$

@@ -17,7 +17,8 @@ Suggests:
     foreign,
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    covr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
