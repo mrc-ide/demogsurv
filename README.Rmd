@@ -39,8 +39,10 @@ The package will be released on [CRAN](https://CRAN.R-project.org) in due course
 
 ## Example
 
-Load example datasets created from [DHS Model Datasets](https://dhsprogram.com/data/model-datasets.cfm).
+Load the package and example datasets created from [DHS Model Datasets](https://dhsprogram.com/data/model-datasets.cfm).
 ```{r}
+library(hhsurveydata)
+
 data(zzbr) # Births recode (child mortality)
 data(zzir) # Individuals recode (fertility, adult mortality)
 ```
@@ -129,19 +131,18 @@ zzsib$death <- factor(zzsib$mm2, c("dead", "alive")) == "dead"
 
 Calculate ~35~q~15~ for the seven year period before the survey.
 ```{r sib death, warning=FALSE}
-calc_nqx(zzsib, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
+calc_nqx(zzsib, agegr=seq(15, 50, 5), tips=c(0, 7), dob="mm4", dod="mm8")
 ```
 
 Calculate ~35~q~15~ by sex, replicating Table MM2.2.
 ```{r 35q15 by sex, warning=FALSE}
 zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
-calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
+calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 7), dob="mm4", dod="mm8")
 ```
 
-The above calculation does not exactly match the example tables. Female ~35~q~15~ 
-should be 175 rather than 176. This will be reviewed as they should match, and 
-additional functionality including functions for producing ASMRs, MMR, and PM
-will be added in future.
+This calculation exactly reproduces the ~35~q~15~ estiamtes produced for Table MM2
+for DHS reports. Additional functionality will be added in future for producing 
+ASMRs (Table MM1), MMR, and PM (Table MM3) will be added in future.
 
 ### Fertility
 

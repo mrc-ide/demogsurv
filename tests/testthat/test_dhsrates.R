@@ -29,7 +29,7 @@ test_that("adult mortality calculation reproduce DHS tables", {
   zzsib <- reshape_sib_data(zzir)
   zzsib$death <- factor(zzsib$mm2, c("dead", "alive")) == "dead"
   zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
-  q3515 <- calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 8),
+  q3515 <- calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 7),
                     dob="mm4", dod="mm8")
-  expect_equal(round(1000*c(q3515$nqx)), c(175, 177))
+  expect_equal(round(1000*c(q3515$nqx)), c(179, 177))
 })
