@@ -16,22 +16,22 @@ This vignette illustrates use of the `hhsurveydata` package to:
 * replicate the standard demographic indicators produced in DHS reports, and
 * calculate indicators for customized periods or age groups.
 
-## Load DHS survey dataset from ZIP archive
+## Load DHS survey datasets
 
 DHS provides an example model dataset downloadable without registration from [here](https://dhsprogram.com/data/download-model-datasets.cfm). Download the Stata dataset version of the individual recode and birth recode datasets into temporary files.
 
 ```{r}
-irdt_zip <- tempfile()
-download.file("https://dhsprogram.com/customcf/legacy/data/sample_download_dataset.cfm?Filename=ZZIR62DT.ZIP&Tp=1&Ctry_Code=zz&survey_id=0&doctype=dhs", irdt_zip)
-brdt_zip <- tempfile()
-download.file("https://dhsprogram.com/customcf/legacy/data/sample_download_dataset.cfm?Filename=ZZBR62DT.ZIP&Tp=1&Ctry_Code=zz&survey_id=0&doctype=dhs", brdt_zip)
+## irdt_zip <- tempfile()
+## download.file("https://dhsprogram.com/customcf/legacy/data/sample_download_dataset.cfm?Filename=ZZIR62DT.ZIP&Tp=1&Ctry_Code=zz&survey_id=0&doctype=dhs", irdt_zip)
+## brdt_zip <- tempfile()
+## download.file("https://dhsprogram.com/customcf/legacy/data/sample_download_dataset.cfm?Filename=ZZBR62DT.ZIP&Tp=1&Ctry_Code=zz&survey_id=0&doctype=dhs", brdt_zip)
 ```
 
 The function `read_zipdta()` identifies and reads the file with extension `.DTA` from within the zip archive. `read_zipdta()` is a wrapper for the more generic function `read_zipdata()` which can match an arbitrary filename inside a zip directory using regular expressions (argument `pattern`) and read the file using a given function (argument `readfn`).
 
 ```{r, warning=FALSE}
-ir <- read_zipdta(irdt_zip)
-br <- read_zipdta(brdt_zip)
+## ir <- read_zipdta(irdt_zip)
+## br <- read_zipdta(brdt_zip)
 ```
 
 ## Adult and maternal mortality

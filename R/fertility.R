@@ -35,7 +35,7 @@
 #' ## Replicate DHS Table 5.1
 #' ## ASFR and TFR in 3 years preceding survey by residence
 #' calc_asfr(zzir, ~1, tips=c(0, 3)) 
-#' dcast(calc_asfr(zzir, ~v025, tips=c(0, 3)), agegr ~ v025, value.var = "asfr")
+#' reshape2::dcast(calc_asfr(zzir, ~v025, tips=c(0, 3)), agegr ~ v025, value.var = "asfr")
 #' calc_tfr(zzir, ~v025)
 #' calc_tfr(zzir, ~1)
 #' 
@@ -68,6 +68,7 @@
 #' reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 #' 
 #' @importFrom survival tmerge
+#' @import stats
 #' @export
 #' @md
 calc_asfr <- function(data,

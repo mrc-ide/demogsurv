@@ -11,7 +11,8 @@ Depends: R (>= 3.2.0),
 Imports:
     survival (>= 2.39),
     survey (>= 2.33),
-    reshape2 (>= 1.4.3)
+    reshape2 (>= 1.4.3),
+    stats
 Suggests: 
     foreign,
     knitr,
