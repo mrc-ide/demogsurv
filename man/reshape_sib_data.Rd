@@ -28,9 +28,9 @@ reshape_sib_data(data, widevars = grep("^v", names(data), value = TRUE),
 Convert respondent-level sibling history data to one row per sibling
 }
 \examples{
-data(zzir62fl)
+data(zzir)
 
-zzsib <- reshape_sib_data(zzir62fl)
+zzsib <- reshape_sib_data(zzir)
 zzsib$death <- factor(zzsib$mm2, c("dead", "alive")) == "dead"
 zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
 calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")

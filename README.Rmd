@@ -41,10 +41,8 @@ The package will be released on [CRAN](https://CRAN.R-project.org) in due course
 
 Load example datasets created from [DHS Model Datasets](https://dhsprogram.com/data/model-datasets.cfm).
 ```{r}
-data(zzbr62fl) # Births recode (child mortality)
-data(zzir62fl) # Individuals recode (fertility, adult mortality)
-zzbr <- zzbr62fl
-zzir <- zzir62fl
+data(zzbr) # Births recode (child mortality)
+data(zzir) # Individuals recode (fertility, adult mortality)
 ```
 
 ### Child mortality 

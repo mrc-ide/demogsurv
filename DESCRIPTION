@@ -9,7 +9,7 @@ Description: This package includes tools for processing and analysing data from 
 Depends: R (>= 3.2.0),
 Imports:
     survival (>= 2.39),
-    survey (>= 2.33-2),
+    survey (>= 2.33),
     reshape2 (>= 1.4.3)
 Suggests: 
     foreign,

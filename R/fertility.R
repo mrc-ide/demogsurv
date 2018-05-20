@@ -30,42 +30,41 @@
 #' @seealso [demog_pyears()]
 #' 
 #' @examples
-#' data(zzir62fl)
-#' ir <- zzir62fl
+#' data(zzir)
 #' 
 #' ## Replicate DHS Table 5.1
 #' ## ASFR and TFR in 3 years preceding survey by residence
-#' calc_asfr(ir, ~1, tips=c(0, 3)) 
-#' dcast(calc_asfr(ir, ~v025, tips=c(0, 3)), agegr ~ v025, value.var = "asfr")
-#' calc_tfr(ir, ~v025)
-#' calc_tfr(ir, ~1)
+#' calc_asfr(zzir, ~1, tips=c(0, 3)) 
+#' dcast(calc_asfr(zzir, ~v025, tips=c(0, 3)), agegr ~ v025, value.var = "asfr")
+#' calc_tfr(zzir, ~v025)
+#' calc_tfr(zzir, ~1)
 #' 
 #' ## Replicate DHS Table 5.2
 #' ## TFR by resdience, region, education, and wealth quintile
-#' calc_tfr(ir, ~v102)  # residence
-#' calc_tfr(ir, ~v101)  # region
-#' calc_tfr(ir, ~v106)  # education
-#' calc_tfr(ir, ~v190)  # wealth
-#' calc_tfr(ir)         # total
+#' calc_tfr(zzir, ~v102)  # residence
+#' calc_tfr(zzir, ~v101)  # region
+#' calc_tfr(zzir, ~v106)  # education
+#' calc_tfr(zzir, ~v190)  # wealth
+#' calc_tfr(zzir)         # total
 #' 
 #' ## Calculate annual TFR estimates for 10 years preceding survey
-#' tfr_ann <- calc_tfr(ir, tips=0:9)
+#' tfr_ann <- calc_tfr(zzir, tips=0:9)
 #' 
 #' ## Sample covariance of annual TFR estimates arising from complex survey design
 #' cov2cor(vcov(tfr_ann$tfr)) 
 #' 
 #' ## Alternately, calculate TFR estimates by calendar year
-#' tfr_cal <- calc_tfr(ir, period = 2004:2015, tips=NULL)
+#' tfr_cal <- calc_tfr(zzir, period = 2004:2015, tips=NULL)
 #' tfr_cal
 #' 
 #' ## sample covariance of annual TFR estimates arising from complex survey design
 #' cov2cor(vcov(tfr_cal$tfr))
 #' 
 #' ## Generate estimates split by period and TIPS 
-#' calc_tfr(ir, period = c(2010, 2013, 2015), tips=0:5)
+#' calc_tfr(zzir, period = c(2010, 2013, 2015), tips=0:5)
 #' 
 #' ## ASFR estimates by birth cohort
-#' asfr_coh <- calc_asfr(ir, cohort=c(1980, 1985, 1990, 1995), tips=NULL)
+#' asfr_coh <- calc_asfr(zzir, cohort=c(1980, 1985, 1990, 1995), tips=NULL)
 #' reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 #' 
 #' @importFrom survival tmerge

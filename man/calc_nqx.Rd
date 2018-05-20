@@ -50,8 +50,7 @@ from a DHS Births Recode file.
 }
 \examples{
 
-data(zzbr62fl)
-zzbr <- zzbr62fl
+data(zzbr)
 zzbr$death <- zzbr$b5 == "no"  # b5: child still alive ("yes"/"no")
 zzbr$dod <- zzbr$b3 + zzbr$b7 + 0.5
 

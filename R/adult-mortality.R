@@ -10,9 +10,9 @@
 #' @param sibvar_regex Optionally, a regular expression to identify variable names for `longvars` from names of `data`.
 #'
 #' @examples
-#' data(zzir62fl)
+#' data(zzir)
 #'
-#' zzsib <- reshape_sib_data(zzir62fl)
+#' zzsib <- reshape_sib_data(zzir)
 #' zzsib$death <- factor(zzsib$mm2, c("dead", "alive")) == "dead"
 #' zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
 #' calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
