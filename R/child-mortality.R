@@ -44,6 +44,7 @@
 #' calc_nqx(zzbr, by=~v101+v102, tips=c(0, 10)) # by region and residence
 #' 
 #' ## Compare unstratified standard error estiamtes for linearization and jackknife
+#' calc_nqx(zzbr, varmethod = "lin")  # unstratified design
 #' calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
 #' calc_nqx(zzbr, strata=NULL, varmethod = "jk1")  # unstratififed jackknife
 #' 
@@ -72,7 +73,7 @@ calc_nqx <- function(data,
                      dod="dod",
                      death="death",
                      intv = "v008",
-                     varmethod = c("lin", "jk"),
+                     varmethod = "lin",
                      origin=1900,
                      scale=12){
 
@@ -92,39 +93,66 @@ calc_nqx <- function(data,
 
   aggr <- demog_pyears(f, mf, period=period, agegr=agegr, tips=tips, event="(death)",
                        tstart="(dob)", tstop="(tstop)", weights="(weights)",
-                       origin=origin, scale=scale)
-  
-  des <- survey::svydesign(ids=clusters, strata=strata, data=aggr$data, weights=~1)
-  class(des) <- c("svypyears", class(des))
+                       origin=origin, scale=scale)$data
 
   ## All values of factor combinations that appear
   byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
-                     names(des$variables))
-  byf <- do.call("interaction", c(des$variables[byvar], drop=TRUE))
-  des <- update(des, byf = byf)
-
-  ## fit model
-  mod <- survey::svyglm(event ~ -1 + byf + offset(log(pyears)),
-                        des, family=quasipoisson)
+                     names(aggr))
+  aggr$byf <- do.call("interaction", c(aggr[byvar], drop=TRUE))
 
   ## prediction for all factor levels that appear
-  pred <- data.frame(des$variables[c(byvar, "byf")])[!duplicated(byf),]
+  pred <- data.frame(aggr[c(byvar, "byf")])[!duplicated(aggr$byf),]
   pred <- pred[order(pred$byf), ]
   pred$pyears <- 1
-
-  mx <- predict(mod, pred, type="response", vcov=TRUE)
-
-  ## Aggregate age-specific mx to cumulative hazard
-  pred[c("pyears", "byf")] <- NULL
-  dfmm <- .mm_aggr(pred, agegr)
+  
+  ## Matrix to aggregate piecewise-constant rates to cumulative hazards
+  dfmm <- .mm_aggr(pred[byvar], agegr)
   mm <- dfmm$mm
 
-  mx %*% mm
-  lest <- drop(mx %*% mm)
-  lv <- t(mm) %*% vcov(mx) %*% mm
-  v <- diag(c(exp(-lest))) %*% lv %*% diag(c(exp(-lest)))
+  if(varmethod == "lin") {
+    des <- survey::svydesign(ids=clusters, strata=strata, data=aggr, weights=~1)
 
-  nqx <- 1 - exp(-lest)
+    ## fit model
+    mod <- survey::svyglm(event ~ -1 + byf + offset(log(pyears)),
+                          des, family=quasipoisson)
+
+    mx <- predict(mod, pred, type="response", vcov=TRUE)
+
+    lest <- drop(mx %*% mm)
+    lv <- t(mm) %*% vcov(mx) %*% mm
+    est <- 1 - exp(-lest)
+    v <- diag(c(exp(-lest))) %*% lv %*% diag(c(exp(-lest)))
+    
+  } else if(varmethod == "jk1") {
+
+    ## Convert to array with events and PYs for each cluster
+    ## reshape2::acast is MUCH faster than stats::reshape
+    events_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="event")
+    pyears_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="pyears")
+    pyears_clust[is.na(pyears_clust)] <- 0
+    events_clust[is.na(events_clust)] <- 0
+  
+    pyears_all <- rowSums(pyears_clust)
+    events_all <- rowSums(events_clust)
+    
+    pyears_jack <- pyears_all - pyears_clust
+    events_jack <- events_all - events_clust
+
+    ## array of rates with single cluster removed
+    mx_jack <- events_jack / pyears_jack
+    nc <- ncol(mx_jack)
+    
+    lest <- drop((events_all / pyears_all) %*% mm)
+    lest_jack <- t(mm) %*% mx_jack
+    lv <- (nc-1)/nc * (lest_jack - lest) %*% t((lest_jack - lest))
+    
+    est <- 1 - exp(-lest)
+    est_jack <- 1 - exp(-t(mm) %*% mx_jack)
+    v <- (nc-1)/nc * (est_jack - est) %*% t((est_jack - est))
+  } else
+    stop(paste0("varmethod = \"", varmethod, "\" is not recognized."))
+
+  nqx <- est
   attr(nqx, "var") <- v
   attr(nqx, "statistic") <- "nqx"
   class(nqx) <- "svystat"
@@ -138,73 +166,4 @@ calc_nqx <- function(data,
   rownames(val) <- NULL
   
   val
-}
-
-
-
-
-#' Jackknife standard errors
-#' 
-
-calc_nqx_jack <- function(formula=~0, data,
-                          agegr = c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12,
-                          period = NULL,
-                          cohort = NULL,
-                          tips = c(0, 5, 10, 15),
-                          clusters=~v021, strata=~v024+v025,
-                          dob="b3", dod="dod", death="death",
-                          intv = "v008", weight= "v005",
-                          origin=1900, scale=12){
-  
-  data$tstop <- ifelse(data[[death]], data[[dod]], data[[intv]])
-
-  data$dob <- data[[dob]]
-  data$intv <- data[[intv]]
-  data$weights <- data[[weight]] / mean(data[[weight]])
-
-  vars <- unique(unlist(lapply(c(formula, strata, clusters), all.vars)))
-  f <- survey::make.formula(vars)
-  mf <- model.frame(f, data=data, na.action=na.pass, death=death,
-                    weights=weights, dob=dob, intv=intv, tstop=tstop)
-
-  aggr <- demog_pyears(f, mf, period=period, agegr=agegr, tips=tips, event="(death)",
-                       tstart="(dob)", tstop="(tstop)", weights="(weights)",
-                       origin=origin, scale=scale)
-
-  ## Convert to matrix with events and PYs for each cluster
-  pyears_clust <- data.table::dcast(aggr$data, agegr+tips ~ v021, value.var="pyears")
-  events_clust <- data.table::dcast(aggr$data, agegr+tips ~ v021, value.var="event")
-  key <- pyears_clust[,1:2]
-  
-  pyears_clust <- as.matrix(pyears_clust[,-(1:2)])
-  events_clust <- as.matrix(events_clust[,-(1:2)])
-
-  pyears_clust[is.na(pyears_clust)] <- 0
-  events_clust[is.na(events_clust)] <- 0
-  
-  pyears_all <- rowSums(pyears_clust)
-  events_all <- rowSums(events_clust)
-  
-  pyears_jack <- pyears_all - pyears_clust
-  events_jack <- events_all - events_clust
-  
-  mx_jack <- events_jack / pyears_jack
-  
-  G <- model.matrix(~tips-1, key) * setNames(diff(agegr), levels(key$agegr))[key$agegr]
-  nc <- ncol(mx_jack)
-
-  est <- c(1 - exp(-t(G) %*% (events_all / pyears_all)))
-  est_jack <- 1 - exp(-t(G) %*% mx_jack)
-  v <- (nc-1)/nc * (est_jack - est) %*% t((est_jack - est))
-  
-  nqx <- data.frame(tips=levels(key$tips),
-                    nqx = est,
-                    se = sqrt(diag(v)),
-                    ci_l = est - qnorm(0.975) * sqrt(diag(v)),
-                    ci_u = est + qnorm(0.975) * sqrt(diag(v)))
-                    
-  attr(nqx, "var") <- v
-  ## class(nqx) <- "svystat"
-
-  return(nqx)
 }

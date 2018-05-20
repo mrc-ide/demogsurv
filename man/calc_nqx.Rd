@@ -7,8 +7,8 @@
 calc_nqx(data, by = NULL, agegr = c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12,
   period = NULL, cohort = NULL, tips = c(0, 5, 10, 15),
   clusters = ~v021, strata = ~v024 + v025, weight = "v005", dob = "b3",
-  dod = "dod", death = "death", intv = "v008", varmethod = c("lin",
-  "jk"), origin = 1900, scale = 12)
+  dod = "dod", death = "death", intv = "v008", varmethod = "lin",
+  origin = 1900, scale = 12)
 }
 \arguments{
 \item{data}{A dataset (data.frame), for example a DHS births recode (BR) dataset.}
@@ -71,6 +71,7 @@ calc_nqx(zzbr, by=~v190, tips=c(0, 10)) # by wealth quintile, 0-9 years before
 calc_nqx(zzbr, by=~v101+v102, tips=c(0, 10)) # by region and residence
 
 ## Compare unstratified standard error estiamtes for linearization and jackknife
+calc_nqx(zzbr, varmethod = "lin")  # unstratified design
 calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
 calc_nqx(zzbr, strata=NULL, varmethod = "jk1")  # unstratififed jackknife
 

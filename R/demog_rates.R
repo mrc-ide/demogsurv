@@ -29,6 +29,7 @@
   df <- mf[!duplicated(mf$byf), , drop=FALSE]
   df <- df[order(df$byf), , drop=FALSE]
   df["byf"] <- NULL
+  rownames(df) <- NULL
 
   list(df = df, mm = mm)
 }
