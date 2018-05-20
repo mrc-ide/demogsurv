@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style type="text/css">
+@font-face {
+font-family: octicons-link;
+src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+body {
+-webkit-text-size-adjust: 100%;
+text-size-adjust: 100%;
+color: #333;
+font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+font-size: 16px;
+line-height: 1.6;
+word-wrap: break-word;
+}
+a {
+background-color: transparent;
+}
+a:active,
+a:hover {
+outline: 0;
+}
+strong {
+font-weight: bold;
+}
+h1 {
+font-size: 2em;
+margin: 0.67em 0;
+}
+img {
+border: 0;
+}
+hr {
+box-sizing: content-box;
+height: 0;
+}
+pre {
+overflow: auto;
+}
+code,
+kbd,
+pre {
+font-family: monospace, monospace;
+font-size: 1em;
+}
+input {
+color: inherit;
+font: inherit;
+margin: 0;
+}
+html input[disabled] {
+cursor: default;
+}
+input {
+line-height: normal;
+}
+input[type="checkbox"] {
+box-sizing: border-box;
+padding: 0;
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+td,
+th {
+padding: 0;
+}
+* {
+box-sizing: border-box;
+}
+input {
+font: 13px / 1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+a {
+color: #4078c0;
+text-decoration: none;
+}
+a:hover,
+a:active {
+text-decoration: underline;
+}
+hr {
+height: 0;
+margin: 15px 0;
+overflow: hidden;
+background: transparent;
+border: 0;
+border-bottom: 1px solid #ddd;
+}
+hr:before {
+display: table;
+content: "";
+}
+hr:after {
+display: table;
+clear: both;
+content: "";
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+margin-top: 15px;
+margin-bottom: 15px;
+line-height: 1.1;
+}
+h1 {
+font-size: 30px;
+}
+h2 {
+font-size: 21px;
+}
+h3 {
+font-size: 16px;
+}
+h4 {
+font-size: 14px;
+}
+h5 {
+font-size: 12px;
+}
+h6 {
+font-size: 11px;
+}
+blockquote {
+margin: 0;
+}
+ul,
+ol {
+padding: 0;
+margin-top: 0;
+margin-bottom: 0;
+}
+ol ol,
+ul ol {
+list-style-type: lower-roman;
+}
+ul ul ol,
+ul ol ol,
+ol ul ol,
+ol ol ol {
+list-style-type: lower-alpha;
+}
+dd {
+margin-left: 0;
+}
+code {
+font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+font-size: 12px;
+}
+pre {
+margin-top: 0;
+margin-bottom: 0;
+font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+.select::-ms-expand {
+opacity: 0;
+}
+.octicon {
+font: normal normal normal 16px/1 octicons-link;
+display: inline-block;
+text-decoration: none;
+text-rendering: auto;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}
+.octicon-link:before {
+content: '\f05c';
+}
+.markdown-body:before {
+display: table;
+content: "";
+}
+.markdown-body:after {
+display: table;
+clear: both;
+content: "";
+}
+.markdown-body>*:first-child {
+margin-top: 0 !important;
+}
+.markdown-body>*:last-child {
+margin-bottom: 0 !important;
+}
+a:not([href]) {
+color: inherit;
+text-decoration: none;
+}
+.anchor {
+display: inline-block;
+padding-right: 2px;
+margin-left: -18px;
+}
+.anchor:focus {
+outline: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+margin-top: 1em;
+margin-bottom: 16px;
+font-weight: bold;
+line-height: 1.4;
+}
+h1 .octicon-link,
+h2 .octicon-link,
+h3 .octicon-link,
+h4 .octicon-link,
+h5 .octicon-link,
+h6 .octicon-link {
+color: #000;
+vertical-align: middle;
+visibility: hidden;
+}
+h1:hover .anchor,
+h2:hover .anchor,
+h3:hover .anchor,
+h4:hover .anchor,
+h5:hover .anchor,
+h6:hover .anchor {
+text-decoration: none;
+}
+h1:hover .anchor .octicon-link,
+h2:hover .anchor .octicon-link,
+h3:hover .anchor .octicon-link,
+h4:hover .anchor .octicon-link,
+h5:hover .anchor .octicon-link,
+h6:hover .anchor .octicon-link {
+visibility: visible;
+}
+h1 {
+padding-bottom: 0.3em;
+font-size: 2.25em;
+line-height: 1.2;
+border-bottom: 1px solid #eee;
+}
+h1 .anchor {
+line-height: 1;
+}
+h2 {
+padding-bottom: 0.3em;
+font-size: 1.75em;
+line-height: 1.225;
+border-bottom: 1px solid #eee;
+}
+h2 .anchor {
+line-height: 1;
+}
+h3 {
+font-size: 1.5em;
+line-height: 1.43;
+}
+h3 .anchor {
+line-height: 1.2;
+}
+h4 {
+font-size: 1.25em;
+}
+h4 .anchor {
+line-height: 1.2;
+}
+h5 {
+font-size: 1em;
+}
+h5 .anchor {
+line-height: 1.1;
+}
+h6 {
+font-size: 1em;
+color: #777;
+}
+h6 .anchor {
+line-height: 1.1;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table,
+pre {
+margin-top: 0;
+margin-bottom: 16px;
+}
+hr {
+height: 4px;
+padding: 0;
+margin: 16px 0;
+background-color: #e7e7e7;
+border: 0 none;
+}
+ul,
+ol {
+padding-left: 2em;
+}
+ul ul,
+ul ol,
+ol ol,
+ol ul {
+margin-top: 0;
+margin-bottom: 0;
+}
+li>p {
+margin-top: 16px;
+}
+dl {
+padding: 0;
+}
+dl dt {
+padding: 0;
+margin-top: 16px;
+font-size: 1em;
+font-style: italic;
+font-weight: bold;
+}
+dl dd {
+padding: 0 16px;
+margin-bottom: 16px;
+}
+blockquote {
+padding: 0 15px;
+color: #777;
+border-left: 4px solid #ddd;
+}
+blockquote>:first-child {
+margin-top: 0;
+}
+blockquote>:last-child {
+margin-bottom: 0;
+}
+table {
+display: block;
+width: 100%;
+overflow: auto;
+word-break: normal;
+word-break: keep-all;
+}
+table th {
+font-weight: bold;
+}
+table th,
+table td {
+padding: 6px 13px;
+border: 1px solid #ddd;
+}
+table tr {
+background-color: #fff;
+border-top: 1px solid #ccc;
+}
+table tr:nth-child(2n) {
+background-color: #f8f8f8;
+}
+img {
+max-width: 100%;
+box-sizing: content-box;
+background-color: #fff;
+}
+code {
+padding: 0;
+padding-top: 0.2em;
+padding-bottom: 0.2em;
+margin: 0;
+font-size: 85%;
+background-color: rgba(0,0,0,0.04);
+border-radius: 3px;
+}
+code:before,
+code:after {
+letter-spacing: -0.2em;
+content: "\00a0";
+}
+pre>code {
+padding: 0;
+margin: 0;
+font-size: 100%;
+word-break: normal;
+white-space: pre;
+background: transparent;
+border: 0;
+}
+.highlight {
+margin-bottom: 16px;
+}
+.highlight pre,
+pre {
+padding: 16px;
+overflow: auto;
+font-size: 85%;
+line-height: 1.45;
+background-color: #f7f7f7;
+border-radius: 3px;
+}
+.highlight pre {
+margin-bottom: 0;
+word-break: normal;
+}
+pre {
+word-wrap: normal;
+}
+pre code {
+display: inline;
+max-width: initial;
+padding: 0;
+margin: 0;
+overflow: initial;
+line-height: inherit;
+word-wrap: normal;
+background-color: transparent;
+border: 0;
+}
+pre code:before,
+pre code:after {
+content: normal;
+}
+kbd {
+display: inline-block;
+padding: 3px 5px;
+font-size: 11px;
+line-height: 10px;
+color: #555;
+vertical-align: middle;
+background-color: #fcfcfc;
+border: solid 1px #ccc;
+border-bottom-color: #bbb;
+border-radius: 3px;
+box-shadow: inset 0 -1px 0 #bbb;
+}
+.pl-c {
+color: #969896;
+}
+.pl-c1,
+.pl-s .pl-v {
+color: #0086b3;
+}
+.pl-e,
+.pl-en {
+color: #795da3;
+}
+.pl-s .pl-s1,
+.pl-smi {
+color: #333;
+}
+.pl-ent {
+color: #63a35c;
+}
+.pl-k {
+color: #a71d5d;
+}
+.pl-pds,
+.pl-s,
+.pl-s .pl-pse .pl-s1,
+.pl-sr,
+.pl-sr .pl-cce,
+.pl-sr .pl-sra,
+.pl-sr .pl-sre {
+color: #183691;
+}
+.pl-v {
+color: #ed6a43;
+}
+.pl-id {
+color: #b52a1d;
+}
+.pl-ii {
+background-color: #b52a1d;
+color: #f8f8f8;
+}
+.pl-sr .pl-cce {
+color: #63a35c;
+font-weight: bold;
+}
+.pl-ml {
+color: #693a17;
+}
+.pl-mh,
+.pl-mh .pl-en,
+.pl-ms {
+color: #1d3e81;
+font-weight: bold;
+}
+.pl-mq {
+color: #008080;
+}
+.pl-mi {
+color: #333;
+font-style: italic;
+}
+.pl-mb {
+color: #333;
+font-weight: bold;
+}
+.pl-md {
+background-color: #ffecec;
+color: #bd2c00;
+}
+.pl-mi1 {
+background-color: #eaffea;
+color: #55a532;
+}
+.pl-mdr {
+color: #795da3;
+font-weight: bold;
+}
+.pl-mo {
+color: #1d3e81;
+}
+kbd {
+display: inline-block;
+padding: 3px 5px;
+font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+line-height: 10px;
+color: #555;
+vertical-align: middle;
+background-color: #fcfcfc;
+border: solid 1px #ccc;
+border-bottom-color: #bbb;
+border-radius: 3px;
+box-shadow: inset 0 -1px 0 #bbb;
+}
+.task-list-item {
+list-style-type: none;
+}
+.task-list-item+.task-list-item {
+margin-top: 3px;
+}
+.task-list-item input {
+margin: 0 0.35em 0.25em -1.6em;
+vertical-align: middle;
+}
+:checked+.radio-label {
+z-index: 1;
+position: relative;
+border-color: #4078c0;
+}
+.sourceLine {
+display: inline-block;
+}
+code .kw { color: #000000; }
+code .dt { color: #ed6a43; }
+code .dv { color: #009999; }
+code .bn { color: #009999; }
+code .fl { color: #009999; }
+code .ch { color: #009999; }
+code .st { color: #183691; }
+code .co { color: #969896; }
+code .ot { color: #0086b3; }
+code .al { color: #a61717; }
+code .fu { color: #63a35c; }
+code .er { color: #a61717; background-color: #e3d2d2; }
+code .wa { color: #000000; }
+code .cn { color: #008080; }
+code .sc { color: #008080; }
+code .vs { color: #183691; }
+code .ss { color: #183691; }
+code .im { color: #000000; }
+code .va {color: #008080; }
+code .cf { color: #000000; }
+code .op { color: #000000; }
+code .bu { color: #000000; }
+code .ex { color: #000000; }
+code .pp { color: #999999; }
+code .at { color: #008080; }
+code .do { color: #969896; }
+code .an { color: #008080; }
+code .cv { color: #008080; }
+code .in { color: #008080; }
+</style>
+<style>
+body {
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+  padding-top: 0px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+<p><a href="https://travis-ci.org/mrc-ide/hhsurveydata"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5OCIgaGVpZ2h0PSIyMCI+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PHJlY3Qgcng9IjMiIHdpZHRoPSI5OCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzU1NSIvPjxyZWN0IHJ4PSIzIiB4PSIzNyIgd2lkdGg9IjYxIiBoZWlnaHQ9IjIwIiBmaWxsPSIjOWY5ZjlmIi8+PHBhdGggZmlsbD0iIzlmOWY5ZiIgZD0iTTM3IDBoNHYyMGgtNHoiLz48cmVjdCByeD0iMyIgd2lkdGg9Ijk4IiBoZWlnaHQ9IjIwIiBmaWxsPSJ1cmwoI2EpIi8+PGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLFZlcmRhbmEsR2VuZXZhLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEiPjx0ZXh0IHg9IjE5LjUiIHk9IjE1IiBmaWxsPSIjMDEwMTAxIiBmaWxsLW9wYWNpdHk9Ii4zIj5idWlsZDwvdGV4dD48dGV4dCB4PSIxOS41IiB5PSIxNCI+YnVpbGQ8L3RleHQ+PHRleHQgeD0iNjYuNSIgeT0iMTUiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiPnVua25vd248L3RleHQ+PHRleHQgeD0iNjYuNSIgeT0iMTQiPnVua25vd248L3RleHQ+PC9nPjwvc3ZnPg==" alt="Travis build status" /></a> <a href="https://codecov.io/github/mrc-ide/hhsurveydata?branch=master"><img src="data:image/svg+xml;base64,CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTIxIiBoZWlnaHQ9IjIwIj4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYiIgeDI9IjAiIHkyPSIxMDAlIj4KICAgICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNiYmIiIHN0b3Atb3BhY2l0eT0iLjEiIC8+CiAgICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLW9wYWNpdHk9Ii4xIiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxtYXNrIGlkPSJhIj4KICAgICAgICA8cmVjdCB3aWR0aD0iMTIxIiBoZWlnaHQ9IjIwIiByeD0iMyIgZmlsbD0iI2ZmZiIgLz4KICAgIDwvbWFzaz4KICAgIDxnIG1hc2s9InVybCgjYSkiPgogICAgICAgIDxwYXRoIGZpbGw9IiM1NTUiIGQ9Ik0wIDBoNjB2MjBIMHoiIC8+CiAgICAgICAgPHBhdGggZmlsbD0iIzlmOWY5ZiIgZD0iTTYwIDBoNjF2MjBINjB6IiAvPgogICAgICAgIDxwYXRoIGZpbGw9InVybCgjYikiIGQ9Ik0wIDBoMTIxdjIwSDB6IiAvPgogICAgPC9nPgogICAgPGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLFZlcmRhbmEsR2VuZXZhLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEiPgogICAgICAgIDx0ZXh0IHg9IjMwIiB5PSIxNSIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyI+Y29kZWNvdjwvdGV4dD4KICAgICAgICA8dGV4dCB4PSIzMCIgeT0iMTQiPmNvZGVjb3Y8L3RleHQ+CiAgICAgICAgPHRleHQgeD0iODkuNSIgeT0iMTUiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiPnVua25vd248L3RleHQ+CiAgICAgICAgPHRleHQgeD0iODkuNSIgeT0iMTQiPnVua25vd248L3RleHQ+CiAgICA8L2c+Cjwvc3ZnPgo=" alt="Coverage status" /></a></p>
+<h1 id="hhsurveydata">hhsurveydata</h1>
+<p>The goal of hhsurveydata is to:</p>
+<ul>
+<li>Calculate common demographic indicators from household survey data, including child mortality, adult mortality, and fertility.</li>
+<li>Stratify indicators according to arbitrary age groups, calendar periods, birth cohorts, time before survey, or other survey variables (region, residence, wealth category, education, etc.).</li>
+<li>Efficiently prepare event / person-year datasets from survey data for other model-based analysis.</li>
+<li>Provide standard error estimates for all indicators via Taylor linearization or jackknife.</li>
+<li>Calculate sample covariance for indicators estimated from a single complex survey (e.g. time-series of child mortality estimates).</li>
+<li>Default parameters are specified for analysis of <a href="https://dhsprogram.com/data/">DHS recode datasets</a> without fuss, but funciton implementation is flexible for use with other survey data.</li>
+</ul>
+<p>For analysis of DHS data, the package interacts well with <a href="https://ojwatson.github.io/rdhs/"><code>rdhs</code></a>. See the vignette <em>TO BE COMPLETED</em> for an example.</p>
+<h2 id="installation">Installation</h2>
+<p>You can install the development version from <a href="https://github.com/mrc-ide/hhsurveydata">GitHub</a> with:</p>
+<pre class="sourceCode r" id="cb1"><code class="sourceCode r"><div class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># install.packages(&quot;devtools&quot;)</span></div>
+<div class="sourceLine" id="cb1-2" data-line-number="2">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;mrc-ide/hhsurveydata&quot;</span>)</div></code></pre>
+<p>The package will be released on <a href="https://CRAN.R-project.org">CRAN</a> in due course.</p>
+<h2 id="example">Example</h2>
+<p>Load the package and example datasets created from <a href="https://dhsprogram.com/data/model-datasets.cfm">DHS Model Datasets</a>.</p>
+<pre class="sourceCode r" id="cb2"><code class="sourceCode r"><div class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(hhsurveydata)</div>
+<div class="sourceLine" id="cb2-2" data-line-number="2"></div>
+<div class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">data</span>(zzbr) <span class="co"># Births recode (child mortality)</span></div>
+<div class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">data</span>(zzir) <span class="co"># Individuals recode (fertility, adult mortality)</span></div></code></pre>
+<h3 id="child-mortality">Child mortality</h3>
+<p>By default, the function <code>calc_nqx</code> calculates U5MR by periods 0-4, 5-9, and 10-14 years before the survey. Before calculating mortality rates, create a binary variable indicator whether a death occurred and a variable givine the date of death, placed 0.5 months in the month the death occurred.</p>
+<pre class="sourceCode r" id="cb3"><code class="sourceCode r"><div class="sourceLine" id="cb3-1" data-line-number="1">zzbr<span class="op">$</span>death &lt;-<span class="st"> </span>zzbr<span class="op">$</span>b5 <span class="op">==</span><span class="st"> &quot;no&quot;</span>      <span class="co"># b5: child is alive (&quot;yes&quot; or &quot;no&quot;)</span></div>
+<div class="sourceLine" id="cb3-2" data-line-number="2">zzbr<span class="op">$</span>dod &lt;-<span class="st"> </span>zzbr<span class="op">$</span>b3 <span class="op">+</span><span class="st"> </span>zzbr<span class="op">$</span>b7 <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span></div>
+<div class="sourceLine" id="cb3-3" data-line-number="3">u5mr &lt;-<span class="st"> </span><span class="kw">calc_nqx</span>(zzbr)</div>
+<div class="sourceLine" id="cb3-4" data-line-number="4">u5mr</div>
+<div class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt;    tips       nqx          se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt; 1 10-14 0.2212304 0.011730185 0.1978969 0.2438851</span></div>
+<div class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; 2   5-9 0.1937855 0.008292561 0.1773675 0.2098759</span></div>
+<div class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt; 3   0-4 0.1408711 0.006432798 0.1281701 0.1533871</span></div></code></pre>
+<p>Note that <code>calc_nqx()</code> does <strong>not</strong> reproduce child mortality estimates produced in DHS reports. <code>calc_nqx()</code> conducts a standard demographic rate calculation based on observed events and person years within each age group and then converts the cumulative hazard to survival probabilities. The standard DHS indicator uses a rule-based approach to allocate child deaths and person years across age groups and proceeds by calculating direct probabilities of death in each age group (see <a href="http://dhsprogram.com/pubs/pdf/DHSG1/Guide_to_DHS_Statistics_29Oct2012_DHSG1.pdf">Rutstein and Rojas 2006</a>). A function <code>calc_dhs_u5mr()</code> will reproduce the DHS calculation, but is not yet fully implemented.</p>
+<p>Use the argument <code>by=</code> to specify factor variables by which to stratify the rate calculation.</p>
+<pre class="sourceCode r" id="cb4"><code class="sourceCode r"><div class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">by=</span><span class="op">~</span>v102) <span class="co"># by urban/rural residence</span></div>
+<div class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">#&gt;    v102  tips       nqx          se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; 1 urban 10-14 0.1750790 0.018595935 0.1378145 0.2107329</span></div>
+<div class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; 2 rural 10-14 0.2453074 0.013657991 0.2180578 0.2716074</span></div>
+<div class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt; 3 urban   5-9 0.1818306 0.016617688 0.1486035 0.2137609</span></div>
+<div class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; 4 rural   5-9 0.1994068 0.009424996 0.1807194 0.2176679</span></div>
+<div class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt; 5 urban   0-4 0.1532941 0.014183345 0.1250339 0.1806416</span></div>
+<div class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt; 6 rural   0-4 0.1345284 0.006453178 0.1217876 0.1470845</span></div>
+<div class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">by=</span><span class="op">~</span>v190, <span class="dt">tips=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">10</span>)) <span class="co"># by wealth quintile, 0-9 years before</span></div>
+<div class="sourceLine" id="cb4-10" data-line-number="10"><span class="co">#&gt;      v190 tips       nqx          se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt; 1 poorest  0-9 0.1768813 0.009976478 0.1570936 0.1962044</span></div>
+<div class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt; 2  poorer  0-9 0.1823974 0.009763729 0.1630352 0.2013118</span></div>
+<div class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt; 3  middle  0-9 0.1657497 0.010603135 0.1447069 0.1862747</span></div>
+<div class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; 4  richer  0-9 0.1557011 0.012229238 0.1313887 0.1793329</span></div>
+<div class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt; 5 richest  0-9 0.1456974 0.015916788 0.1139245 0.1763310</span></div>
+<div class="sourceLine" id="cb4-16" data-line-number="16"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">by=</span><span class="op">~</span>v101<span class="op">+</span>v102, <span class="dt">tips=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">10</span>)) <span class="co"># by region and residence</span></div>
+<div class="sourceLine" id="cb4-17" data-line-number="17"><span class="co">#&gt;       v101  v102 tips       nqx         se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb4-18" data-line-number="18"><span class="co">#&gt; 1 region 1 urban  0-9 0.1440943 0.01331266 0.1176001 0.1697929</span></div>
+<div class="sourceLine" id="cb4-19" data-line-number="19"><span class="co">#&gt; 2 region 2 urban  0-9 0.1648417 0.02741923 0.1093342 0.2168898</span></div>
+<div class="sourceLine" id="cb4-20" data-line-number="20"><span class="co">#&gt; 3 region 3 urban  0-9 0.1618804 0.01696421 0.1279628 0.1944787</span></div>
+<div class="sourceLine" id="cb4-21" data-line-number="21"><span class="co">#&gt; 4 region 4 urban  0-9 0.1998386 0.03390294 0.1305530 0.2636029</span></div>
+<div class="sourceLine" id="cb4-22" data-line-number="22"><span class="co">#&gt; 5 region 1 rural  0-9 0.1559257 0.01004546 0.1360056 0.1753866</span></div>
+<div class="sourceLine" id="cb4-23" data-line-number="23"><span class="co">#&gt; 6 region 2 rural  0-9 0.1755639 0.01088753 0.1539462 0.1966293</span></div>
+<div class="sourceLine" id="cb4-24" data-line-number="24"><span class="co">#&gt; 7 region 3 rural  0-9 0.2021511 0.03301796 0.1347402 0.2643101</span></div>
+<div class="sourceLine" id="cb4-25" data-line-number="25"><span class="co">#&gt; 8 region 4 rural  0-9 0.1764668 0.01299817 0.1505927 0.2015527</span></div></code></pre>
+<p>The column <code>nqx</code> is stored as class <code>svystat</code> from the <code>survey</code> package. The sample covariance or correlation matrix of the estimates can be obtained using <code>vcov()</code>.</p>
+<pre class="sourceCode r" id="cb5"><code class="sourceCode r"><div class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">vcov</span>(u5mr<span class="op">$</span>nqx)  <span class="co"># sample covariance</span></div>
+<div class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">#&gt;              [,1]         [,2]         [,3]</span></div>
+<div class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">#&gt; [1,] 1.375972e-04 4.450180e-05 8.842864e-06</span></div>
+<div class="sourceLine" id="cb5-4" data-line-number="4"><span class="co">#&gt; [2,] 4.450180e-05 6.876656e-05 1.451310e-05</span></div>
+<div class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; [3,] 8.842864e-06 1.451310e-05 4.138089e-05</span></div>
+<div class="sourceLine" id="cb5-6" data-line-number="6"><span class="kw">cov2cor</span>(<span class="kw">vcov</span>(u5mr<span class="op">$</span>nqx))  <span class="co"># sample correlation</span></div>
+<div class="sourceLine" id="cb5-7" data-line-number="7"><span class="co">#&gt;           [,1]      [,2]      [,3]</span></div>
+<div class="sourceLine" id="cb5-8" data-line-number="8"><span class="co">#&gt; [1,] 1.0000000 0.4574926 0.1171894</span></div>
+<div class="sourceLine" id="cb5-9" data-line-number="9"><span class="co">#&gt; [2,] 0.4574926 1.0000000 0.2720644</span></div>
+<div class="sourceLine" id="cb5-10" data-line-number="10"><span class="co">#&gt; [3,] 0.1171894 0.2720644 1.0000000</span></div></code></pre>
+<p>Standard error estimation can be done via Taylor linearisation or unstratified jackknife. Results are very similar if unstratified design-based estimates are used.</p>
+<pre class="sourceCode r" id="cb6"><code class="sourceCode r"><div class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">varmethod =</span> <span class="st">&quot;lin&quot;</span>) <span class="co"># default is linearization</span></div>
+<div class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">#&gt;    tips       nqx          se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; 1 10-14 0.2212304 0.011730185 0.1978969 0.2438851</span></div>
+<div class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt; 2   5-9 0.1937855 0.008292561 0.1773675 0.2098759</span></div>
+<div class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; 3   0-4 0.1408711 0.006432798 0.1281701 0.1533871</span></div>
+<div class="sourceLine" id="cb6-6" data-line-number="6"></div>
+<div class="sourceLine" id="cb6-7" data-line-number="7">## Compare unstratified standard error estiamtes for linearization and jackknife</div>
+<div class="sourceLine" id="cb6-8" data-line-number="8"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">strata=</span><span class="ot">NULL</span>, <span class="dt">varmethod =</span> <span class="st">&quot;lin&quot;</span>)  <span class="co"># unstratified design</span></div>
+<div class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt;    tips       nqx          se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt; 1 10-14 0.2212304 0.011976980 0.1973986 0.2443546</span></div>
+<div class="sourceLine" id="cb6-11" data-line-number="11"><span class="co">#&gt; 2   5-9 0.1937855 0.008367844 0.1772169 0.2100205</span></div>
+<div class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt; 3   0-4 0.1408711 0.006507844 0.1280208 0.1535320</span></div>
+<div class="sourceLine" id="cb6-13" data-line-number="13"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">strata=</span><span class="ot">NULL</span>, <span class="dt">varmethod =</span> <span class="st">&quot;jk1&quot;</span>)  <span class="co"># unstratififed jackknife</span></div>
+<div class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">#&gt;    tips       nqx          se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt; 1 10-14 0.2212304 0.012088926 0.1971571 0.2445818</span></div>
+<div class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; 2   5-9 0.1937855 0.008408382 0.1771422 0.2100923</span></div>
+<div class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; 3   0-4 0.1408711 0.006539720 0.1279620 0.1535891</span></div></code></pre>
+<p>To calculate different child mortality indicators (neonatal, infant, etc.), specify different age groups over which to aggregate.</p>
+<pre class="sourceCode r" id="cb7"><code class="sourceCode r"><div class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">agegr=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)<span class="op">/</span><span class="dv">12</span>)  <span class="co"># neonatal</span></div>
+<div class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt;    tips        nqx          se       ci_l       ci_u</span></div>
+<div class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#&gt; 1 10-14 0.04358764 0.004262693 0.03519631 0.05190598</span></div>
+<div class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">#&gt; 2   5-9 0.04590724 0.003799869 0.03843049 0.05332585</span></div>
+<div class="sourceLine" id="cb7-5" data-line-number="5"><span class="co">#&gt; 3   0-4 0.03792144 0.003320563 0.03139119 0.04440766</span></div>
+<div class="sourceLine" id="cb7-6" data-line-number="6"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">agegr=</span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">12</span>)<span class="op">/</span><span class="dv">12</span>) <span class="co"># postneonatal</span></div>
+<div class="sourceLine" id="cb7-7" data-line-number="7"><span class="co">#&gt;    tips        nqx          se       ci_l       ci_u</span></div>
+<div class="sourceLine" id="cb7-8" data-line-number="8"><span class="co">#&gt; 1 10-14 0.10613868 0.007294180 0.09172741 0.12032129</span></div>
+<div class="sourceLine" id="cb7-9" data-line-number="9"><span class="co">#&gt; 2   5-9 0.08366400 0.006097552 0.07163475 0.09553739</span></div>
+<div class="sourceLine" id="cb7-10" data-line-number="10"><span class="co">#&gt; 3   0-4 0.05107115 0.003999245 0.04320031 0.05887724</span></div>
+<div class="sourceLine" id="cb7-11" data-line-number="11"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">agegr=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">12</span>)<span class="op">/</span><span class="dv">12</span>) <span class="co"># infant (1q0)</span></div>
+<div class="sourceLine" id="cb7-12" data-line-number="12"><span class="co">#&gt;    tips       nqx          se      ci_l       ci_u</span></div>
+<div class="sourceLine" id="cb7-13" data-line-number="13"><span class="co">#&gt; 1 10-14 0.1451000 0.008870650 0.1275358 0.16231054</span></div>
+<div class="sourceLine" id="cb7-14" data-line-number="14"><span class="co">#&gt; 2   5-9 0.1257305 0.006823068 0.1122547 0.13900166</span></div>
+<div class="sourceLine" id="cb7-15" data-line-number="15"><span class="co">#&gt; 3   0-4 0.0870559 0.005070203 0.0770642 0.09693942</span></div>
+<div class="sourceLine" id="cb7-16" data-line-number="16"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">agegr=</span><span class="kw">c</span>(<span class="dv">12</span>, <span class="dv">24</span>, <span class="dv">36</span>, <span class="dv">48</span>, <span class="dv">60</span>)<span class="op">/</span><span class="dv">12</span>) <span class="co"># child (4q1)</span></div>
+<div class="sourceLine" id="cb7-17" data-line-number="17"><span class="co">#&gt;    tips        nqx          se       ci_l       ci_u</span></div>
+<div class="sourceLine" id="cb7-18" data-line-number="18"><span class="co">#&gt; 1 10-14 0.08905182 0.007189004 0.07485210 0.10303360</span></div>
+<div class="sourceLine" id="cb7-19" data-line-number="19"><span class="co">#&gt; 2   5-9 0.07784223 0.005665474 0.06667098 0.08887977</span></div>
+<div class="sourceLine" id="cb7-20" data-line-number="20"><span class="co">#&gt; 3   0-4 0.05894689 0.004529373 0.05002747 0.06778255</span></div>
+<div class="sourceLine" id="cb7-21" data-line-number="21"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">agegr=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">12</span>, <span class="dv">24</span>, <span class="dv">36</span>, <span class="dv">48</span>, <span class="dv">60</span>)<span class="op">/</span><span class="dv">12</span>) <span class="co"># u5mr (5q0)</span></div>
+<div class="sourceLine" id="cb7-22" data-line-number="22"><span class="co">#&gt;    tips       nqx          se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb7-23" data-line-number="23"><span class="co">#&gt; 1 10-14 0.2212304 0.011730185 0.1978969 0.2438851</span></div>
+<div class="sourceLine" id="cb7-24" data-line-number="24"><span class="co">#&gt; 2   5-9 0.1937855 0.008292561 0.1773675 0.2098759</span></div>
+<div class="sourceLine" id="cb7-25" data-line-number="25"><span class="co">#&gt; 3   0-4 0.1408711 0.006432798 0.1281701 0.1533871</span></div></code></pre>
+<p>Calculate annual <sub>5</sub>q<sub>0</sub> by calendar year (rather than years preceding survey).</p>
+<pre class="sourceCode r" id="cb8"><code class="sourceCode r"><div class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">calc_nqx</span>(zzbr, <span class="dt">period=</span><span class="dv">2005</span><span class="op">:</span><span class="dv">2015</span>, <span class="dt">tips=</span><span class="ot">NULL</span>)</div>
+<div class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">#&gt;    period       nqx         se       ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">#&gt; 1    2005 0.1937695 0.01611970 0.16154821 0.2247525</span></div>
+<div class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">#&gt; 2    2006 0.1890020 0.01485224 0.15936341 0.2175956</span></div>
+<div class="sourceLine" id="cb8-5" data-line-number="5"><span class="co">#&gt; 3    2007 0.1983320 0.01469757 0.16900148 0.2266273</span></div>
+<div class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#&gt; 4    2008 0.1906183 0.01306713 0.16459769 0.2158285</span></div>
+<div class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">#&gt; 5    2009 0.1979731 0.01559065 0.16682639 0.2279554</span></div>
+<div class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#&gt; 6    2010 0.1874172 0.01366295 0.16019216 0.2137596</span></div>
+<div class="sourceLine" id="cb8-9" data-line-number="9"><span class="co">#&gt; 7    2011 0.1768661 0.01378438 0.14940096 0.2034444</span></div>
+<div class="sourceLine" id="cb8-10" data-line-number="10"><span class="co">#&gt; 8    2012 0.1390004 0.01488779 0.10932074 0.1676910</span></div>
+<div class="sourceLine" id="cb8-11" data-line-number="11"><span class="co">#&gt; 9    2013 0.1224668 0.01183607 0.09895918 0.1453611</span></div>
+<div class="sourceLine" id="cb8-12" data-line-number="12"><span class="co">#&gt; 10   2014 0.1225079 0.01208800 0.09849310 0.1458829</span></div></code></pre>
+<h3 id="adult-mortality">Adult mortality</h3>
+<p>The function <code>calc_nqx()</code> can also used to calculate adult mortality indicators such as <sub>35</sub>q<sub>15</sub>. First, the convenience function <code>reshape_sib_data()</code> transforms respondent-level data to a dataset with one row for each sibling reported. Then define a binary variable for whether the sibling is alive or dead.</p>
+<pre class="sourceCode r" id="cb9"><code class="sourceCode r"><div class="sourceLine" id="cb9-1" data-line-number="1">zzsib &lt;-<span class="st"> </span><span class="kw">reshape_sib_data</span>(zzir)</div>
+<div class="sourceLine" id="cb9-2" data-line-number="2">zzsib<span class="op">$</span>death &lt;-<span class="st"> </span><span class="kw">factor</span>(zzsib<span class="op">$</span>mm2, <span class="kw">c</span>(<span class="st">&quot;dead&quot;</span>, <span class="st">&quot;alive&quot;</span>)) <span class="op">==</span><span class="st"> &quot;dead&quot;</span></div></code></pre>
+<p>Calculate <sub>35</sub>q<sub>15</sub> for the seven year period before the survey.</p>
+<pre class="sourceCode r" id="cb10"><code class="sourceCode r"><div class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">calc_nqx</span>(zzsib, <span class="dt">agegr=</span><span class="kw">seq</span>(<span class="dv">15</span>, <span class="dv">50</span>, <span class="dv">5</span>), <span class="dt">tips=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">7</span>), <span class="dt">dob=</span><span class="st">&quot;mm4&quot;</span>, <span class="dt">dod=</span><span class="st">&quot;mm8&quot;</span>)</div>
+<div class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">#&gt;   tips       nqx          se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">#&gt; 1  0-6 0.1778199 0.009395366 0.1591976 0.1960298</span></div></code></pre>
+<p>Calculate <sub>35</sub>q<sub>15</sub> by sex, replicating Table MM2.2.</p>
+<pre class="sourceCode r" id="cb11"><code class="sourceCode r"><div class="sourceLine" id="cb11-1" data-line-number="1">zzsib<span class="op">$</span>sex &lt;-<span class="st"> </span><span class="kw">factor</span>(zzsib<span class="op">$</span>mm1, <span class="kw">c</span>(<span class="st">&quot;female&quot;</span>, <span class="st">&quot;male&quot;</span>))  <span class="co"># drop mm2 = 3: &quot;missing&quot;</span></div>
+<div class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">calc_nqx</span>(zzsib, <span class="dt">by=</span><span class="op">~</span>sex, <span class="dt">agegr=</span><span class="kw">seq</span>(<span class="dv">15</span>, <span class="dv">50</span>, <span class="dv">5</span>), <span class="dt">tips=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">7</span>), <span class="dt">dob=</span><span class="st">&quot;mm4&quot;</span>, <span class="dt">dod=</span><span class="st">&quot;mm8&quot;</span>)</div>
+<div class="sourceLine" id="cb11-3" data-line-number="3"><span class="co">#&gt;      sex tips       nqx         se      ci_l      ci_u</span></div>
+<div class="sourceLine" id="cb11-4" data-line-number="4"><span class="co">#&gt; 1 female  0-6 0.1790557 0.01296694 0.1532435 0.2040811</span></div>
+<div class="sourceLine" id="cb11-5" data-line-number="5"><span class="co">#&gt; 2   male  0-6 0.1766238 0.01332997 0.1500787 0.2023399</span></div></code></pre>
+<p>This calculation exactly reproduces the <sub>35</sub>q<sub>15</sub> estiamtes produced for Table MM2 for DHS reports. Additional functionality will be added in future for producing ASMRs (Table MM1), MMR, and PM (Table MM3) will be added in future.</p>
+<h3 id="fertility">Fertility</h3>
+<p>The functions <code>calc_asfr()</code> and <code>calc_tfr()</code> calculate age-specific fertility rates and total fertility rate, respectively. The default calculation is by five-year age groups for three years before the survey, exactly reproducing the estimates produced in DHS reports.</p>
+<pre class="sourceCode r" id="cb12"><code class="sourceCode r"><div class="sourceLine" id="cb12-1" data-line-number="1">## Replicate DHS Table 5.1.</div>
+<div class="sourceLine" id="cb12-2" data-line-number="2">## Total ASFR and TFR in 3 years preceding survey</div>
+<div class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw">calc_asfr</span>(zzir, <span class="dt">tips=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">3</span>))</div>
+<div class="sourceLine" id="cb12-4" data-line-number="4"><span class="co">#&gt;   agegr tips       asfr     se_asfr</span></div>
+<div class="sourceLine" id="cb12-5" data-line-number="5"><span class="co">#&gt; 1 15-19  0-2 0.11901592 0.008154144</span></div>
+<div class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">#&gt; 2 20-24  0-2 0.20736603 0.012782416</span></div>
+<div class="sourceLine" id="cb12-7" data-line-number="7"><span class="co">#&gt; 3 25-29  0-2 0.21553394 0.008245023</span></div>
+<div class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">#&gt; 4 30-34  0-2 0.18803561 0.010426419</span></div>
+<div class="sourceLine" id="cb12-9" data-line-number="9"><span class="co">#&gt; 5 35-39  0-2 0.12494212 0.008135705</span></div>
+<div class="sourceLine" id="cb12-10" data-line-number="10"><span class="co">#&gt; 6 40-44  0-2 0.06044451 0.007502008</span></div>
+<div class="sourceLine" id="cb12-11" data-line-number="11"><span class="co">#&gt; 7 45-49  0-2 0.02828233 0.006066635</span></div>
+<div class="sourceLine" id="cb12-12" data-line-number="12"><span class="kw">calc_tfr</span>(zzir)</div>
+<div class="sourceLine" id="cb12-13" data-line-number="13"><span class="co">#&gt;   tips      tfr    se_tfr</span></div>
+<div class="sourceLine" id="cb12-14" data-line-number="14"><span class="co">#&gt; 1  0-2 4.718102 0.1949224</span></div>
+<div class="sourceLine" id="cb12-15" data-line-number="15"></div>
+<div class="sourceLine" id="cb12-16" data-line-number="16">## ASFR and TFR by urban/rural residence</div>
+<div class="sourceLine" id="cb12-17" data-line-number="17">reshape2<span class="op">::</span><span class="kw">dcast</span>(<span class="kw">calc_asfr</span>(zzir, <span class="op">~</span>v025, <span class="dt">tips=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">3</span>)), agegr <span class="op">~</span><span class="st"> </span>v025, <span class="dt">value.var =</span> <span class="st">&quot;asfr&quot;</span>)</div>
+<div class="sourceLine" id="cb12-18" data-line-number="18"><span class="co">#&gt;   agegr      urban      rural</span></div>
+<div class="sourceLine" id="cb12-19" data-line-number="19"><span class="co">#&gt; 1 15-19 0.07718083 0.16269262</span></div>
+<div class="sourceLine" id="cb12-20" data-line-number="20"><span class="co">#&gt; 2 20-24 0.15883881 0.25754199</span></div>
+<div class="sourceLine" id="cb12-21" data-line-number="21"><span class="co">#&gt; 3 25-29 0.16862119 0.24797353</span></div>
+<div class="sourceLine" id="cb12-22" data-line-number="22"><span class="co">#&gt; 4 30-34 0.14294124 0.21875542</span></div>
+<div class="sourceLine" id="cb12-23" data-line-number="23"><span class="co">#&gt; 5 35-39 0.08182797 0.15262614</span></div>
+<div class="sourceLine" id="cb12-24" data-line-number="24"><span class="co">#&gt; 6 40-44 0.04817726 0.07005696</span></div>
+<div class="sourceLine" id="cb12-25" data-line-number="25"><span class="co">#&gt; 7 45-49 0.02404944 0.03087701</span></div>
+<div class="sourceLine" id="cb12-26" data-line-number="26"><span class="kw">calc_tfr</span>(zzir, <span class="dt">by=</span><span class="op">~</span>v025)</div>
+<div class="sourceLine" id="cb12-27" data-line-number="27"><span class="co">#&gt;    v025 tips      tfr    se_tfr</span></div>
+<div class="sourceLine" id="cb12-28" data-line-number="28"><span class="co">#&gt; 1 urban  0-2 3.508184 0.2813637</span></div>
+<div class="sourceLine" id="cb12-29" data-line-number="29"><span class="co">#&gt; 2 rural  0-2 5.702618 0.1425967</span></div></code></pre>
+<p>Replicate fertility estimates stratified by various sociodemographic characteristics.</p>
+<pre class="sourceCode r" id="cb13"><code class="sourceCode r"><div class="sourceLine" id="cb13-1" data-line-number="1">## Replicate DHS Table 5.2</div>
+<div class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">calc_tfr</span>(zzir, <span class="op">~</span>v102)  <span class="co"># residence</span></div>
+<div class="sourceLine" id="cb13-3" data-line-number="3"><span class="co">#&gt;    v102 tips      tfr    se_tfr</span></div>
+<div class="sourceLine" id="cb13-4" data-line-number="4"><span class="co">#&gt; 1 urban  0-2 3.508184 0.2813637</span></div>
+<div class="sourceLine" id="cb13-5" data-line-number="5"><span class="co">#&gt; 2 rural  0-2 5.702618 0.1425967</span></div>
+<div class="sourceLine" id="cb13-6" data-line-number="6"><span class="kw">calc_tfr</span>(zzir, <span class="op">~</span>v101)  <span class="co"># region</span></div>
+<div class="sourceLine" id="cb13-7" data-line-number="7"><span class="co">#&gt;       v101 tips      tfr    se_tfr</span></div>
+<div class="sourceLine" id="cb13-8" data-line-number="8"><span class="co">#&gt; 1 region 1  0-2 5.334781 0.1781935</span></div>
+<div class="sourceLine" id="cb13-9" data-line-number="9"><span class="co">#&gt; 2 region 2  0-2 5.255445 0.2842471</span></div>
+<div class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt; 3 region 3  0-2 3.079052 0.3674651</span></div>
+<div class="sourceLine" id="cb13-11" data-line-number="11"><span class="co">#&gt; 4 region 4  0-2 5.500077 0.2452335</span></div>
+<div class="sourceLine" id="cb13-12" data-line-number="12"><span class="kw">calc_tfr</span>(zzir, <span class="op">~</span>v106)  <span class="co"># education</span></div>
+<div class="sourceLine" id="cb13-13" data-line-number="13"><span class="co">#&gt;           v106 tips      tfr    se_tfr</span></div>
+<div class="sourceLine" id="cb13-14" data-line-number="14"><span class="co">#&gt; 1 no education  0-2 5.585398 0.1406657</span></div>
+<div class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt; 2      primary  0-2 5.041455 0.3599601</span></div>
+<div class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt; 3    secondary  0-2 3.245211 0.2956154</span></div>
+<div class="sourceLine" id="cb13-17" data-line-number="17"><span class="co">#&gt; 4       higher  0-2 1.388428 0.3198573</span></div>
+<div class="sourceLine" id="cb13-18" data-line-number="18"><span class="kw">calc_tfr</span>(zzir, <span class="op">~</span>v190)  <span class="co"># wealth quintile</span></div>
+<div class="sourceLine" id="cb13-19" data-line-number="19"><span class="co">#&gt;      v190 tips      tfr    se_tfr</span></div>
+<div class="sourceLine" id="cb13-20" data-line-number="20"><span class="co">#&gt; 1 poorest  0-2 5.951668 0.2183868</span></div>
+<div class="sourceLine" id="cb13-21" data-line-number="21"><span class="co">#&gt; 2  poorer  0-2 5.693275 0.1867203</span></div>
+<div class="sourceLine" id="cb13-22" data-line-number="22"><span class="co">#&gt; 3  middle  0-2 5.270892 0.2283221</span></div>
+<div class="sourceLine" id="cb13-23" data-line-number="23"><span class="co">#&gt; 4  richer  0-2 4.406202 0.2813975</span></div>
+<div class="sourceLine" id="cb13-24" data-line-number="24"><span class="co">#&gt; 5 richest  0-2 2.907027 0.2738504</span></div>
+<div class="sourceLine" id="cb13-25" data-line-number="25"><span class="kw">calc_tfr</span>(zzir)  <span class="co"># total</span></div>
+<div class="sourceLine" id="cb13-26" data-line-number="26"><span class="co">#&gt;   tips      tfr    se_tfr</span></div>
+<div class="sourceLine" id="cb13-27" data-line-number="27"><span class="co">#&gt; 1  0-2 4.718102 0.1949224</span></div></code></pre>
+<p>Generate estimates stratified by both calendar period and time preceding survey.</p>
+<pre class="sourceCode r" id="cb14"><code class="sourceCode r"><div class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">calc_tfr</span>(zzir, <span class="dt">period =</span> <span class="kw">c</span>(<span class="dv">2010</span>, <span class="dv">2013</span>, <span class="dv">2015</span>), <span class="dt">tips=</span><span class="dv">0</span><span class="op">:</span><span class="dv">5</span>)</div>
+<div class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">#&gt;      period tips      tfr    se_tfr</span></div>
+<div class="sourceLine" id="cb14-3" data-line-number="3"><span class="co">#&gt; 1 2010-2012    4 5.260048 0.3166023</span></div>
+<div class="sourceLine" id="cb14-4" data-line-number="4"><span class="co">#&gt; 2 2010-2012    3 5.207062 0.2697222</span></div>
+<div class="sourceLine" id="cb14-5" data-line-number="5"><span class="co">#&gt; 3 2010-2012    2 4.084194 0.3176187</span></div>
+<div class="sourceLine" id="cb14-6" data-line-number="6"><span class="co">#&gt; 4 2013-2014    2 5.020537 0.2999262</span></div>
+<div class="sourceLine" id="cb14-7" data-line-number="7"><span class="co">#&gt; 5 2013-2014    1 4.555710 0.2448427</span></div>
+<div class="sourceLine" id="cb14-8" data-line-number="8"><span class="co">#&gt; 6 2013-2014    0 4.720417 0.3525991</span></div></code></pre>
+<p>Calculate ASFR by birth cohort.</p>
+<pre class="sourceCode r" id="cb15"><code class="sourceCode r"><div class="sourceLine" id="cb15-1" data-line-number="1">asfr_coh &lt;-<span class="st"> </span><span class="kw">calc_asfr</span>(zzir, <span class="dt">cohort=</span><span class="kw">c</span>(<span class="dv">1980</span>, <span class="dv">1985</span>, <span class="dv">1990</span>, <span class="dv">1995</span>), <span class="dt">tips=</span><span class="ot">NULL</span>)</div>
+<div class="sourceLine" id="cb15-2" data-line-number="2">reshape2<span class="op">::</span><span class="kw">dcast</span>(asfr_coh, agegr <span class="op">~</span><span class="st"> </span>cohort, <span class="dt">value.var =</span> <span class="st">&quot;asfr&quot;</span>)</div>
+<div class="sourceLine" id="cb15-3" data-line-number="3"><span class="co">#&gt;   agegr 1980-1984 1985-1989 1990-1994</span></div>
+<div class="sourceLine" id="cb15-4" data-line-number="4"><span class="co">#&gt; 1 15-19 0.1636472 0.1641461 0.1470502</span></div>
+<div class="sourceLine" id="cb15-5" data-line-number="5"><span class="co">#&gt; 2 20-24 0.2610719 0.2402068 0.2140443</span></div>
+<div class="sourceLine" id="cb15-6" data-line-number="6"><span class="co">#&gt; 3 25-29 0.2519899 0.2321897 0.2957371</span></div>
+<div class="sourceLine" id="cb15-7" data-line-number="7"><span class="co">#&gt; 4 30-34 0.2012103 0.1674921        NA</span></div>
+<div class="sourceLine" id="cb15-8" data-line-number="8"><span class="co">#&gt; 5 35-39 0.1473996        NA        NA</span></div></code></pre>
+<h2 id="to-do">To Do</h2>
+<ul>
+<li>Refactor jackknife code and implement for ASFR and TFR calculation.</li>
+<li>Implement stratified jackknife.</li>
+<li>Implement DHS child mortality calculation with rule-based allocation across age intervals.</li>
+<li>Calculate multiple aggregations of nqx and sample correlation of these (e.g. NN, PN, 1q0, 4q1, 5q0).</li>
+<li>Extend fertility calculation to accomodate birth list (long) data.</li>
+<li>Document everything…</li>
+<li>Settle on a better package name. I kind of like ‘demogr’ (demographic rates / demography R), but this is very close to demogR. ‘demogrates’ is an option.</li>
+<li>Develop, test, and create examples for non-DHS household surveys, e.g. MICS, WFS.</li>
+<li>Extend interface to allow specification of formula, variable name, or vectors.</li>
+</ul>
+
+</body>
+</html>

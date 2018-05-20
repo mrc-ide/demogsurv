@@ -1,6 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+[![Travis build
+status](https://travis-ci.org/mrc-ide/hhsurveydata.svg?branch=master)](https://travis-ci.org/mrc-ide/hhsurveydata)
+[![Coverage
+status](https://codecov.io/gh/mrc-ide/hhsurveydata/branch/master/graph/badge.svg)](https://codecov.io/github/mrc-ide/hhsurveydata?branch=master)
+
 # hhsurveydata
 
 The goal of hhsurveydata is to:
@@ -39,10 +44,12 @@ due course.
 
 ## Example
 
-Load example datasets created from [DHS Model
+Load the package and example datasets created from [DHS Model
 Datasets](https://dhsprogram.com/data/model-datasets.cfm).
 
 ``` r
+library(hhsurveydata)
+
 data(zzbr) # Births recode (child mortality)
 data(zzir) # Individuals recode (fertility, adult mortality)
 ```
@@ -217,9 +224,9 @@ the
 survey.
 
 ``` r
-calc_nqx(zzsib, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
+calc_nqx(zzsib, agegr=seq(15, 50, 5), tips=c(0, 7), dob="mm4", dod="mm8")
 #>   tips       nqx          se      ci_l      ci_u
-#> 1  0-7 0.1766998 0.008637983 0.1595944 0.1934571
+#> 1  0-6 0.1778199 0.009395366 0.1591976 0.1960298
 ```
 
 Calculate <sub>35</sub>q<sub>15</sub> by sex, replicating Table
@@ -227,16 +234,16 @@ MM2.2.
 
 ``` r
 zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
-calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 8), dob="mm4", dod="mm8")
+calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 7), dob="mm4", dod="mm8")
 #>      sex tips       nqx         se      ci_l      ci_u
-#> 1 female  0-7 0.1758983 0.01336771 0.1492771 0.2016864
-#> 2   male  0-7 0.1772981 0.01264042 0.1521465 0.2017035
+#> 1 female  0-6 0.1790557 0.01296694 0.1532435 0.2040811
+#> 2   male  0-6 0.1766238 0.01332997 0.1500787 0.2023399
 ```
 
-The above calculation does not exactly match the example tables. Female
-<sub>35</sub>q<sub>15</sub> should be 175 rather than 176. This will be
-reviewed as they should match, and additional functionality including
-functions for producing ASMRs, MMR, and PM will be added in future.
+This calculation exactly reproduces the <sub>35</sub>q<sub>15</sub>
+estiamtes produced for Table MM2 for DHS reports. Additional
+functionality will be added in future for producing ASMRs (Table MM1),
+MMR, and PM (Table MM3) will be added in future.
 
 ### Fertility
 
