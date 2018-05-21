@@ -1,7 +1,7 @@
 ---
 title: "Using `hhsurveydata` with `rdhs`"
 author: "Jeff Eaton, Bruno Masquelier, and OJ Watson"
-date: "`r Sys.Date()`"
+date: "2018-05-22"
 output:
   html_document: 
     smart: false
@@ -16,7 +16,8 @@ This vignette illustrates use of `hhsurveydata` and `rdhs` to calculate fertilit
 
 ## Install and load packages
 
-```{r install}
+
+```r
 ## install.packages("devtools")
 ## devtools::load_all("OJWatson/rdhs")
 ## devtools::load_all("mrc-ide/hhsurveydata")
@@ -35,7 +36,8 @@ Sys.setenv(rdhs_DATA_TABLE = "TRUE")
 
 Identify all DHS surveys conducted in sub-Saharan Africa since the year 2005.
 
-```{r dhs_surveys}
+
+```r
 countries <- dhs_countries()
 cc <- countries[RegionName == "Sub-Saharan Africa"]$DHS_CountryCode
 surveys <- dhs_surveys(countryIds = cc, surveyYearStart=2005, surveyType = "DHS")
@@ -43,21 +45,24 @@ surveys <- dhs_surveys(countryIds = cc, surveyYearStart=2005, surveyType = "DHS"
 
 Identify individual recode (IR) and births recode (BR) datasets corresponding to these surveys.
 
-```{r dhs_datasets}
+
+```r
 ird <- dhs_datasets(fileType = "IR", fileFormat = "flat")[SurveyId %in% surveys$SurveyId]
 brd <- dhs_datasets(fileType = "BR", fileFormat = "flat")[SurveyId %in% surveys$SurveyId]
 ```
 
 Use `rdhs` to retreive datasets, downloading them from DHS website if not already in the `rdhs` cache.
 
-```{r get_datasets, warning=FALSE, message=FALSE}
+
+```r
 ird$path <- unlist(get_datasets(ird$FileName))
 brd$path <- unlist(get_datasets(brd$FileName))
 ```
 
 Load all of the datasets into R as a list.
 
-```{r load datasets, results="hide", eval=FALSE}
+
+```r
 ir <- list()
 for(survid in ird$SurveyId){
   print(survid)
@@ -100,7 +105,8 @@ Note that `rdhs` provides better tools to extract variables and pool datasets wh
 ### Fertility
 
 Calcualte TFR and 15-19 ASFR for 3 year period preceding survey (default argument `tips=c(0, 3)`).
-```{r tfr, eval=FALSE}
+
+```r
 tfr <- lapply(ir, calc_tfr, by=~SurveyId+CountryName+SurveyYear, strata=NULL)
 tfr <- do.call(rbind, tfr)
 
@@ -114,9 +120,18 @@ asfr15to19 <- do.call(rbind, asfr15to19)
 
 Identify surveys that include sibling history model via querying the DHS API survery with "Maternal mortality" characteristic.
 
-```{r has sibling}
+
+```r
 survchar <- dhs_surveyCharacteristics()
 survchar[grepl("Maternal", SurveyCharacteristicName)]
+```
+
+```
+##    SurveyCharacteristicID SurveyCharacteristicName
+## 1:                      1       Maternal mortality
+```
+
+```r
 mm_surv <- dhs_surveys(surveyCharacteristicIds = 1)
 has_mm <- surveys$SurveyId %in% mm_surv$SurveyId
 ```
@@ -124,14 +139,15 @@ has_mm <- surveys$SurveyId %in% mm_surv$SurveyId
 Reshape IR datasets to one row per sibling episode, create a binary variable indicating sibling death, 
 and calculate ~35~q~15~ estimates by sexx.
 
-```{r sibmx, warning=FALSE, eval=FALSE}
+
+```r
 sib <- lapply(ir[has_mm], reshape_sib_data,
               widevars = c("SurveyId", "CountryName", "SurveyYear", "v005", "v008", "v021"))
 sib <- lapply(sib, function(x){x$death <- factor(x$mm2, c("dead", "alive")) == "dead"; x})
 q3515 <- lapply(sib, calc_nqx, by=~SurveyId+CountryName+SurveyYear + mm1, strata = NULL,
                 agegr=seq(15, 50, 5), tips=c(0, 7), dob="mm4", dod="mm8")
 q3515 <- do.call(rbind, q3515)
-```	
+```
 
 ### Child mortality
 
@@ -148,14 +164,16 @@ hazards over the age group 0-4 years and converted to probabilities to estimate 
 Add a binary indicator whether a death occurred and a date of death variable, placed 0.5 
 months in the month the death occurred.
 
-```{r deathvar, eval=FALSE}
+
+```r
 br <- lapply(br, function(x){x$death <- x$b5 == "no"; x})
 br <- lapply(br, function(x){x$dod <- x$b3 + x$b7 + 0.5; x})
 ```
 
 Calculate ~5~q~0~ for period 0-4, 5-9, and 10-14 years preceding the survey.
 
-```{r 5q0, eval=FALSE}
+
+```r
 u5mr <- lapply(br, calc_nqx, by=~SurveyId+CountryName+SurveyYear, strata=NULL)
 u5mr <- do.call(rbind, u5mr)
 ```
@@ -163,28 +181,61 @@ u5mr <- do.call(rbind, u5mr)
 
 ## Merge DHS StatCompiler indicators
 
-```{r sneaky load, echo=FALSE, results="hide"}
-tfr <- readRDS("rdhs-integration/tfr.rds")
-asfr15to19 <- readRDS("rdhs-integration/asfr15to19.rds")
-q3515 <- readRDS("rdhs-integration/q3515.rds")
-u5mr <- readRDS("rdhs-integration/u5mr.rds")
-```
+
 
 Identify the indicator IDs associated with TFR, ASFR 15-19, ~35~q~15~, and ~5~q~0~.
 
-```{r dhs_indicators}
+
+```r
 indic <- dhs_indicators()
 
 indic[grepl("TFR 15-49", ShortName), .(IndicatorId, ShortName, Label)]
+```
+
+```
+##      IndicatorId ShortName                      Label
+## 1: FE_FRTR_W_TFR TFR 15-49 Total fertility rate 15-49
+```
+
+```r
 indic[grepl("ASFR 15-19", ShortName), .(IndicatorId, ShortName, Label)]
+```
+
+```
+##      IndicatorId  ShortName
+## 1: FE_FRTR_W_A15 ASFR 15-19
+## 2: FE_FRTT_W_A15 ASFR 15-19
+##                                                     Label
+## 1:                     Age specific fertility rate: 15-19
+## 2: Age specific fertility rate: 15-19 (five year periods)
+```
+
+```r
 indic[grepl("Probability of dying", ShortName), .(IndicatorId, Definition)]
+```
+
+```
+##      IndicatorId
+## 1: MM_AMPB_W_AMP
+## 2: MM_AMPB_M_AMP
+##                                                            Definition
+## 1: Probability of dying between exact age 15 and 50 (35q15) for women
+## 2:   Probability of dying between exact age 15 and 50 (35q15) for men
+```
+
+```r
 indic[grepl("Under-five mortality", ShortName), .(IndicatorId, Label)]
+```
+
+```
+##      IndicatorId                     Label
+## 1: CM_ECMR_C_U5M Under-five mortality rate
 ```
 
 Query estimates from DHS API and merge with calculated estimates.
 
-```{r dhs_data}
 
+```r
 tfr_dhs <- dhs_data(indicatorIds = "FE_FRTR_W_TFR",
                     surveyId = tfr$SurveyId)
 tfr <- merge(tfr, tfr_dhs[ , .(SurveyId, Value)])
@@ -207,22 +258,56 @@ u5mr <- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])
 
 ## View estimates
 
-```{r review estimates, echo=FALSE}
-knitr::kable(head(tfr), digits=c(rep(0, 4), 1, 3, 2),
-             caption = "TFR")
 
-knitr::kable(head(asfr15to19), digits=c(rep(0, 5), 3, 4, 0),
-             caption = "ASFR 15-19")
+Table: TFR
 
-knitr::kable(head(q3515), digits=c(rep(0, 5), rep(3, 4), 0),
-             caption = "35q15")
+SurveyId     Value  CountryName     SurveyYear  tips      tfr   se_tfr
+----------  ------  -------------  -----------  -----  ------  -------
+AO2015DHS        6  Angola                2015  0-2     6.216     0.14
+BF2010DHS        6  Burkina Faso          2010  0-2     5.991     0.10
+BJ2006DHS        6  Benin                 2006  0-2     5.739     0.07
+BJ2012DHS        5  Benin                 2012  0-2     4.902     0.07
+BU2010DHS        6  Burundi               2010  0-2     6.384     0.10
+BU2016DHS        6  Burundi               2016  0-2     5.519     0.08
 
-hu5mr <- head(u5mr)
-hu5mr$tips <- factor(hu5mr$tips, c("0-4", "5-9", "10-14"))
-hu5mr <- hu5mr[order(hu5mr$SurveyId, hu5mr$tips),]
-knitr::kable(hu5mr, digits=c(rep(0, 4), rep(3, 4), 0),
-             caption = "5q0")
-```
+
+
+Table: ASFR 15-19
+
+SurveyId     Value  CountryName    SurveyYear   agegr   tips      asfr   se_asfr
+----------  ------  -------------  -----------  ------  -----  -------  --------
+AO2015DHS      163  Angola         2015         15-19   0-2     0.1627         0
+BF2010DHS      130  Burkina Faso   2010         15-19   0-2     0.1301         0
+BJ2006DHS      112  Benin          2006         15-19   0-2     0.1123         0
+BJ2012DHS       94  Benin          2012         15-19   0-2     0.0939         0
+BU2010DHS       65  Burundi        2010         15-19   0-2     0.0652         0
+BU2016DHS       58  Burundi        2016         15-19   0-2     0.0582         0
+
+
+
+Table: 35q15
+
+SurveyId    mm1       Value  CountryName    SurveyYear   tips      nqx      se    ci_l   ci_u
+----------  -------  ------  -------------  -----------  -----  ------  ------  ------  -----
+AO2015DHS   female      110  Angola         2015         0-6     0.110   0.010   0.090      0
+AO2015DHS   male        182  Angola         2015         0-6     0.182   0.013   0.157      0
+BF2010DHS   female      146  Burkina Faso   2010         0-6     0.146   0.008   0.131      0
+BF2010DHS   male        145  Burkina Faso   2010         0-6     0.145   0.007   0.130      0
+BJ2006DHS   female      127  Benin          2006         0-6     0.127   0.006   0.114      0
+BJ2006DHS   male        162  Benin          2006         0-6     0.161   0.008   0.146      0
+
+
+
+Table: 5q0
+
+     SurveyId    tips     Value  CountryName    SurveyYear      nqx      se    ci_l   ci_u
+---  ----------  ------  ------  -------------  -----------  ------  ------  ------  -----
+1    AO2015DHS   0-4         68  Angola         2015          0.066   0.004   0.058      0
+3    AO2015DHS   5-9         95  Angola         2015          0.093   0.005   0.082      0
+2    AO2015DHS   10-14      145  Angola         2015          0.146   0.008   0.130      0
+4    BF2010DHS   0-4        129  Burkina Faso   2010          0.121   0.004   0.113      0
+6    BF2010DHS   5-9        168  Burkina Faso   2010          0.169   0.005   0.160      0
+5    BF2010DHS   10-14      177  Burkina Faso   2010          0.180   0.006   0.169      0
 
 ## Check that TFR, ASFR, and ~35~q~15~ estimates exactly match
 
@@ -230,25 +315,70 @@ Estimates for fertility rates and adult mortality rates should exactly match
 those produced as standard DHS indicators.
 
 
-```{r check match}
 
+```r
 ## TFR matches exactly
 with(tfr, table(round(tfr, 1) == Value))
+```
 
+```
+## 
+## TRUE 
+##   66
+```
+
+```r
 ## ASFR 15-19 matches exactly
 with(asfr15to19, table(round(1000*asfr) == Value))
+```
 
+```
+## 
+## TRUE 
+##   66
+```
+
+```r
 ## 35q15 matches exactly for >80%
 with(q3515, table(round(1000*nqx) == Value))
-with(q3515, table(round(1000*nqx) - Value))
+```
 
+```
+## 
+## FALSE  TRUE 
+##    23    87
+```
+
+```r
+with(q3515, table(round(1000*nqx) - Value))
+```
+
+```
+## 
+## -8 -3 -1  0  1  5 
+##  1  1 16 87  4  1
+```
+
+```r
 subset(q3515, abs((round(1000*nqx) - Value)) > 1)
+```
+
+```
+##     SurveyId    mm1 Value CountryName SurveyYear tips       nqx         se
+## 57 MZ2011DHS female   199  Mozambique       2011  0-6 0.1914953 0.01021433
+## 58 MZ2011DHS   male   241  Mozambique       2011  0-6 0.2383925 0.01186020
+## 97 UG2011DHS female   201      Uganda       2011  0-6 0.2062956 0.01222652
+##         ci_l      ci_u
+## 57 0.1712256 0.2112692
+## 58 0.2147886 0.2612869
+## 97 0.1819667 0.2299010
 ```
 
 
 ## Compare ~5~q~0~ estimates
 
-```{r 5q0 compare, fig.height=3, fig.width=4.5, fig.align="center"}
+
+```r
 u5mr$tips <- factor(u5mr$tips, c("0-4", "5-9", "10-14"))
 ggplot(u5mr, aes(1000*nqx, Value, color=tips)) +
   geom_abline(slope=1, color="grey") +
@@ -258,3 +388,5 @@ ggplot(u5mr, aes(1000*nqx, Value, color=tips)) +
   ylab("DHS StatCompiler") +
   ggtitle("5q0 comparison")
 ```
+
+<img src="rdhs-integration_files/figure-html/5q0 compare-1.png" style="display: block; margin: auto;" />
