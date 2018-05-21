@@ -2,10 +2,13 @@
 #'
 #' @aliases calc_tfr
 #'
-#' @param bvars variables giving child dates of birth.
+#' @param bvars Names of variables giving child dates of birth. If `bhdata` is
+#'   provided, then length(bvars) must equal 1.
 #' @param agegr break points for age groups in completed years of age.
 #' @param period break points for calendar year periods (possibly non-integer).
 #' @param tips break points for TIme Preceding Survey.
+#' @param bhdata A birth history dataset (`data.frame`) with child dates of birth
+#'   in long format.
 #'
 #' @return A `data.frame` consisting of estimates and standard errors. The column
 #' consisting of point estimates (`asfr` or `tfr`) is an object of class
@@ -86,7 +89,9 @@ calc_asfr <- function(data,
                       bvars = grep("^b3\\_[0-9]*", names(data), value=TRUE),
                       birth_displace = 1e-6,
                       origin=1900,
-                      scale=12){
+                      scale=12,
+                      bhdata = NULL,
+                      counts=FALSE){
   
   data$id <- data[[id]]
   data$dob <- data[[dob]]
@@ -101,10 +106,20 @@ calc_asfr <- function(data,
   mf <- model.frame(formula = f, data = data, na.action = na.pass,
                     id = id, weights = weights, dob = dob, intv = intv)
 
-  births <- reshape(model.frame(paste("~", paste(bvars, collapse="+")),
-                                data, na.action=na.pass, id=id),
-                    idvar="(id)", timevar="bidx",
-                    varying=bvars, v.names="bcmc", direction="long")
+  if(is.null(bhdata)) {
+    births <- reshape(model.frame(paste("~", paste(bvars, collapse="+")),
+                                  data, na.action=na.pass, id=id),
+                      idvar="(id)", timevar="bidx",
+                      varying=bvars, v.names="bcmc", direction="long")
+  } else {
+    if(length(bvars) > 1)
+      stop("If `bhdata' is provided, bvars must provide a single variable name (length(bvars) = 1)")
+    
+    bhdata$id <- bhdata[[id]]
+    bhdata$bcmc <- bhdata[[bvars]]
+    births <- model.frame(~bcmc, data = bhdata, id = id)
+    births$bidx <- ave(births$bcmc, births$`(id)`, FUN = seq_along)
+  }
   births <- births[!is.na(births$bcmc), ]
   births$bcmc <- births$bcmc + births$bidx * birth_displace
   
@@ -131,6 +146,12 @@ calc_asfr <- function(data,
   val <- data.frame(des$variables[c(byvar, "byf")])[!duplicated(byf),]
   val <- val[order(val$byf), ]
   val$pyears <- 1
+
+  if(counts){
+    mc <- model.matrix(~-1+byf, aggr$data)
+    clong <- aggr$data[c("event", "pyears")]
+    val[c("births", "pys")] <- t(mc) %*% as.matrix(clong)
+  }
   
   val$asfr <- predict(mod, val, type="response", vcov=TRUE)
   val$se_asfr <- sqrt(diag(vcov(val$asfr)))
@@ -148,20 +169,23 @@ calc_tfr <- function(data,
                      period = NULL,
                      cohort = NULL,
                      tips = c(0, 3),
-                     clusters=~v021,
-                     strata=~v024+v025,
-                     id="caseid",
-                     dob="v011",
+                     clusters = ~v021,
+                     strata = ~v024+v025,
+                     id = "caseid",
+                     dob = "v011",
                      intv = "v008",
-                     weight= "v005",
+                     weight = "v005",
                      bvars = grep("^b3\\_[0-9]*", names(data), value=TRUE),
                      birth_displace = 1e-6,
-                     origin=1900,
-                     scale=12){
+                     origin = 1900,
+                     scale = 12,
+                     bhdata = NULL){
   
   g <- match.call()
   g[[1]] <- quote(calc_asfr)
-  asfr <- eval(g)
+  g$data <- data
+  g$bhdata <- bhdata
+  asfr <- eval(g, envir=parent.frame())
 
   mf <- asfr[setdiff(names(asfr), c("asfr", "se_asfr"))]
   dfmm <- .mm_aggr(mf, agegr)

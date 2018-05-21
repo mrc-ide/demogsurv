@@ -192,9 +192,18 @@ reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 * Refactor jackknife code and implement for ASFR and TFR calculation.
 * Implement stratified jackknife.
 * Implement DHS child mortality calculation with rule-based allocation across age intervals.
+* Handle married women only datasets.
 * Calculate multiple aggregations of nqx and sample correlation of these (e.g. NN, PN, 1q0, 4q1, 5q0).
 * Extend fertility calculation to accomodate birth list (long) data.
 * Document everything...
 * Settle on a better package name. I kind of like 'demogr' (demographic rates / demography R), but this is very close to demogR. 'demogrates' is an option.
 * Develop, test, and create examples for non-DHS household surveys, e.g. MICS, WFS.
 * Extend interface to allow specification of formula, variable name, or vectors.
+
+
+* Add some basic data checking before rate calculation, good warnings, potentially
+  automatic handling.
+  [] Variable names all exist.
+  [] No missing data in date variables.
+  [] Episode start date is before episode end date.
+  [] All birth history ids appear in respondent dataset.
