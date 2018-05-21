@@ -14,7 +14,6 @@ test_that("fertility calculations match DHS tables", {
  
 
 test_that("child mortality calculations work", {
-  zzbr <- zzbr
   zzbr$death <- zzbr$b5 == "no"  # b5: child still alive ("yes"/"no")
   zzbr$dod <- zzbr$b3 + zzbr$b7 + 0.5
   u5mr <- calc_nqx(zzbr)
@@ -32,4 +31,13 @@ test_that("adult mortality calculation reproduce DHS tables", {
   q3515 <- calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 7),
                     dob="mm4", dod="mm8")
   expect_equal(round(1000*c(q3515$nqx)), c(179, 177))
+})
+
+
+test_that("rate calculations work for single age group", {
+  zzbr$death <- zzbr$b5 == "no"  # b5: child still alive ("yes"/"no")
+  zzbr$dod <- zzbr$b3 + zzbr$b7 + 0.5
+  expect_equal(round(c(calc_asfr(zzir, agegr=c(15, 20))$asfr), 4), 0.1190)
+  expect_equal(round(c(calc_nqx(zzbr, agegr=c(0, 1), tips=c(0,5))$nqx), 4), 0.0884)
+  expect_equal(round(calc_nqx(zzbr, agegr=c(0, 1), tips=c(0,5), varmethod="jk1")$se, 4), 0.0054)
 })

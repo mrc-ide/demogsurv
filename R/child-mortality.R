@@ -112,8 +112,12 @@ calc_nqx <- function(data,
     des <- survey::svydesign(ids=clusters, strata=strata, data=aggr, weights=~1)
 
     ## fit model
-    mod <- survey::svyglm(event ~ -1 + byf + offset(log(pyears)),
-                          des, family=quasipoisson)
+    f <- if(length(levels(aggr$byf)) == 1)
+           event ~ offset(log(pyears))
+         else
+           event ~ -1 + byf + offset(log(pyears))
+
+    mod <- survey::svyglm(f, des, family=quasipoisson)
 
     mx <- predict(mod, pred, type="response", vcov=TRUE)
 

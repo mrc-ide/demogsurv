@@ -139,8 +139,13 @@ calc_asfr <- function(data,
   des <- update(des, byf = byf)
 
   ## fit model
-  mod <- survey::svyglm(event ~ -1 + byf + offset(log(pyears)),
-                        des, family=quasipoisson)
+  ## fit model
+  f <- if(length(levels(byf)) == 1)
+         event ~ offset(log(pyears))
+       else
+         event ~ -1 + byf + offset(log(pyears))
+  
+  mod <- survey::svyglm(f, des, family=quasipoisson)
   
   ## prediction for all factor levels that appear
   val <- data.frame(des$variables[c(byvar, "byf")])[!duplicated(byf),]
