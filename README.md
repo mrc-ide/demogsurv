@@ -26,8 +26,9 @@ The goal of hhsurveydata is to:
     implementation is flexible for use with other survey data.
 
 For analysis of DHS data, the package interacts well with
-[`rdhs`](https://ojwatson.github.io/rdhs/). See the vignette *TO BE
-COMPLETED* for an example.
+[`rdhs`](https://ojwatson.github.io/rdhs/). See the
+[vignette](https://raw.githubusercontent.com/mrc-ide/hhsurveydata/master/vignettes/rdhs-integration.html)
+for an example.
 
 ## Installation
 
@@ -59,7 +60,7 @@ data(zzir) # Individuals recode (fertility, adult mortality)
 By default, the function `calc_nqx` calculates U5MR by periods 0-4, 5-9,
 and 10-14 years before the survey. Before calculating mortality rates,
 create a binary variable indicator whether a death occurred and a
-variable givine the date of death, placed 0.5 months in the month the
+variable giving the date of death, placed 0.5 months in the month the
 death occurred.
 
 ``` r
@@ -144,7 +145,7 @@ calc_nqx(zzbr, varmethod = "lin") # default is linearization
 #> 2   5-9 0.1937855 0.008292561 0.1773675 0.2098759
 #> 3   0-4 0.1408711 0.006432798 0.1281701 0.1533871
 
-## Compare unstratified standard error estiamtes for linearization and jackknife
+## Compare unstratified standard error estimates for linearization and jackknife
 calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
 #>    tips       nqx          se      ci_l      ci_u
 #> 1 10-14 0.2212304 0.011976980 0.1973986 0.2443546
@@ -347,17 +348,33 @@ reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 ## To Do
 
   - Refactor jackknife code and implement for ASFR and TFR calculation.
+
   - Implement stratified jackknife.
+
   - Implement DHS child mortality calculation with rule-based allocation
     across age intervals.
+
+  - Handle married women only datasets.
+
   - Calculate multiple aggregations of nqx and sample correlation of
     these (e.g. NN, PN, 1q0, 4q1, 5q0).
+
   - Extend fertility calculation to accomodate birth list (long) data.
+
   - Document everything…
+
   - Settle on a better package name. I kind of like ‘demogr’
     (demographic rates / demography R), but this is very close to
     demogR. ‘demogrates’ is an option.
+
   - Develop, test, and create examples for non-DHS household surveys,
     e.g. MICS, WFS.
+
   - Extend interface to allow specification of formula, variable name,
     or vectors.
+
+  - Add some basic data checking before rate calculation, good warnings,
+    potentially automatic handling. \[\] Variable names all exist. \[\]
+    No missing data in date variables. \[\] Episode start date is before
+    episode end date. \[\] All birth history ids appear in respondent
+    dataset.

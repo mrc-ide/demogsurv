@@ -9,7 +9,8 @@ calc_asfr(data, by = NULL, agegr = 3:10 * 5, period = NULL,
   cohort = NULL, tips = c(0, 3), clusters = ~v021, strata = ~v024 +
   v025, id = "caseid", dob = "v011", intv = "v008", weight = "v005",
   bvars = grep("^b3\\\\_[0-9]*", names(data), value = TRUE),
-  birth_displace = 1e-06, origin = 1900, scale = 12)
+  birth_displace = 1e-06, origin = 1900, scale = 12, bhdata = NULL,
+  counts = FALSE)
 }
 \arguments{
 \item{agegr}{break points for age groups in completed years of age.}
@@ -18,7 +19,11 @@ calc_asfr(data, by = NULL, agegr = 3:10 * 5, period = NULL,
 
 \item{tips}{break points for TIme Preceding Survey.}
 
-\item{bvars}{variables giving child dates of birth.}
+\item{bvars}{Names of variables giving child dates of birth. If \code{bhdata} is
+provided, then length(bvars) must equal 1.}
+
+\item{bhdata}{A birth history dataset (\code{data.frame}) with child dates of birth
+in long format.}
 }
 \value{
 A \code{data.frame} consisting of estimates and standard errors. The column

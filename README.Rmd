@@ -26,7 +26,7 @@ The goal of hhsurveydata is to:
 * Calculate sample covariance for indicators estimated from a single complex survey (e.g. time-series of child mortality estimates).
 * Default parameters are specified for analysis of [DHS recode datasets](https://dhsprogram.com/data/) without fuss, but funciton implementation is flexible for use with other survey data.
 
-For analysis of DHS data, the package interacts well with [`rdhs`](https://ojwatson.github.io/rdhs/). See the vignette *TO BE COMPLETED* for an example.
+For analysis of DHS data, the package interacts well with [`rdhs`](https://ojwatson.github.io/rdhs/). See the [vignette](https://raw.githubusercontent.com/mrc-ide/hhsurveydata/master/vignettes/rdhs-integration.html) for an example.
 
 ## Installation
 
@@ -54,7 +54,7 @@ data(zzir) # Individuals recode (fertility, adult mortality)
 
 By default, the function `calc_nqx` calculates U5MR by periods 0-4, 5-9, and 10-14 
 years before the survey. Before calculating mortality rates, create a binary variable
-indicator whether a death occurred and a variable givine the date of death, placed 
+indicator whether a death occurred and a variable giving the date of death, placed 
 0.5 months in the month the death occurred.
 
 ```{r u5mr}
@@ -98,7 +98,7 @@ jackknife. Results are very similar if unstratified design-based estimates are u
 ```{r varmethod}
 calc_nqx(zzbr, varmethod = "lin") # default is linearization
 
-## Compare unstratified standard error estiamtes for linearization and jackknife
+## Compare unstratified standard error estimates for linearization and jackknife
 calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
 calc_nqx(zzbr, strata=NULL, varmethod = "jk1")  # unstratififed jackknife
 ```
