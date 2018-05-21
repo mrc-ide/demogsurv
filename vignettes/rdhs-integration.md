@@ -23,9 +23,38 @@ This vignette illustrates use of `hhsurveydata` and `rdhs` to calculate fertilit
 ## devtools::load_all("mrc-ide/hhsurveydata")
 
 library(rdhs)
+```
+
+```
+## The DHS API took longer than 30 seconds to respond, or it returned an error.
+## As a result some of the functionality of rdhs may not work.
+## To check if the API is down please head to:
+## https://api.dhsprogram.com/rest/dhs/dataupdates
+```
+
+```r
 library(hhsurveydata)
 library(ggplot2)
 library(data.table)
+```
+
+```
+## data.table 1.10.4.3
+```
+
+```
+##   The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
+```
+
+```
+##   Documentation: ?data.table, example(data.table) and browseVignettes("data.table")
+```
+
+```
+##   Release notes, videos and slides: http://r-datatable.com
+```
+
+```r
 library(haven)
 
 ## a little nugget to return API requests as data.table rather than data.frame.
@@ -261,53 +290,53 @@ u5mr <- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])
 
 Table: TFR
 
-SurveyId     Value  CountryName     SurveyYear  tips      tfr   se_tfr
-----------  ------  -------------  -----------  -----  ------  -------
-AO2015DHS        6  Angola                2015  0-2     6.216     0.14
-BF2010DHS        6  Burkina Faso          2010  0-2     5.991     0.10
-BJ2006DHS        6  Benin                 2006  0-2     5.739     0.07
-BJ2012DHS        5  Benin                 2012  0-2     4.902     0.07
-BU2010DHS        6  Burundi               2010  0-2     6.384     0.10
-BU2016DHS        6  Burundi               2016  0-2     5.519     0.08
+SurveyId    CountryName     SurveyYear  tips    tfr   se_tfr   Value
+----------  -------------  -----------  -----  ----  -------  ------
+AO2015DHS   Angola                2015  0-2     6.2    0.139     6.2
+BF2010DHS   Burkina Faso          2010  0-2     6.0    0.099     6.0
+BJ2006DHS   Benin                 2006  0-2     5.7    0.072     5.7
+BJ2012DHS   Benin                 2012  0-2     4.9    0.066     4.9
+BU2010DHS   Burundi               2010  0-2     6.4    0.098     6.4
+BU2016DHS   Burundi               2016  0-2     5.5    0.076     5.5
 
 
 
 Table: ASFR 15-19
 
-SurveyId     Value  CountryName    SurveyYear   agegr   tips      asfr   se_asfr
-----------  ------  -------------  -----------  ------  -----  -------  --------
-AO2015DHS      163  Angola         2015         15-19   0-2     0.1627         0
-BF2010DHS      130  Burkina Faso   2010         15-19   0-2     0.1301         0
-BJ2006DHS      112  Benin          2006         15-19   0-2     0.1123         0
-BJ2012DHS       94  Benin          2012         15-19   0-2     0.0939         0
-BU2010DHS       65  Burundi        2010         15-19   0-2     0.0652         0
-BU2016DHS       58  Burundi        2016         15-19   0-2     0.0582         0
+SurveyId    CountryName    SurveyYear   agegr   tips     asfr   se_asfr   Value
+----------  -------------  -----------  ------  -----  ------  --------  ------
+AO2015DHS   Angola         2015         15-19   0-2     0.163    0.0073     163
+BF2010DHS   Burkina Faso   2010         15-19   0-2     0.130    0.0049     130
+BJ2006DHS   Benin          2006         15-19   0-2     0.112    0.0045     112
+BJ2012DHS   Benin          2012         15-19   0-2     0.094    0.0038      94
+BU2010DHS   Burundi        2010         15-19   0-2     0.065    0.0040      65
+BU2016DHS   Burundi        2016         15-19   0-2     0.058    0.0030      58
 
 
 
 Table: 35q15
 
-SurveyId    mm1       Value  CountryName    SurveyYear   tips      nqx      se    ci_l   ci_u
-----------  -------  ------  -------------  -----------  -----  ------  ------  ------  -----
-AO2015DHS   female      110  Angola         2015         0-6     0.110   0.010   0.090      0
-AO2015DHS   male        182  Angola         2015         0-6     0.182   0.013   0.157      0
-BF2010DHS   female      146  Burkina Faso   2010         0-6     0.146   0.008   0.131      0
-BF2010DHS   male        145  Burkina Faso   2010         0-6     0.145   0.007   0.130      0
-BJ2006DHS   female      127  Benin          2006         0-6     0.127   0.006   0.114      0
-BJ2006DHS   male        162  Benin          2006         0-6     0.161   0.008   0.146      0
+SurveyId    mm1      CountryName    SurveyYear   tips      nqx      se    ci_l    ci_u   Value
+----------  -------  -------------  -----------  -----  ------  ------  ------  ------  ------
+AO2015DHS   female   Angola         2015         0-6     0.110   0.010   0.090   0.130     110
+AO2015DHS   male     Angola         2015         0-6     0.182   0.013   0.157   0.207     182
+BF2010DHS   female   Burkina Faso   2010         0-6     0.146   0.008   0.131   0.161     146
+BF2010DHS   male     Burkina Faso   2010         0-6     0.145   0.007   0.130   0.158     145
+BJ2006DHS   female   Benin          2006         0-6     0.127   0.006   0.114   0.139     127
+BJ2006DHS   male     Benin          2006         0-6     0.161   0.008   0.146   0.177     162
 
 
 
 Table: 5q0
 
-     SurveyId    tips     Value  CountryName    SurveyYear      nqx      se    ci_l   ci_u
----  ----------  ------  ------  -------------  -----------  ------  ------  ------  -----
-1    AO2015DHS   0-4         68  Angola         2015          0.066   0.004   0.058      0
-3    AO2015DHS   5-9         95  Angola         2015          0.093   0.005   0.082      0
-2    AO2015DHS   10-14      145  Angola         2015          0.146   0.008   0.130      0
-4    BF2010DHS   0-4        129  Burkina Faso   2010          0.121   0.004   0.113      0
-6    BF2010DHS   5-9        168  Burkina Faso   2010          0.169   0.005   0.160      0
-5    BF2010DHS   10-14      177  Burkina Faso   2010          0.180   0.006   0.169      0
+     SurveyId    tips    CountryName    SurveyYear      nqx      se    ci_l    ci_u   Value
+---  ----------  ------  -------------  -----------  ------  ------  ------  ------  ------
+1    AO2015DHS   0-4     Angola         2015          0.066   0.004   0.058   0.073      68
+3    AO2015DHS   5-9     Angola         2015          0.093   0.005   0.082   0.103      95
+2    AO2015DHS   10-14   Angola         2015          0.146   0.008   0.130   0.163     145
+4    BF2010DHS   0-4     Burkina Faso   2010          0.121   0.004   0.113   0.129     129
+6    BF2010DHS   5-9     Burkina Faso   2010          0.169   0.005   0.160   0.179     168
+5    BF2010DHS   10-14   Burkina Faso   2010          0.180   0.006   0.169   0.191     177
 
 ## Check that TFR, ASFR, and ~35~q~15~ estimates exactly match
 
@@ -364,14 +393,14 @@ subset(q3515, abs((round(1000*nqx) - Value)) > 1)
 ```
 
 ```
-##     SurveyId    mm1 Value CountryName SurveyYear tips       nqx         se
-## 57 MZ2011DHS female   199  Mozambique       2011  0-6 0.1914953 0.01021433
-## 58 MZ2011DHS   male   241  Mozambique       2011  0-6 0.2383925 0.01186020
-## 97 UG2011DHS female   201      Uganda       2011  0-6 0.2062956 0.01222652
-##         ci_l      ci_u
-## 57 0.1712256 0.2112692
-## 58 0.2147886 0.2612869
-## 97 0.1819667 0.2299010
+##     SurveyId    mm1 CountryName SurveyYear tips       nqx         se
+## 57 MZ2011DHS female  Mozambique       2011  0-6 0.1914953 0.01021433
+## 58 MZ2011DHS   male  Mozambique       2011  0-6 0.2383925 0.01186020
+## 97 UG2011DHS female      Uganda       2011  0-6 0.2062956 0.01222652
+##         ci_l      ci_u Value
+## 57 0.1712256 0.2112692   199
+## 58 0.2147886 0.2612869   241
+## 97 0.1819667 0.2299010   201
 ```
 
 

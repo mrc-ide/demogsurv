@@ -318,11 +318,19 @@ $(document).ready(function () {
 ## devtools::load_all(&quot;OJWatson/rdhs&quot;)
 ## devtools::load_all(&quot;mrc-ide/hhsurveydata&quot;)
 
-library(rdhs)
-library(hhsurveydata)
+library(rdhs)</code></pre>
+<pre><code>## The DHS API took longer than 30 seconds to respond, or it returned an error.
+## As a result some of the functionality of rdhs may not work.
+## To check if the API is down please head to:
+## https://api.dhsprogram.com/rest/dhs/dataupdates</code></pre>
+<pre class="r"><code>library(hhsurveydata)
 library(ggplot2)
-library(data.table)
-library(haven)
+library(data.table)</code></pre>
+<pre><code>## data.table 1.10.4.3</code></pre>
+<pre><code>##   The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way</code></pre>
+<pre><code>##   Documentation: ?data.table, example(data.table) and browseVignettes(&quot;data.table&quot;)</code></pre>
+<pre><code>##   Release notes, videos and slides: http://r-datatable.com</code></pre>
+<pre class="r"><code>library(haven)
 
 ## a little nugget to return API requests as data.table rather than data.frame.
 Sys.setenv(rdhs_DATA_TABLE = &quot;TRUE&quot;)</code></pre>
@@ -467,68 +475,68 @@ u5mr &lt;- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])</code></pre>
 <thead>
 <tr class="header">
 <th style="text-align: left;">SurveyId</th>
-<th style="text-align: right;">Value</th>
 <th style="text-align: left;">CountryName</th>
 <th style="text-align: right;">SurveyYear</th>
 <th style="text-align: left;">tips</th>
 <th style="text-align: right;">tfr</th>
 <th style="text-align: right;">se_tfr</th>
+<th style="text-align: right;">Value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">AO2015DHS</td>
-<td style="text-align: right;">6</td>
 <td style="text-align: left;">Angola</td>
 <td style="text-align: right;">2015</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">6.216</td>
-<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">6.2</td>
+<td style="text-align: right;">0.139</td>
+<td style="text-align: right;">6.2</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BF2010DHS</td>
-<td style="text-align: right;">6</td>
 <td style="text-align: left;">Burkina Faso</td>
 <td style="text-align: right;">2010</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">5.991</td>
-<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">0.099</td>
+<td style="text-align: right;">6.0</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BJ2006DHS</td>
-<td style="text-align: right;">6</td>
 <td style="text-align: left;">Benin</td>
 <td style="text-align: right;">2006</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">5.739</td>
-<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">5.7</td>
+<td style="text-align: right;">0.072</td>
+<td style="text-align: right;">5.7</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BJ2012DHS</td>
-<td style="text-align: right;">5</td>
 <td style="text-align: left;">Benin</td>
 <td style="text-align: right;">2012</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">4.902</td>
-<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">4.9</td>
+<td style="text-align: right;">0.066</td>
+<td style="text-align: right;">4.9</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BU2010DHS</td>
-<td style="text-align: right;">6</td>
 <td style="text-align: left;">Burundi</td>
 <td style="text-align: right;">2010</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">6.384</td>
-<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">6.4</td>
+<td style="text-align: right;">0.098</td>
+<td style="text-align: right;">6.4</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BU2016DHS</td>
-<td style="text-align: right;">6</td>
 <td style="text-align: left;">Burundi</td>
 <td style="text-align: right;">2016</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">5.519</td>
-<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">0.076</td>
+<td style="text-align: right;">5.5</td>
 </tr>
 </tbody>
 </table>
@@ -537,75 +545,75 @@ u5mr &lt;- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])</code></pre>
 <thead>
 <tr class="header">
 <th style="text-align: left;">SurveyId</th>
-<th style="text-align: right;">Value</th>
 <th style="text-align: left;">CountryName</th>
 <th style="text-align: left;">SurveyYear</th>
 <th style="text-align: left;">agegr</th>
 <th style="text-align: left;">tips</th>
 <th style="text-align: right;">asfr</th>
 <th style="text-align: right;">se_asfr</th>
+<th style="text-align: right;">Value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">AO2015DHS</td>
-<td style="text-align: right;">163</td>
 <td style="text-align: left;">Angola</td>
 <td style="text-align: left;">2015</td>
 <td style="text-align: left;">15-19</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">0.1627</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.163</td>
+<td style="text-align: right;">0.0073</td>
+<td style="text-align: right;">163</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BF2010DHS</td>
-<td style="text-align: right;">130</td>
 <td style="text-align: left;">Burkina Faso</td>
 <td style="text-align: left;">2010</td>
 <td style="text-align: left;">15-19</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">0.1301</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.130</td>
+<td style="text-align: right;">0.0049</td>
+<td style="text-align: right;">130</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BJ2006DHS</td>
-<td style="text-align: right;">112</td>
 <td style="text-align: left;">Benin</td>
 <td style="text-align: left;">2006</td>
 <td style="text-align: left;">15-19</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">0.1123</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.112</td>
+<td style="text-align: right;">0.0045</td>
+<td style="text-align: right;">112</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BJ2012DHS</td>
-<td style="text-align: right;">94</td>
 <td style="text-align: left;">Benin</td>
 <td style="text-align: left;">2012</td>
 <td style="text-align: left;">15-19</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">0.0939</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.094</td>
+<td style="text-align: right;">0.0038</td>
+<td style="text-align: right;">94</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BU2010DHS</td>
-<td style="text-align: right;">65</td>
 <td style="text-align: left;">Burundi</td>
 <td style="text-align: left;">2010</td>
 <td style="text-align: left;">15-19</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">0.0652</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.065</td>
+<td style="text-align: right;">0.0040</td>
+<td style="text-align: right;">65</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BU2016DHS</td>
-<td style="text-align: right;">58</td>
 <td style="text-align: left;">Burundi</td>
 <td style="text-align: left;">2016</td>
 <td style="text-align: left;">15-19</td>
 <td style="text-align: left;">0-2</td>
-<td style="text-align: right;">0.0582</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.058</td>
+<td style="text-align: right;">0.0030</td>
+<td style="text-align: right;">58</td>
 </tr>
 </tbody>
 </table>
@@ -615,7 +623,6 @@ u5mr &lt;- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])</code></pre>
 <tr class="header">
 <th style="text-align: left;">SurveyId</th>
 <th style="text-align: left;">mm1</th>
-<th style="text-align: right;">Value</th>
 <th style="text-align: left;">CountryName</th>
 <th style="text-align: left;">SurveyYear</th>
 <th style="text-align: left;">tips</th>
@@ -623,80 +630,81 @@ u5mr &lt;- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])</code></pre>
 <th style="text-align: right;">se</th>
 <th style="text-align: right;">ci_l</th>
 <th style="text-align: right;">ci_u</th>
+<th style="text-align: right;">Value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">AO2015DHS</td>
 <td style="text-align: left;">female</td>
-<td style="text-align: right;">110</td>
 <td style="text-align: left;">Angola</td>
 <td style="text-align: left;">2015</td>
 <td style="text-align: left;">0-6</td>
 <td style="text-align: right;">0.110</td>
 <td style="text-align: right;">0.010</td>
 <td style="text-align: right;">0.090</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.130</td>
+<td style="text-align: right;">110</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">AO2015DHS</td>
 <td style="text-align: left;">male</td>
-<td style="text-align: right;">182</td>
 <td style="text-align: left;">Angola</td>
 <td style="text-align: left;">2015</td>
 <td style="text-align: left;">0-6</td>
 <td style="text-align: right;">0.182</td>
 <td style="text-align: right;">0.013</td>
 <td style="text-align: right;">0.157</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.207</td>
+<td style="text-align: right;">182</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BF2010DHS</td>
 <td style="text-align: left;">female</td>
-<td style="text-align: right;">146</td>
 <td style="text-align: left;">Burkina Faso</td>
 <td style="text-align: left;">2010</td>
 <td style="text-align: left;">0-6</td>
 <td style="text-align: right;">0.146</td>
 <td style="text-align: right;">0.008</td>
 <td style="text-align: right;">0.131</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.161</td>
+<td style="text-align: right;">146</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BF2010DHS</td>
 <td style="text-align: left;">male</td>
-<td style="text-align: right;">145</td>
 <td style="text-align: left;">Burkina Faso</td>
 <td style="text-align: left;">2010</td>
 <td style="text-align: left;">0-6</td>
 <td style="text-align: right;">0.145</td>
 <td style="text-align: right;">0.007</td>
 <td style="text-align: right;">0.130</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.158</td>
+<td style="text-align: right;">145</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BJ2006DHS</td>
 <td style="text-align: left;">female</td>
-<td style="text-align: right;">127</td>
 <td style="text-align: left;">Benin</td>
 <td style="text-align: left;">2006</td>
 <td style="text-align: left;">0-6</td>
 <td style="text-align: right;">0.127</td>
 <td style="text-align: right;">0.006</td>
 <td style="text-align: right;">0.114</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.139</td>
+<td style="text-align: right;">127</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BJ2006DHS</td>
 <td style="text-align: left;">male</td>
-<td style="text-align: right;">162</td>
 <td style="text-align: left;">Benin</td>
 <td style="text-align: left;">2006</td>
 <td style="text-align: left;">0-6</td>
 <td style="text-align: right;">0.161</td>
 <td style="text-align: right;">0.008</td>
 <td style="text-align: right;">0.146</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.177</td>
+<td style="text-align: right;">162</td>
 </tr>
 </tbody>
 </table>
@@ -707,13 +715,13 @@ u5mr &lt;- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])</code></pre>
 <th></th>
 <th style="text-align: left;">SurveyId</th>
 <th style="text-align: left;">tips</th>
-<th style="text-align: right;">Value</th>
 <th style="text-align: left;">CountryName</th>
 <th style="text-align: left;">SurveyYear</th>
 <th style="text-align: right;">nqx</th>
 <th style="text-align: right;">se</th>
 <th style="text-align: right;">ci_l</th>
 <th style="text-align: right;">ci_u</th>
+<th style="text-align: right;">Value</th>
 </tr>
 </thead>
 <tbody>
@@ -721,73 +729,73 @@ u5mr &lt;- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])</code></pre>
 <td>1</td>
 <td style="text-align: left;">AO2015DHS</td>
 <td style="text-align: left;">0-4</td>
-<td style="text-align: right;">68</td>
 <td style="text-align: left;">Angola</td>
 <td style="text-align: left;">2015</td>
 <td style="text-align: right;">0.066</td>
 <td style="text-align: right;">0.004</td>
 <td style="text-align: right;">0.058</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.073</td>
+<td style="text-align: right;">68</td>
 </tr>
 <tr class="even">
 <td>3</td>
 <td style="text-align: left;">AO2015DHS</td>
 <td style="text-align: left;">5-9</td>
-<td style="text-align: right;">95</td>
 <td style="text-align: left;">Angola</td>
 <td style="text-align: left;">2015</td>
 <td style="text-align: right;">0.093</td>
 <td style="text-align: right;">0.005</td>
 <td style="text-align: right;">0.082</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.103</td>
+<td style="text-align: right;">95</td>
 </tr>
 <tr class="odd">
 <td>2</td>
 <td style="text-align: left;">AO2015DHS</td>
 <td style="text-align: left;">10-14</td>
-<td style="text-align: right;">145</td>
 <td style="text-align: left;">Angola</td>
 <td style="text-align: left;">2015</td>
 <td style="text-align: right;">0.146</td>
 <td style="text-align: right;">0.008</td>
 <td style="text-align: right;">0.130</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.163</td>
+<td style="text-align: right;">145</td>
 </tr>
 <tr class="even">
 <td>4</td>
 <td style="text-align: left;">BF2010DHS</td>
 <td style="text-align: left;">0-4</td>
-<td style="text-align: right;">129</td>
 <td style="text-align: left;">Burkina Faso</td>
 <td style="text-align: left;">2010</td>
 <td style="text-align: right;">0.121</td>
 <td style="text-align: right;">0.004</td>
 <td style="text-align: right;">0.113</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.129</td>
+<td style="text-align: right;">129</td>
 </tr>
 <tr class="odd">
 <td>6</td>
 <td style="text-align: left;">BF2010DHS</td>
 <td style="text-align: left;">5-9</td>
-<td style="text-align: right;">168</td>
 <td style="text-align: left;">Burkina Faso</td>
 <td style="text-align: left;">2010</td>
 <td style="text-align: right;">0.169</td>
 <td style="text-align: right;">0.005</td>
 <td style="text-align: right;">0.160</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.179</td>
+<td style="text-align: right;">168</td>
 </tr>
 <tr class="even">
 <td>5</td>
 <td style="text-align: left;">BF2010DHS</td>
 <td style="text-align: left;">10-14</td>
-<td style="text-align: right;">177</td>
 <td style="text-align: left;">Burkina Faso</td>
 <td style="text-align: left;">2010</td>
 <td style="text-align: right;">0.180</td>
 <td style="text-align: right;">0.006</td>
 <td style="text-align: right;">0.169</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.191</td>
+<td style="text-align: right;">177</td>
 </tr>
 </tbody>
 </table>
@@ -815,14 +823,14 @@ with(q3515, table(round(1000*nqx) == Value))</code></pre>
 ## -8 -3 -1  0  1  5 
 ##  1  1 16 87  4  1</code></pre>
 <pre class="r"><code>subset(q3515, abs((round(1000*nqx) - Value)) &gt; 1)</code></pre>
-<pre><code>##     SurveyId    mm1 Value CountryName SurveyYear tips       nqx         se
-## 57 MZ2011DHS female   199  Mozambique       2011  0-6 0.1914953 0.01021433
-## 58 MZ2011DHS   male   241  Mozambique       2011  0-6 0.2383925 0.01186020
-## 97 UG2011DHS female   201      Uganda       2011  0-6 0.2062956 0.01222652
-##         ci_l      ci_u
-## 57 0.1712256 0.2112692
-## 58 0.2147886 0.2612869
-## 97 0.1819667 0.2299010</code></pre>
+<pre><code>##     SurveyId    mm1 CountryName SurveyYear tips       nqx         se
+## 57 MZ2011DHS female  Mozambique       2011  0-6 0.1914953 0.01021433
+## 58 MZ2011DHS   male  Mozambique       2011  0-6 0.2383925 0.01186020
+## 97 UG2011DHS female      Uganda       2011  0-6 0.2062956 0.01222652
+##         ci_l      ci_u Value
+## 57 0.1712256 0.2112692   199
+## 58 0.2147886 0.2612869   241
+## 97 0.1819667 0.2299010   201</code></pre>
 </section>
 <section id="compare-5q0-estimates" class="level2">
 <h2>Compare <sub>5</sub>q<sub>0</sub> estimates</h2>
