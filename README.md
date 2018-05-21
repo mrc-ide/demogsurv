@@ -27,7 +27,7 @@ The goal of hhsurveydata is to:
 
 For analysis of DHS data, the package interacts well with
 [`rdhs`](https://ojwatson.github.io/rdhs/). See the
-[vignette](https://raw.githubusercontent.com/mrc-ide/hhsurveydata/master/vignettes/rdhs-integration.html)
+[vignette](https://github.com/mrc-ide/hhsurveydata/blob/master/vignettes/rdhs-integration.pdf)
 for an example.
 
 ## Installation
