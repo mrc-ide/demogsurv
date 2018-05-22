@@ -1,3 +1,4 @@
+
 Package: hhsurveydata
 Title: Data processing tools for DHS and other household surveys
 Version: 0.1.0
@@ -15,10 +16,16 @@ Imports:
     stats
 Suggests: 
     foreign,
+    rdhs,
+    ggplot2,
+    data.table,
+    haven,
     knitr,
     rmarkdown,
     testthat,
     covr
+Remotes:
+    OJWatson/rdhs
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
