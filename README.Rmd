@@ -12,12 +12,12 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
-  [![Travis build status](https://travis-ci.org/mrc-ide/hhsurveydata.svg?branch=master)](https://travis-ci.org/mrc-ide/hhsurveydata)
-  [![Coverage status](https://codecov.io/gh/mrc-ide/hhsurveydata/branch/master/graph/badge.svg)](https://codecov.io/github/mrc-ide/hhsurveydata?branch=master)
+  [![Travis build status](https://travis-ci.org/mrc-ide/demogsurv.svg?branch=master)](https://travis-ci.org/mrc-ide/demogsurv)
+  [![Coverage status](https://codecov.io/gh/mrc-ide/demogsurv/branch/master/graph/badge.svg)](https://codecov.io/github/mrc-ide/demogsurv?branch=master)
   
-# hhsurveydata
+# demogsurv
 
-The goal of hhsurveydata is to:
+The goal of demogsurv is to:
 
 * Calculate common demographic indicators from household survey data, including child mortality, adult mortality, and fertility.
 * Stratify indicators according to arbitrary age groups, calendar periods, birth cohorts, time before survey, or other survey variables (region, residence, wealth category, education, etc.).
@@ -26,15 +26,15 @@ The goal of hhsurveydata is to:
 * Calculate sample covariance for indicators estimated from a single complex survey (e.g. time-series of child mortality estimates).
 * Default parameters are specified for analysis of [DHS recode datasets](https://dhsprogram.com/data/) without fuss, but funciton implementation is flexible for use with other survey data.
 
-For analysis of DHS data, the package interacts well with [`rdhs`](https://ojwatson.github.io/rdhs/). See the [vignette](https://github.com/mrc-ide/hhsurveydata/blob/master/vignettes/rdhs-integration.pdf) for an example.
+For analysis of DHS data, the package interacts well with [`rdhs`](https://ojwatson.github.io/rdhs/). See the [vignette](https://github.com/mrc-ide/demogsurv/blob/master/vignettes/rdhs-integration.pdf) for an example.
 
 ## Installation
 
-You can install the development version from [GitHub](https://github.com/mrc-ide/hhsurveydata) with:
+You can install the development version from [GitHub](https://github.com/mrc-ide/demogsurv) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("mrc-ide/hhsurveydata")
+devtools::install_github("mrc-ide/demogsurv")
 ```
 
 The package will be released on [CRAN](https://CRAN.R-project.org) in due course.
@@ -44,7 +44,7 @@ The package will be released on [CRAN](https://CRAN.R-project.org) in due course
 
 Load the package and example datasets created from [DHS Model Datasets](https://dhsprogram.com/data/model-datasets.cfm).
 ```{r}
-library(hhsurveydata)
+library(demogsurv)
 
 data(zzbr) # Births recode (child mortality)
 data(zzir) # Individuals recode (fertility, adult mortality)
@@ -190,20 +190,20 @@ reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 ## To Do
 
 * Refactor jackknife code and implement for ASFR and TFR calculation.
+* Refactor for single `calc_rate()` function used by mortality and fertility calculations.
+* Add indirect indicators
 * Implement stratified jackknife.
-* Implement DHS child mortality calculation with rule-based allocation across age intervals.
+* Implement DHS child mortality calculation (Rutstein and Rojas 2006).
 * Handle married women only datasets.
 * Calculate multiple aggregations of nqx and sample correlation of these (e.g. NN, PN, 1q0, 4q1, 5q0).
-* Extend fertility calculation to accomodate birth list (long) data.
 * Document everything...
-* Settle on a better package name. I kind of like 'demogr' (demographic rates / demography R), but this is very close to demogR. 'demogrates' is an option.
 * Develop, test, and create examples for non-DHS household surveys, e.g. MICS, WFS.
 * Extend interface to allow specification of formula, variable name, or vectors.
 
 
 * Add some basic data checking before rate calculation, good warnings, potentially
   automatic handling.
-  [] Variable names all exist.
-  [] No missing data in date variables.
-  [] Episode start date is before episode end date.
-  [] All birth history ids appear in respondent dataset.
+  [ ] Variable names all exist.
+  [ ] No missing data in date variables.
+  [ ] Episode start date is before episode end date.
+  [ ] All birth history ids appear in respondent dataset.

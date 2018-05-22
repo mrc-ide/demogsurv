@@ -2,13 +2,13 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 [![Travis build
-status](https://travis-ci.org/mrc-ide/hhsurveydata.svg?branch=master)](https://travis-ci.org/mrc-ide/hhsurveydata)
+status](https://travis-ci.org/mrc-ide/demogsurv.svg?branch=master)](https://travis-ci.org/mrc-ide/demogsurv)
 [![Coverage
-status](https://codecov.io/gh/mrc-ide/hhsurveydata/branch/master/graph/badge.svg)](https://codecov.io/github/mrc-ide/hhsurveydata?branch=master)
+status](https://codecov.io/gh/mrc-ide/demogsurv/branch/master/graph/badge.svg)](https://codecov.io/github/mrc-ide/demogsurv?branch=master)
 
-# hhsurveydata
+# demogsurv
 
-The goal of hhsurveydata is to:
+The goal of demogsurv is to:
 
   - Calculate common demographic indicators from household survey data,
     including child mortality, adult mortality, and fertility.
@@ -27,17 +27,17 @@ The goal of hhsurveydata is to:
 
 For analysis of DHS data, the package interacts well with
 [`rdhs`](https://ojwatson.github.io/rdhs/). See the
-[vignette](https://github.com/mrc-ide/hhsurveydata/blob/master/vignettes/rdhs-integration.pdf)
+[vignette](https://github.com/mrc-ide/demogsurv/blob/master/vignettes/rdhs-integration.pdf)
 for an example.
 
 ## Installation
 
 You can install the development version from
-[GitHub](https://github.com/mrc-ide/hhsurveydata) with:
+[GitHub](https://github.com/mrc-ide/demogsurv) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("mrc-ide/hhsurveydata")
+devtools::install_github("mrc-ide/demogsurv")
 ```
 
 The package will be released on [CRAN](https://CRAN.R-project.org) in
@@ -49,7 +49,7 @@ Load the package and example datasets created from [DHS Model
 Datasets](https://dhsprogram.com/data/model-datasets.cfm).
 
 ``` r
-library(hhsurveydata)
+library(demogsurv)
 
 data(zzbr) # Births recode (child mortality)
 data(zzir) # Individuals recode (fertility, adult mortality)
@@ -349,23 +349,21 @@ reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 
   - Refactor jackknife code and implement for ASFR and TFR calculation.
 
+  - Refactor for single `calc_rate()` function used by mortality and
+    fertility calculations.
+
+  - Add indirect indicators
+
   - Implement stratified jackknife.
 
-  - Implement DHS child mortality calculation with rule-based allocation
-    across age intervals.
+  - Implement DHS child mortality calculation (Rutstein and Rojas 2006).
 
   - Handle married women only datasets.
 
   - Calculate multiple aggregations of nqx and sample correlation of
     these (e.g. NN, PN, 1q0, 4q1, 5q0).
 
-  - Extend fertility calculation to accomodate birth list (long) data.
-
   - Document everything…
-
-  - Settle on a better package name. I kind of like ‘demogr’
-    (demographic rates / demography R), but this is very close to
-    demogR. ‘demogrates’ is an option.
 
   - Develop, test, and create examples for non-DHS household surveys,
     e.g. MICS, WFS.
@@ -374,7 +372,7 @@ reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
     or vectors.
 
   - Add some basic data checking before rate calculation, good warnings,
-    potentially automatic handling. \[\] Variable names all exist. \[\]
-    No missing data in date variables. \[\] Episode start date is before
-    episode end date. \[\] All birth history ids appear in respondent
-    dataset.
+    potentially automatic handling. \[ \] Variable names all exist. \[
+    \] No missing data in date variables. \[ \] Episode start date is
+    before episode end date. \[ \] All birth history ids appear in
+    respondent dataset.

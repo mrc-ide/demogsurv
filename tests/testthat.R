@@ -1,4 +1,4 @@
 library(testthat)
-library(hhsurveydata)
+library(demogsurv)
 
-test_check("hhsurveydata")
+test_check("demogsurv")

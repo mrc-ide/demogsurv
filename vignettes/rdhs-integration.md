@@ -1,5 +1,5 @@
 ---
-title: "Using `hhsurveydata` with `rdhs`"
+title: "Using `demogsurv` with `rdhs`"
 author: "Jeff Eaton, Bruno Masquelier, and OJ Watson"
 date: "2018-05-22"
 output:
@@ -12,7 +12,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette illustrates use of `hhsurveydata` and `rdhs` to calculate fertility and mortality indicators for lots of DHS surveys in sub-Saharan Africa, and compare estimates to those produced for the [DHS StatCompiler](https://www.statcompiler.com/en/). It is currently a hastily developed analysis script, though may be further developed in the future.
+This vignette illustrates use of `demogsurv` and `rdhs` to calculate fertility and mortality indicators for lots of DHS surveys in sub-Saharan Africa, and compare estimates to those produced for the [DHS StatCompiler](https://www.statcompiler.com/en/). It is currently a hastily developed analysis script, though may be further developed in the future.
 
 ## Install and load packages
 
@@ -20,20 +20,24 @@ This vignette illustrates use of `hhsurveydata` and `rdhs` to calculate fertilit
 ```r
 ## install.packages("devtools")
 ## devtools::load_all("OJWatson/rdhs")
-## devtools::load_all("mrc-ide/hhsurveydata")
+## devtools::load_all("mrc-ide/demogsurv")
 
 library(rdhs)
 ```
 
 ```
-## The DHS API took longer than 30 seconds to respond, or it returned an error.
-## As a result some of the functionality of rdhs may not work.
-## To check if the API is down please head to:
-## https://api.dhsprogram.com/rest/dhs/dataupdates
+## 
+## Attaching package: 'rdhs'
+```
+
+```
+## The following object is masked from 'package:demogsurv':
+## 
+##     read_zipdata
 ```
 
 ```r
-library(hhsurveydata)
+library(demogsurv)
 library(ggplot2)
 library(data.table)
 ```
@@ -129,7 +133,7 @@ br <- Map(data.frame,
 Note that `rdhs` provides better tools to extract variables and pool datasets which haven't been fully embraced here.
 
 
-## Use `hhsurveydata` to analyse demographic rate indicators
+## Use `demogsurv` to analyse demographic rate indicators
 
 ### Fertility
 
@@ -180,7 +184,7 @@ q3515 <- do.call(rbind, q3515)
 
 ### Child mortality
 
-`hhsurveydata` does not yet implement the exact child mortality calculation produced in DHS
+`demogsurv` does not yet implement the exact child mortality calculation produced in DHS
 reports and DHS StatCompiler (see [Rutstein and Rojas 2006](http://dhsprogram.com/pubs/pdf/DHSG1/Guide_to_DHS_Statistics_29Oct2012_DHSG1.pdf).
 This is planned for future implementation. 
 
@@ -413,7 +417,7 @@ ggplot(u5mr, aes(1000*nqx, Value, color=tips)) +
   geom_abline(slope=1, color="grey") +
   geom_point() +
   coord_fixed() +
-  xlab("hhsurveydata::calc_nqx()") +
+  xlab("demogsurv::calc_nqx()") +
   ylab("DHS StatCompiler") +
   ggtitle("5q0 comparison")
 ```

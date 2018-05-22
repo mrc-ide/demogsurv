@@ -1,13 +1,16 @@
-
-Package: hhsurveydata
-Title: Data processing tools for DHS and other household surveys
-Version: 0.1.0
+Package: demogsurv
+Title: Demographic analysis of DHS and other household surveys
+Version: 0.2.0
 Authors@R: c(person("Jeff", "Eaton", email = "jeffrey.eaton@imperial.ac.uk", role = c("aut", "cre")),
              person("Bruno", "Masquelier", email = "bruno.masquelier@uclouvain.be", role = "aut"))
-Description: This package includes tools for processing and analysing data from household
-    surveys. Initially developed for for processing and analysis of demographic and HIV
-    indicators from Demographic and Health Surveys (DHS) and Multiple Indicator Cluster
-    Surveys (MICS).
+Description: This package includes tools for calculating demographic indicators from household
+    survey data. Initially developed for for processing and analysis from Demographic and Health
+    Surveys (DHS) and Multiple Indicator Cluster Surveys (MICS). The package provides tools to
+    calculate standard child mortality, adult mortality, and fertility indicators stratified
+    arbitrarily by age group, calendar period, pre-survey time periods, birth cohorts and
+    other survey variables (e.g. residence, region, wealth status, education, etc.). Design-based
+    standard errors and sample correlations are available for all indicators via Taylor
+    linearisation or jackknife.
 Depends: R (>= 3.2.0),
 Imports:
     survival (>= 2.39),
