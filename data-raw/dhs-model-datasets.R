@@ -40,7 +40,7 @@ zzir62fl <- haven::as_factor(zzir62fl)
 
 
 ## Reduce the variables saved to facilitate faster package loading
-zzir <- zzir62fl[grep("caseid|^v0|^v1|^b|^mm", names(zzir62fl), value=TRUE)]
+zzir <- zzir62fl[grep("caseid|^v0|^v1|^v2|^b|^mm", names(zzir62fl), value=TRUE)]
 zzbr <- zzbr62fl[grep("caseid|^v0|^v1|^b", names(zzbr62fl), value=TRUE)]
 
-usethis::use_data(zzir, zzbr)
+usethis::use_data(zzir, zzbr, overwrite=TRUE)
