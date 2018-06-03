@@ -34,8 +34,8 @@
 #' u5mr
 #' 
 #' ## Retrieve sample covariance and correlation
-#' vcov(u5mr$nqx)  # sample covariance
-#' cov2cor(vcov(u5mr$nqx))  # sample correlation
+#' vcov(u5mr)  # sample covariance
+#' cov2cor(vcov(u5mr))  # sample correlation
 #' 
 #' ## 5q0 by sociodemographic characteristics
 #' calc_nqx(zzbr, by=~v102) # by urban/rural residence
@@ -46,6 +46,7 @@
 #' calc_nqx(zzbr, varmethod = "lin")  # unstratified design
 #' calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
 #' calc_nqx(zzbr, strata=NULL, varmethod = "jk1")  # unstratififed jackknife
+#' calc_nqx(zzbr, varmethod = "jkn")  # stratififed jackknife
 #' 
 #' ## Calculate various child mortality indicators (neonatal, infant, etc.)
 #' calc_nqx(zzbr, agegr=c(0, 1)/12)  # neonatal
@@ -97,8 +98,8 @@ calc_nqx <- function(data,
   ## All values of factor combinations that appear
   byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
                      names(aggr))
-  aggr$byf <- do.call("interaction", c(aggr[byvar], drop=TRUE))
-
+  aggr$byf <- interaction(aggr[byvar], drop=TRUE)
+  
   ## prediction for all factor levels that appear
   pred <- data.frame(aggr[c(byvar, "byf")])[!duplicated(aggr$byf),]
   pred <- pred[order(pred$byf), ]
@@ -123,49 +124,36 @@ calc_nqx <- function(data,
 
     lest <- drop(mx %*% mm)
     lv <- t(mm) %*% vcov(mx) %*% mm
-    est <- 1 - exp(-lest)
+    est <- 
     dF <- diag(exp(-lest), length(lest))
     v <- dF %*% lv %*% dF
+
+    estdf <- data.frame(est  = 1 - exp(-lest),
+                        se   = sqrt(diag(v)),
+                        ci_l = 1 - exp(-(lest - qnorm(0.975)*diag(lv))),
+                        ci_u = 1 - exp(-(lest + qnorm(0.975)*diag(lv))))
+    attr(estdf, "var") <- v
     
-  } else if(varmethod == "jk1") {
+  } else if(varmethod %in% c("jkn", "jk1")) {
 
     ## Convert to array with events and PYs for each cluster
     ## reshape2::acast is MUCH faster than stats::reshape
     events_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="event")
     pyears_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="pyears")
-    pyears_clust[is.na(pyears_clust)] <- 0
-    events_clust[is.na(events_clust)] <- 0
-  
-    pyears_all <- rowSums(pyears_clust)
-    events_all <- rowSums(events_clust)
-    
-    pyears_jack <- pyears_all - pyears_clust
-    events_jack <- events_all - events_clust
 
-    ## array of rates with single cluster removed
-    mx_jack <- events_jack / pyears_jack
-    nc <- ncol(mx_jack)
-    
-    lest <- drop((events_all / pyears_all) %*% mm)
-    lest_jack <- t(mm) %*% mx_jack
-    lv <- (nc-1)/nc * (lest_jack - lest) %*% t((lest_jack - lest))
-    
-    est <- 1 - exp(-lest)
-    est_jack <- 1 - exp(-t(mm) %*% mx_jack)
-    v <- (nc-1)/nc * (est_jack - est) %*% t((est_jack - est))
+    if(varmethod == "jkn"){
+      aggr$strataid <- as.integer(interaction(aggr[all.vars(strata)], drop=TRUE))
+      strataid <- drop(reshape2::acast(unique(aggr[c(all.vars(clusters), "strataid")]),
+                                       update(clusters,  1 ~ .), value.var="strataid"))
+    } else
+      strataid <- NULL
+
+    estdf <- jackknife(events_clust, pyears_clust, strataid, t(dfmm$mm), function(x) 1 - exp(-x))
   } else
     stop(paste0("varmethod = \"", varmethod, "\" is not recognized."))
 
-  nqx <- est
-  attr(nqx, "var") <- v
-  attr(nqx, "statistic") <- "nqx"
-  class(nqx) <- "svystat"
-
-  val <- dfmm$df
-  val$nqx <- nqx
-  val$se <- sqrt(diag(v))
-  val$ci_l <- 1 - exp(-lest + qnorm(0.975)*sqrt(diag(lv)))
-  val$ci_u <- 1 - exp(-lest - qnorm(0.975)*sqrt(diag(lv)))
+  val <- data.frame(dfmm$df, estdf)
+  attr(val, "var") <- vcov(estdf)
 
   rownames(val) <- NULL
   

@@ -61,8 +61,8 @@ u5mr <- calc_nqx(zzbr)
 u5mr
 
 ## Retrieve sample covariance and correlation
-vcov(u5mr$nqx)  # sample covariance
-cov2cor(vcov(u5mr$nqx))  # sample correlation
+vcov(u5mr)  # sample covariance
+cov2cor(vcov(u5mr))  # sample correlation
 
 ## 5q0 by sociodemographic characteristics
 calc_nqx(zzbr, by=~v102) # by urban/rural residence
@@ -73,6 +73,7 @@ calc_nqx(zzbr, by=~v101+v102, tips=c(0, 10)) # by region and residence
 calc_nqx(zzbr, varmethod = "lin")  # unstratified design
 calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
 calc_nqx(zzbr, strata=NULL, varmethod = "jk1")  # unstratififed jackknife
+calc_nqx(zzbr, varmethod = "jkn")  # stratififed jackknife
 
 ## Calculate various child mortality indicators (neonatal, infant, etc.)
 calc_nqx(zzbr, agegr=c(0, 1)/12)  # neonatal
