@@ -9,11 +9,12 @@
 #' @param tips break points for TIme Preceding Survey.
 #' @param bhdata A birth history dataset (`data.frame`) with child dates of birth
 #'   in long format.
+#' @param varmethod Method for variance calculation. Currently "lin" for Taylor
+#'   linearisation or "jk1" for unstratified jackknife, or "jkn", for stratified
+#'   jackknife.
 #'
-#' @return A `data.frame` consisting of estimates and standard errors. The column
-#' consisting of point estimates (`asfr` or `tfr`) is an object of class
-#' [survey::svystat], and thus the full covariance matrix of the estimates
-#' can be retreived by `vcov(val$asfr)`.
+#' @return A `data.frame` consisting of estimates and standard errors. The full
+#' covariance matrix of the estimates can be retreived by `vcov(val)`.
 #'
 #' @details
 #' Events and person-years are calculated using normalized weights. Unweighted
@@ -86,12 +87,14 @@ calc_asfr <- function(data,
                       dob="v011",
                       intv = "v008",
                       weight= "v005",
+                      varmethod = "lin",
                       bvars = grep("^b3\\_[0-9]*", names(data), value=TRUE),
                       birth_displace = 1e-6,
                       origin=1900,
                       scale=12,
                       bhdata = NULL,
-                      counts=FALSE){
+                      counts=FALSE,
+                      clustcounts = FALSE){
   
   data$id <- data[[id]]
   data$dob <- data[[dob]]
@@ -127,44 +130,79 @@ calc_asfr <- function(data,
   epis <- tmerge(epis, births, id=`(id)`, birth = event(bcmc))
   
   aggr <- demog_pyears(f, epis, period=period, agegr=agegr, cohort=cohort, tips=tips,
-                       event="birth", weights="(weights)", origin=origin, scale=scale)
+                       event="birth", weights="(weights)", origin=origin, scale=scale)$data
   
-  des <- survey::svydesign(ids=clusters, strata=strata, data=aggr$data, weights=~1)
-  class(des) <- c("svypyears", class(des))
-
   ## construct interaction of all factor levels that appear
   byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
-                     names(des$variables))
-  byf <- do.call("interaction", c(des$variables[byvar], drop=TRUE))
-  des <- update(des, byf = byf)
-
-  ## fit model
-  ## fit model
-  f <- if(length(levels(byf)) == 1)
-         event ~ offset(log(pyears))
-       else
-         event ~ -1 + byf + offset(log(pyears))
-  
-  mod <- survey::svyglm(f, des, family=quasipoisson)
+                     names(aggr))
+  aggr$byf <- interaction(aggr[byvar], drop=TRUE)
   
   ## prediction for all factor levels that appear
-  val <- data.frame(des$variables[c(byvar, "byf")])[!duplicated(byf),]
-  val <- val[order(val$byf), ]
-  val$pyears <- 1
-
+  pred <- data.frame(aggr[c(byvar, "byf")])[!duplicated(aggr$byf),]
+  pred <- pred[order(pred$byf), ]
+  
   if(counts){
-    mc <- model.matrix(~-1+byf, aggr$data)
-    clong <- aggr$data[c("event", "pyears")]
-    val[c("births", "pys")] <- t(mc) %*% as.matrix(clong)
+    mc <- model.matrix(~-1+byf, aggr)
+    clong <- aggr[c("event", "pyears")]
+    pred[c("births", "pys")] <- t(mc) %*% as.matrix(clong)
   }
-  
-  val$asfr <- predict(mod, val, type="response", vcov=TRUE)
-  val$se_asfr <- sqrt(diag(vcov(val$asfr)))
-  val[c("byf", "pyears")] <- NULL
 
-  rownames(val) <- NULL
+  if(varmethod == "lin") {
+
+    des <- survey::svydesign(ids=clusters, strata=strata, data=aggr, weights=~1)
+    class(des) <- c("svypyears", class(des))
+    
+    ## fit model
+    f <- if(length(levels(aggr$byf)) == 1)
+           event ~ offset(log(pyears))
+         else
+           event ~ -1 + byf + offset(log(pyears))
+    
+    mod <- survey::svyglm(f, des, family=quasipoisson)
+    
+    ## prediction for all factor levels that appear
+    pred$pyears <- 1
   
-  return(val)
+    asfr <- predict(mod, pred, type="response", vcov=TRUE)
+    v <- vcov(asfr)
+    dimnames(v) <- list(pred$byf, pred$byf)
+
+    pred$asfr <- as.numeric(asfr)
+    pred$se_asfr <- sqrt(diag(v))
+    pred[c("byf", "pyears")] <- NULL
+    attr(pred, "var") <- v
+  } else if(varmethod %in% c("jkn", "jk1")) {
+    
+    ## Convert to array with events and PYs for each cluster
+    ## reshape2::acast is MUCH faster than stats::reshape
+    events_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="event")
+    pyears_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="pyears")
+    
+    if(varmethod == "jkn"){
+      aggr$strataid <- as.integer(interaction(aggr[all.vars(strata)], drop=TRUE))
+      strataid <- drop(reshape2::acast(unique(aggr[c(all.vars(clusters), "strataid")]),
+                                       update(clusters,  1 ~ .), value.var="strataid"))
+    } else
+      strataid <- NULL
+    
+    estdf <- jackknife(events_clust, pyears_clust, strataid)
+
+    pred$asfr <- estdf$est
+    pred$se_asfr <- estdf$se
+    attr(pred, "var") <- vcov(estdf)
+    pred$byf <- NULL
+    if(clustcounts){
+      attr(pred, "events_clust") <- events_clust
+      attr(pred, "pyears_clust") <- pyears_clust
+      attr(pred, "strataid") <- strataid
+    }
+  } else
+    stop(paste0("varmethod = \"", varmethod, "\" is not recognized."))
+
+
+  rownames(pred) <- NULL
+  
+  return(pred)
 }
 
 #' @export
@@ -180,6 +218,7 @@ calc_tfr <- function(data,
                      dob = "v011",
                      intv = "v008",
                      weight = "v005",
+                     varmethod = "lin",
                      bvars = grep("^b3\\_[0-9]*", names(data), value=TRUE),
                      birth_displace = 1e-6,
                      origin = 1900,
@@ -190,21 +229,35 @@ calc_tfr <- function(data,
   g[[1]] <- quote(calc_asfr)
   g$data <- data
   g$bhdata <- bhdata
+  if(varmethod %in% c("jk1", "jkn"))
+    g$clustcounts <- TRUE
   asfr <- eval(g, envir=parent.frame())
 
   mf <- asfr[setdiff(names(asfr), c("asfr", "se_asfr"))]
   dfmm <- .mm_aggr(mf, agegr)
-  mm <- dfmm$mm
-
-  mu <- drop(asfr$asfr %*% mm)
-  v <- t(mm) %*% vcov(asfr$asfr) %*% mm
-  class(mu) <- "svystat"
-  attr(mu, "var") <-  v
-  attr(mu, "statistic") <- "tfr"
-
+      
   val <- dfmm$df
-  val$tfr <- mu
-  val$se_tfr <- sqrt(diag(v))
+
+  if(varmethod == "lin") {
+    mm <- dfmm$mm
+    
+    mu <- drop(asfr$asfr %*% mm)
+    v <- t(mm) %*% attr(asfr, "var") %*% mm
+
+    val$tfr <- mu
+    val$se_tfr <- sqrt(diag(v))
+    attr(val, "var") <- v
+  } else if(varmethod %in% c("jkn", "jk1")) {
+    estdf <- jackknife(attr(asfr, "events_clust"),
+                       attr(asfr, "pyears_clust"),
+                       attr(asfr, "strataid"),
+                       t(dfmm$mm))
+
+    val$tfr <- estdf$est
+    val$se_tfr <- estdf$se
+    attr(val, "var") <- vcov(estdf)
+  } else
+    stop(paste0("varmethod = \"", varmethod, "\" is not recognized."))
 
   rownames(val) <- NULL
   

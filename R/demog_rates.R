@@ -48,17 +48,17 @@ vcov.default <- function(x) attr(x, "var")
 #' latter corresponds to the unstratified jackknife covariance reported in DHS survey
 #' reports. The calculations are equivalent for \code{strataid = rep(1, ncol(x))}.
 #'
-#' @param x \code{v \times k} matrix specifying weighted numerator for each of
+#' @param x \code{v x k} matrix specifying weighted numerator for each of
 #'   \code{k} PSUs (across columns)
-#' @param n \code{v \times k} matrix specifying weighted denominator for
+#' @param n \code{v x k} matrix specifying weighted denominator for
 #'   each PSU (across columns)
 #' @param strataid integer or factor vector consisting of id for each strata. Optional,
 #'   length should be number of columns of x if supplied.
-#' @param L \code{q \times v} matrix defining a linear transform 
+#' @param L \code{q x v} matrix defining a linear transform 
 #' @param fn function to transorm ratio x/n.
 #'
 #' @return a data frame with \code{q} rows consisting of estimates calculated as
-#'   \code{fn(L * rowSums(x) / rowSums(n))}, standard error, and 95\% CIs calculated
+#'   \code{fn(L * rowSums(x) / rowSums(n) )}, standard error, and 95\% CIs calculated
 #'   on the untransformed scale and then transformed.  The covariance matrix is
 #'   returned as the \code{"var"} attribute and can be accessed by \code{vcov(val)}.
 #'
@@ -67,7 +67,7 @@ vcov.default <- function(x) attr(x, "var")
 #'   PLoS Med 9(8): e1001289. \url{https://doi.org/10.1371/journal.pmed.1001289}.
 #'
 #' @export
-jackknife <- function(x, n, strataid = NULL, L = diag(ncol(x)), fn = I){
+jackknife <- function(x, n, strataid = NULL, L = diag(nrow(x)), fn = function(x) x){
 
   x[is.na(x)] <- 0
   n[is.na(n)] <- 0

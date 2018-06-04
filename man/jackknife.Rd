@@ -4,25 +4,25 @@
 \alias{jackknife}
 \title{Jackknife covariance calculation}
 \usage{
-jackknife(x, n, strataid = NULL, L = diag(ncol(x)), fn = I)
+jackknife(x, n, strataid = NULL, L = diag(nrow(x)), fn = function(x) x)
 }
 \arguments{
-\item{x}{\code{v \times k} matrix specifying weighted numerator for each of
+\item{x}{\code{v x k} matrix specifying weighted numerator for each of
 \code{k} PSUs (across columns)}
 
-\item{n}{\code{v \times k} matrix specifying weighted denominator for
+\item{n}{\code{v x k} matrix specifying weighted denominator for
 each PSU (across columns)}
 
 \item{strataid}{integer or factor vector consisting of id for each strata. Optional,
 length should be number of columns of x if supplied.}
 
-\item{L}{\code{q \times v} matrix defining a linear transform}
+\item{L}{\code{q x v} matrix defining a linear transform}
 
 \item{fn}{function to transorm ratio x/n.}
 }
 \value{
 a data frame with \code{q} rows consisting of estimates calculated as
-  \code{fn(L * rowSums(x) / rowSums(n))}, standard error, and 95\% CIs calculated
+  \code{fn(L * rowSums(x) / rowSums(n) )}, standard error, and 95\% CIs calculated
   on the untransformed scale and then transformed.  The covariance matrix is
   returned as the \code{"var"} attribute and can be accessed by \code{vcov(val)}.
 }

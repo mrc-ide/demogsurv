@@ -36,7 +36,8 @@ calc_nqx(data, by = NULL, agegr = c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12,
 \item{intv}{Variable name for interview date (character string).}
 
 \item{varmethod}{Method for variance calculation. Currently "lin" for Taylor
-linearisation or "jk1" for (unstratified) jackknife.}
+linearisation or "jk1" for unstratified jackknife, or "jkn", for stratified
+jackknife.}
 
 \item{origin}{Origin year for date arguments. 1900 for CMC inputs.}
 

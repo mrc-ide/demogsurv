@@ -8,9 +8,9 @@
 calc_asfr(data, by = NULL, agegr = 3:10 * 5, period = NULL,
   cohort = NULL, tips = c(0, 3), clusters = ~v021, strata = ~v024 +
   v025, id = "caseid", dob = "v011", intv = "v008", weight = "v005",
-  bvars = grep("^b3\\\\_[0-9]*", names(data), value = TRUE),
-  birth_displace = 1e-06, origin = 1900, scale = 12, bhdata = NULL,
-  counts = FALSE)
+  varmethod = "lin", bvars = grep("^b3\\\\_[0-9]*", names(data), value =
+  TRUE), birth_displace = 1e-06, origin = 1900, scale = 12,
+  bhdata = NULL, counts = FALSE, clustcounts = FALSE)
 }
 \arguments{
 \item{agegr}{break points for age groups in completed years of age.}
@@ -19,6 +19,10 @@ calc_asfr(data, by = NULL, agegr = 3:10 * 5, period = NULL,
 
 \item{tips}{break points for TIme Preceding Survey.}
 
+\item{varmethod}{Method for variance calculation. Currently "lin" for Taylor
+linearisation or "jk1" for unstratified jackknife, or "jkn", for stratified
+jackknife.}
+
 \item{bvars}{Names of variables giving child dates of birth. If \code{bhdata} is
 provided, then length(bvars) must equal 1.}
 
@@ -26,10 +30,8 @@ provided, then length(bvars) must equal 1.}
 in long format.}
 }
 \value{
-A \code{data.frame} consisting of estimates and standard errors. The column
-consisting of point estimates (\code{asfr} or \code{tfr}) is an object of class
-\link[survey:svystat]{survey::svystat}, and thus the full covariance matrix of the estimates
-can be retreived by \code{vcov(val$asfr)}.
+A \code{data.frame} consisting of estimates and standard errors. The full
+covariance matrix of the estimates can be retreived by \code{vcov(val)}.
 }
 \description{
 Calculate age-specific fertility rate (ASFR) and total fertility rate (TFR)

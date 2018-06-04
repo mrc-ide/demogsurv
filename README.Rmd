@@ -83,20 +83,19 @@ calc_nqx(zzbr, by=~v190, tips=c(0, 10)) # by wealth quintile, 0-9 years before
 calc_nqx(zzbr, by=~v101+v102, tips=c(0, 10)) # by region and residence
 ```
 
-The column `nqx` is stored as class `svystat` from the  `survey` package. The 
-sample covariance or correlation matrix of the estimates can be obtained using 
-`vcov()`.
+The sample covariance or correlation matrix of the estimates can be obtained via `vcov()`.
 
 ```{r sample covariance}
-vcov(u5mr$nqx)  # sample covariance
-cov2cor(vcov(u5mr$nqx))  # sample correlation
+vcov(u5mr)  # sample covariance
+cov2cor(vcov(u5mr))  # sample correlation
 ```
 
-Standard error estimation can be done via Taylor linearisation or unstratified 
-jackknife. Results are very similar if unstratified design-based estimates are used.
+Standard error estimation can be done via Taylor linearisation, unstratified 
+jackknife, or stratified jackknife. Results are very similar.
 
 ```{r varmethod}
 calc_nqx(zzbr, varmethod = "lin") # default is linearization
+calc_nqx(zzbr, varmethod = "jkn") # stratified jackknife (varmethod = "jkn")
 
 ## Compare unstratified standard error estimates for linearization and jackknife
 calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
@@ -163,6 +162,7 @@ calc_tfr(zzir)
 ## ASFR and TFR by urban/rural residence
 reshape2::dcast(calc_asfr(zzir, ~v025, tips=c(0, 3)), agegr ~ v025, value.var = "asfr")
 calc_tfr(zzir, by=~v025)
+calc_tfr(zzir, by=~v025, varmethod="jkn")
 ```
 
 Replicate fertility estimates stratified by various sociodemographic characteristics.
@@ -189,10 +189,8 @@ reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
 
 ## To Do
 
-* Refactor jackknife code and implement for ASFR and TFR calculation.
 * Refactor for single `calc_rate()` function used by mortality and fertility calculations.
 * Add indirect indicators
-* Implement stratified jackknife.
 * Implement DHS child mortality calculation (Rutstein and Rojas 2006).
 * Handle married women only datasets.
 * Calculate multiple aggregations of nqx and sample correlation of these (e.g. NN, PN, 1q0, 4q1, 5q0).

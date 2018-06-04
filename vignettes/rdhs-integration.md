@@ -1,7 +1,7 @@
 ---
 title: "Using `demogsurv` with `rdhs`"
 author: "Jeff Eaton, Bruno Masquelier, and OJ Watson"
-date: "2018-05-22"
+date: "2018-06-04"
 output:
   html_document: 
     smart: false
@@ -23,42 +23,9 @@ This vignette illustrates use of `demogsurv` and `rdhs` to calculate fertility a
 ## devtools::load_all("mrc-ide/demogsurv")
 
 library(rdhs)
-```
-
-```
-## 
-## Attaching package: 'rdhs'
-```
-
-```
-## The following object is masked from 'package:demogsurv':
-## 
-##     read_zipdata
-```
-
-```r
 library(demogsurv)
 library(ggplot2)
 library(data.table)
-```
-
-```
-## data.table 1.10.4.3
-```
-
-```
-##   The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
-```
-
-```
-##   Documentation: ?data.table, example(data.table) and browseVignettes("data.table")
-```
-
-```
-##   Release notes, videos and slides: http://r-datatable.com
-```
-
-```r
 library(haven)
 
 ## a little nugget to return API requests as data.table rather than data.frame.
@@ -320,7 +287,7 @@ BU2016DHS   Burundi        2016         15-19   0-2     0.058    0.0030      58
 
 Table: 35q15
 
-SurveyId    mm1      CountryName    SurveyYear   tips      nqx      se    ci_l    ci_u   Value
+SurveyId    mm1      CountryName    SurveyYear   tips      est      se    ci_l    ci_u   Value
 ----------  -------  -------------  -----------  -----  ------  ------  ------  ------  ------
 AO2015DHS   female   Angola         2015         0-6     0.110   0.010   0.090   0.130     110
 AO2015DHS   male     Angola         2015         0-6     0.182   0.013   0.157   0.207     182
@@ -333,7 +300,7 @@ BJ2006DHS   male     Benin          2006         0-6     0.161   0.008   0.146  
 
 Table: 5q0
 
-     SurveyId    tips    CountryName    SurveyYear      nqx      se    ci_l    ci_u   Value
+     SurveyId    tips    CountryName    SurveyYear      est      se    ci_l    ci_u   Value
 ---  ----------  ------  -------------  -----------  ------  ------  ------  ------  ------
 1    AO2015DHS   0-4     Angola         2015          0.066   0.004   0.058   0.073      68
 3    AO2015DHS   5-9     Angola         2015          0.093   0.005   0.082   0.103      95
@@ -373,7 +340,7 @@ with(asfr15to19, table(round(1000*asfr) == Value))
 
 ```r
 ## 35q15 matches exactly for >80%
-with(q3515, table(round(1000*nqx) == Value))
+with(q3515, table(round(1000*est) == Value))
 ```
 
 ```
@@ -383,7 +350,7 @@ with(q3515, table(round(1000*nqx) == Value))
 ```
 
 ```r
-with(q3515, table(round(1000*nqx) - Value))
+with(q3515, table(round(1000*est) - Value))
 ```
 
 ```
@@ -393,11 +360,11 @@ with(q3515, table(round(1000*nqx) - Value))
 ```
 
 ```r
-subset(q3515, abs((round(1000*nqx) - Value)) > 1)
+subset(q3515, abs((round(1000*est) - Value)) > 1)
 ```
 
 ```
-##     SurveyId    mm1 CountryName SurveyYear tips       nqx         se
+##     SurveyId    mm1 CountryName SurveyYear tips       est         se
 ## 57 MZ2011DHS female  Mozambique       2011  0-6 0.1914953 0.01021433
 ## 58 MZ2011DHS   male  Mozambique       2011  0-6 0.2383925 0.01186020
 ## 97 UG2011DHS female      Uganda       2011  0-6 0.2062956 0.01222652
@@ -413,7 +380,7 @@ subset(q3515, abs((round(1000*nqx) - Value)) > 1)
 
 ```r
 u5mr$tips <- factor(u5mr$tips, c("0-4", "5-9", "10-14"))
-ggplot(u5mr, aes(1000*nqx, Value, color=tips)) +
+ggplot(u5mr, aes(1000*est, Value, color=tips)) +
   geom_abline(slope=1, color="grey") +
   geom_point() +
   coord_fixed() +

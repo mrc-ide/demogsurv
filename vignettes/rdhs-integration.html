@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jeff Eaton, Bruno Masquelier, and OJ Watson" />
 
-<meta name="date" content="2018-05-22" />
+<meta name="date" content="2018-06-04" />
 
 <title>Using demogsurv with rdhs</title>
 
@@ -306,7 +306,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Using <code>demogsurv</code> with <code>rdhs</code></h1>
 <h4 class="author"><em>Jeff Eaton, Bruno Masquelier, and OJ Watson</em></h4>
-<h4 class="date"><em>2018-05-22</em></h4>
+<h4 class="date"><em>2018-06-04</em></h4>
 
 </div>
 
@@ -318,20 +318,11 @@ $(document).ready(function () {
 ## devtools::load_all(&quot;OJWatson/rdhs&quot;)
 ## devtools::load_all(&quot;mrc-ide/demogsurv&quot;)
 
-library(rdhs)</code></pre>
-<pre><code>## 
-## Attaching package: 'rdhs'</code></pre>
-<pre><code>## The following object is masked from 'package:demogsurv':
-## 
-##     read_zipdata</code></pre>
-<pre class="r"><code>library(demogsurv)
+library(rdhs)
+library(demogsurv)
 library(ggplot2)
-library(data.table)</code></pre>
-<pre><code>## data.table 1.10.4.3</code></pre>
-<pre><code>##   The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way</code></pre>
-<pre><code>##   Documentation: ?data.table, example(data.table) and browseVignettes(&quot;data.table&quot;)</code></pre>
-<pre><code>##   Release notes, videos and slides: http://r-datatable.com</code></pre>
-<pre class="r"><code>library(haven)
+library(data.table)
+library(haven)
 
 ## a little nugget to return API requests as data.table rather than data.frame.
 Sys.setenv(rdhs_DATA_TABLE = &quot;TRUE&quot;)</code></pre>
@@ -627,7 +618,7 @@ u5mr &lt;- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])</code></pre>
 <th style="text-align: left;">CountryName</th>
 <th style="text-align: left;">SurveyYear</th>
 <th style="text-align: left;">tips</th>
-<th style="text-align: right;">nqx</th>
+<th style="text-align: right;">est</th>
 <th style="text-align: right;">se</th>
 <th style="text-align: right;">ci_l</th>
 <th style="text-align: right;">ci_u</th>
@@ -718,7 +709,7 @@ u5mr &lt;- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])</code></pre>
 <th style="text-align: left;">tips</th>
 <th style="text-align: left;">CountryName</th>
 <th style="text-align: left;">SurveyYear</th>
-<th style="text-align: right;">nqx</th>
+<th style="text-align: right;">est</th>
 <th style="text-align: right;">se</th>
 <th style="text-align: right;">ci_l</th>
 <th style="text-align: right;">ci_u</th>
@@ -815,16 +806,16 @@ with(asfr15to19, table(round(1000*asfr) == Value))</code></pre>
 ## TRUE 
 ##   66</code></pre>
 <pre class="r"><code>## 35q15 matches exactly for &gt;80%
-with(q3515, table(round(1000*nqx) == Value))</code></pre>
+with(q3515, table(round(1000*est) == Value))</code></pre>
 <pre><code>## 
 ## FALSE  TRUE 
 ##    23    87</code></pre>
-<pre class="r"><code>with(q3515, table(round(1000*nqx) - Value))</code></pre>
+<pre class="r"><code>with(q3515, table(round(1000*est) - Value))</code></pre>
 <pre><code>## 
 ## -8 -3 -1  0  1  5 
 ##  1  1 16 87  4  1</code></pre>
-<pre class="r"><code>subset(q3515, abs((round(1000*nqx) - Value)) &gt; 1)</code></pre>
-<pre><code>##     SurveyId    mm1 CountryName SurveyYear tips       nqx         se
+<pre class="r"><code>subset(q3515, abs((round(1000*est) - Value)) &gt; 1)</code></pre>
+<pre><code>##     SurveyId    mm1 CountryName SurveyYear tips       est         se
 ## 57 MZ2011DHS female  Mozambique       2011  0-6 0.1914953 0.01021433
 ## 58 MZ2011DHS   male  Mozambique       2011  0-6 0.2383925 0.01186020
 ## 97 UG2011DHS female      Uganda       2011  0-6 0.2062956 0.01222652
@@ -836,7 +827,7 @@ with(q3515, table(round(1000*nqx) == Value))</code></pre>
 <section id="compare-5q0-estimates" class="level2">
 <h2>Compare <sub>5</sub>q<sub>0</sub> estimates</h2>
 <pre class="r"><code>u5mr$tips &lt;- factor(u5mr$tips, c(&quot;0-4&quot;, &quot;5-9&quot;, &quot;10-14&quot;))
-ggplot(u5mr, aes(1000*nqx, Value, color=tips)) +
+ggplot(u5mr, aes(1000*est, Value, color=tips)) +
   geom_abline(slope=1, color=&quot;grey&quot;) +
   geom_point() +
   coord_fixed() +

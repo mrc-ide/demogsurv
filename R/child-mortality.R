@@ -17,7 +17,8 @@
 #' @param death Variable name for event variable (character string).
 #' @param intv Variable name for interview date (character string).
 #' @param varmethod Method for variance calculation. Currently "lin" for Taylor
-#'   linearisation or "jk1" for (unstratified) jackknife.
+#'   linearisation or "jk1" for unstratified jackknife, or "jkn", for stratified
+#'   jackknife.
 #' @param origin Origin year for date arguments. 1900 for CMC inputs.
 #' @param scale Scale for dates inputs to calendar years. 12 for CMC inputs.
 #'
