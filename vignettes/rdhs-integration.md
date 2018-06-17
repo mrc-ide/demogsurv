@@ -1,13 +1,13 @@
 ---
 title: "Using `demogsurv` with `rdhs`"
 author: "Jeff Eaton, Bruno Masquelier, and OJ Watson"
-date: "2018-06-04"
+date: "2018-06-18"
 output:
   html_document: 
     smart: false
     keep_md: true
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Using demogsurv with rdhs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,8 +19,8 @@ This vignette illustrates use of `demogsurv` and `rdhs` to calculate fertility a
 
 ```r
 ## install.packages("devtools")
-## devtools::load_all("OJWatson/rdhs")
-## devtools::load_all("mrc-ide/demogsurv")
+## devtools::install_github("OJWatson/rdhs")
+## devtools::install_github("mrc-ide/demogsurv")
 
 library(rdhs)
 library(demogsurv)
