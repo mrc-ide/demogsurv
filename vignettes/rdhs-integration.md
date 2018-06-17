@@ -389,4 +389,4 @@ ggplot(u5mr, aes(1000*est, Value, color=tips)) +
   ggtitle("5q0 comparison")
 ```
 
-<img src="rdhs-integration_files/figure-html/5q0 compare-1.png" style="display: block; margin: auto;" />
+<img src="rdhs-integration_files/figure-html/5q0_compare-1.png" style="display: block; margin: auto;" />

@@ -116,7 +116,7 @@ u5mr <- subset(u5mr, year <= as.integer(as.character(SurveyYear)))
 
 Logit transform estimate and variance. *Should we use c-log-log transform instead?*
 
-```{r logit transform, fig.show='hold', fig.height=3.8, fig.width=3.3}
+```{r logit_transform, fig.show='hold', fig.height=3.8, fig.width=3.3}
 u5mr$lest <- qlogis(u5mr$est)
 u5mr$l_se <- u5mr$se / (u5mr$est * (1 - u5mr$est))
 
@@ -202,7 +202,7 @@ Comparison of the `loess` and `gam` smoothing suggest they are relatively simila
 Other GAM specifications could be explored, but probably would not have a great
 deal of affect in this example.
 
-```{r smooth compare, fig.show='hold', fig.height=3.8, fig.width=3.3}
+```{r smooth_compare, fig.show='hold', fig.height=3.8, fig.width=3.3}
 smpred <- rbind(data.frame(model = "loess", sm1pred[c("year", "fit", "ci_l", "ci_u")]),
                 data.frame(model = "gam",   sm2pred[c("year", "fit", "ci_l", "ci_u")]))
 

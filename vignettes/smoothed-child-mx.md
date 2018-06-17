@@ -152,7 +152,7 @@ ggplot(u5mr, aes(year, lest,
   theme(legend.position="bottom")
 ```
 
-![](smoothed-child-mx_files/figure-html/logit transform-1.png)![](smoothed-child-mx_files/figure-html/logit transform-2.png)
+![](smoothed-child-mx_files/figure-html/logit_transform-1.png)![](smoothed-child-mx_files/figure-html/logit_transform-2.png)
 
 Smooth the logit-transformed ~5~q~0~ estimates using loess smoothing with
 weighted least squares. Weights are taken to be proportional to the inverse
@@ -248,7 +248,7 @@ ggplot(smpred, aes(year, plogis(fit), ymin=plogis(ci_l), ymax=plogis(ci_u),
       
 ```
 
-![](smoothed-child-mx_files/figure-html/smooth compare-1.png)![](smoothed-child-mx_files/figure-html/smooth compare-2.png)
+![](smoothed-child-mx_files/figure-html/smooth_compare-1.png)![](smoothed-child-mx_files/figure-html/smooth_compare-2.png)
 
 
 ##### Strengths

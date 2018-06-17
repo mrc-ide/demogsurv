@@ -248,7 +248,7 @@ subset(q3515, abs((round(1000*est) - Value)) > 1)
 
 ## Compare ~5~q~0~ estimates
 
-```{r 5q0 compare, fig.height=3, fig.width=4.5, fig.align="center"}
+```{r 5q0_compare, fig.height=3, fig.width=4.5, fig.align="center"}
 u5mr$tips <- factor(u5mr$tips, c("0-4", "5-9", "10-14"))
 ggplot(u5mr, aes(1000*est, Value, color=tips)) +
   geom_abline(slope=1, color="grey") +
