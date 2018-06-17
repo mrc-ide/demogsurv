@@ -131,8 +131,8 @@ calc_nqx <- function(data,
 
     estdf <- data.frame(est  = 1 - exp(-lest),
                         se   = sqrt(diag(v)),
-                        ci_l = 1 - exp(-(lest - qnorm(0.975)*diag(lv))),
-                        ci_u = 1 - exp(-(lest + qnorm(0.975)*diag(lv))))
+                        ci_l = 1 - exp(-(lest - qnorm(0.975)*sqrt(diag(lv)))),
+                        ci_u = 1 - exp(-(lest + qnorm(0.975)*sqrt(diag(lv)))))
     attr(estdf, "var") <- v
     
   } else if(varmethod %in% c("jkn", "jk1")) {
