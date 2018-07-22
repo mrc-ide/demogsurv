@@ -2,6 +2,7 @@
 
 export(calc_asfr)
 export(calc_nqx)
+export(calc_nqx_indirect)
 export(calc_tfr)
 export(demog_pyears)
 export(jackknife)
