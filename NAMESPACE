@@ -2,8 +2,8 @@
 
 export(calc_asfr)
 export(calc_nqx)
-export(calc_nqx_indirect)
 export(calc_tfr)
+export(calc_u5mr_indirect)
 export(demog_pyears)
 export(jackknife)
 export(reshape_sib_data)
