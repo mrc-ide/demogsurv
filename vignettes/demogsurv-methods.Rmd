@@ -1,0 +1,154 @@
+---
+title: "Demographic indicator calcultions using `demogsurv`"
+author: "Jeff Eaton and Bruno Masquelier"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    smart: false
+    keep_md: true
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette describes the methods implemented by `demogsurv` for calculating demographic indicators.
+
+## Setup
+
+Load the `demogsurv` package.
+
+```{r}
+## devtools::install_github("mrc-ide/demogsurv")
+library(demogsurv)
+library(survival)
+library(survey)
+```
+
+[DHS model datasets](https://dhsprogram.com/data/download-model-datasets.cfm) are included as example datsets in the package (see `?zzir`). Load the example datasets:
+
+```{r load-datasets}
+data(zzir) # Individual recode
+data(zzbr) # Birth's recode
+```
+
+# Child mortality (~5~q~0~)
+
+The package implemets a generic function `calc_nqx()` for calculating the 
+probability of dying between ages $x$ and $x+n$. For calculation of ~5~q~0~, 
+`calc_nqx()` proceeds by:
+
+1. Calculating the numbers deaths and person-years observed within the age ranges
+   0, 1-2, 3-5, 6-11, 12-23, 24-35, 36-47, and 48-60 months.
+1. Calculating the mortality rate within each age group.
+1. Aggregate mortality rates to cumulative mortality hazard over age 0 to 4 years.
+1. Convert cumulative hazard to probability of dying.
+
+The calculation uses the same age group stratification as the standard DHS indicators
+reported for infant and child mortality. But the calculation differs in that it 
+calculates a piecewise constant mortaity hazard within each of these age groups
+and converts the cumulative hazard to probability of dying, whereas the DHS indicator
+calculates the probability of dying within each age group as the ratio of the number 
+of deaths divided by the number surviving to the start of the age group.
+calculates the product overall ages (see [Rutstein and Rojas 2006](http://dhsprogram.com/pubs/pdf/DHSG1/Guide_to_DHS_Statistics_29Oct2012_DHSG1.pdf)).
+
+## Define survival episodes for each child born
+
+The calculation uses the _Birth's recode_ dataset (`zzbr`), which is formatted as 
+one row per live born child reported in the full birth history. The first step is 
+to define survival episodes for each child.
+
+Define a binary variable indicating whether a death occurred or the episode is 
+censored.
+```{r event_var}
+zzbr$death <- zzbr$b5 == "no"  # b5: child still alive (1 = "yes", 2 = "no")
+```
+
+Variable `b7` reports the child age at death in completed months. The date of
+death is calculated as the date of birth plus the age at death plus 0.5 months,
+such that on average one half month of person-time is contributed in the month
+of death.
+```{r dod}
+zzbr$dod <- zzbr$b3 + zzbr$b7 + 0.5
+```
+
+Survivor episodes start at the child date of birth (variable `b3`) and ends at 
+either the child date of death or are right  censored at the date of interview 
+(`v008`).
+```{r censor}
+zzbr$tstop <- ifelse(zzbr$death, zzbr$dod, zzbr$v008)
+```
+
+## Aggregate weighted numbers of deaths and person years by age group
+
+The function `demog_pyears()` is a wrapper for the function `survival::pyears()` to 
+calculate numbers of events (deaths) and person years stratfied by age group (`agegr`), 
+calendar period (`period`), time preceding the survey (`tips`), or birth cohort (`cohort`)
+from survival episode data. We use `demog_pyears()` to calculate the number of child
+deaths and person years in the age groups 0, 1-2, 3-5, 6-11, 12-23, 24-35, 36-47, 
+and 48-59 months during the period 0-4 years before the survey.
+
+```{r, demog_pyears, }
+zzbr$weight <- zzbr$v005 / mean(zzbr$v005) # Normalize weights
+aggr <- demog_pyears(~1, zzbr, agegr=c(0, 1, 3, 6, 12, 24, 36, 48, 60)/12, tips=c(0, 5),
+                     event="death", tstart="b3", tstop="tstop",
+                     dob = "b3", intv = "v008", weights="weight",
+                     origin = 1900, scale = 12)
+````
+
+## Calculate mortality rate within each age group
+
+The mortality rate $mu_a$ within each age group is estimated as the number
+of observed deaths divided by the number of person-years.
+
+```{r mx}
+mx <- aggr$data
+mx$agegr <- paste(c(0, "1-2", "3-5", "6-11", "12-23", "24-35", "36-47", "48-59"), "months")
+mx$mx <- mx$event / mx$pyears
+knitr::kable(mx)
+```
+
+## Cumulative hazard and probability of dying
+
+The cumualative hazard is the sum over all age groups of the mortality rate
+in each age group times the span of the age group.
+```{r cumhaz}
+mx$a_min <- c(0, 1, 3, 6, 12, 24, 36, 48) / 12
+mx$a_max <- c(1, 3, 6, 12, 24, 36, 48, 60) / 12
+
+cum_mx <- sum( (mx$a_max - mx$a_min) * mx$mx)
+cum_mx
+```
+
+Finally, the probability of dying ~5~q~0~ is one minus the cumulative probability
+of escaping death:
+```{r 5q0}
+1 - exp(-cum_mx) # 5q0
+```
+
+## Standard error estimation 
+
+### Via Taylor linearization 
+
+_To be completed_
+
+### Via stratified jackknife 
+
+_To be completed_
+
+
+# Adult mortality (~35~q~15~, ~45~q~15~)
+
+_To be completed_
+
+# Total fertility rate
+
+_To be completed_
+
