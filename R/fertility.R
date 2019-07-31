@@ -10,8 +10,8 @@
 #' @param bhdata A birth history dataset (`data.frame`) with child dates of birth
 #'   in long format.
 #' @param varmethod Method for variance calculation. Currently "lin" for Taylor
-#'   linearisation or "jk1" for unstratified jackknife, or "jkn", for stratified
-#'   jackknife.
+#'   linearisation, "jk1" for unstratified jackknife, "jkn" for stratified
+#'   jackknife, or "none" for no variance estimate. 
 #'
 #' @return A `data.frame` consisting of estimates and standard errors. The full
 #' covariance matrix of the estimates can be retreived by `vcov(val)`.
@@ -141,13 +141,20 @@ calc_asfr <- function(data,
   pred <- data.frame(aggr[c(byvar, "byf")])[!duplicated(aggr$byf),]
   pred <- pred[order(pred$byf), ]
   
-  if(counts){
+  if(counts || varmethod == "none"){
     mc <- model.matrix(~-1+byf, aggr)
     clong <- aggr[c("event", "pyears")]
     pred[c("births", "pys")] <- t(mc) %*% as.matrix(clong)
   }
 
-  if(varmethod == "lin") {
+  if(varmethod == "none") {
+
+    pred$asfr <- pred$births / pred$pys
+    pred$byf <- NULL
+    if(!counts)
+      pred[c("births", "pys")] <- NULL
+
+  } else if(varmethod == "lin") {
 
     des <- survey::svydesign(ids=clusters, strata=strata, data=aggr, weights=~1)
     class(des) <- c("svypyears", class(des))
