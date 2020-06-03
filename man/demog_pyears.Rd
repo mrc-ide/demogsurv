@@ -4,10 +4,22 @@
 \alias{demog_pyears}
 \title{Events and person-years from episode data for demographic analysis}
 \usage{
-demog_pyears(formula, data, period = NULL, agegr = NULL, cohort = NULL,
-  tips = NULL, origin = 1900, scale = 12, dob = "(dob)",
-  intv = "(intv)", tstart = "tstart", tstop = "tstop", event = "event",
-  weights = NULL)
+demog_pyears(
+  formula,
+  data,
+  period = NULL,
+  agegr = NULL,
+  cohort = NULL,
+  tips = NULL,
+  origin = 1900,
+  scale = 12,
+  dob = "(dob)",
+  intv = "(intv)",
+  tstart = "tstart",
+  tstop = "tstop",
+  event = "event",
+  weights = NULL
+)
 }
 \description{
 This is a wrapper for the \code{\link[survival]{pyears}} function

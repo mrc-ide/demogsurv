@@ -5,12 +5,28 @@
 \alias{calc_tfr}
 \title{Calculate age-specific fertility rate (ASFR) and total fertility rate (TFR)}
 \usage{
-calc_asfr(data, by = NULL, agegr = 3:10 * 5, period = NULL,
-  cohort = NULL, tips = c(0, 3), clusters = ~v021, strata = ~v024 +
-  v025, id = "caseid", dob = "v011", intv = "v008", weight = "v005",
-  varmethod = "lin", bvars = grep("^b3\\\\_[0-9]*", names(data), value =
-  TRUE), birth_displace = 1e-06, origin = 1900, scale = 12,
-  bhdata = NULL, counts = FALSE, clustcounts = FALSE)
+calc_asfr(
+  data,
+  by = NULL,
+  agegr = 3:10 * 5,
+  period = NULL,
+  cohort = NULL,
+  tips = c(0, 3),
+  clusters = ~v021,
+  strata = ~v024 + v025,
+  id = "caseid",
+  dob = "v011",
+  intv = "v008",
+  weight = "v005",
+  varmethod = "lin",
+  bvars = grep("^b3\\\\_[0-9]*", names(data), value = TRUE),
+  birth_displace = 1e-06,
+  origin = 1900,
+  scale = 12,
+  bhdata = NULL,
+  counts = FALSE,
+  clustcounts = FALSE
+)
 }
 \arguments{
 \item{agegr}{break points for age groups in completed years of age.}
@@ -20,8 +36,8 @@ calc_asfr(data, by = NULL, agegr = 3:10 * 5, period = NULL,
 \item{tips}{break points for TIme Preceding Survey.}
 
 \item{varmethod}{Method for variance calculation. Currently "lin" for Taylor
-linearisation or "jk1" for unstratified jackknife, or "jkn", for stratified
-jackknife.}
+linearisation, "jk1" for unstratified jackknife, "jkn" for stratified
+jackknife, or "none" for no variance estimate.}
 
 \item{bvars}{Names of variables giving child dates of birth. If \code{bhdata} is
 provided, then length(bvars) must equal 1.}

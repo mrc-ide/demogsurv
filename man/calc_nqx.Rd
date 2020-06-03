@@ -4,11 +4,24 @@
 \alias{calc_nqx}
 \title{Calculate the probability of dying between age x and x+n (nqx)}
 \usage{
-calc_nqx(data, by = NULL, agegr = c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12,
-  period = NULL, cohort = NULL, tips = c(0, 5, 10, 15),
-  clusters = ~v021, strata = ~v024 + v025, weight = "v005", dob = "b3",
-  dod = "dod", death = "death", intv = "v008", varmethod = "lin",
-  origin = 1900, scale = 12)
+calc_nqx(
+  data,
+  by = NULL,
+  agegr = c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12,
+  period = NULL,
+  cohort = NULL,
+  tips = c(0, 5, 10, 15),
+  clusters = ~v021,
+  strata = ~v024 + v025,
+  weight = "v005",
+  dob = "b3",
+  dod = "dod",
+  death = "death",
+  intv = "v008",
+  varmethod = "lin",
+  origin = 1900,
+  scale = 12
+)
 }
 \arguments{
 \item{data}{A dataset (data.frame), for example a DHS births recode (BR) dataset.}

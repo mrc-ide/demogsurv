@@ -4,10 +4,15 @@
 \alias{reshape_sib_data}
 \title{Convert respondent-level sibling history data to one row per sibling}
 \usage{
-reshape_sib_data(data, widevars = grep("^v", names(data), value = TRUE),
+reshape_sib_data(
+  data,
+  widevars = grep("^v", names(data), value = TRUE),
   longvars = grep(sibvar_regex, names(data), value = TRUE),
-  idvar = "caseid", sib_vars = sub("(.*)_.*", "\\\\1", longvars),
-  sib_idvar = "mmidx", sibvar_regex = "^mm[idx0-9]")
+  idvar = "caseid",
+  sib_vars = sub("(.*)_.*", "\\\\1", longvars),
+  sib_idvar = "mmidx",
+  sibvar_regex = "^mm[idx0-9]"
+)
 }
 \arguments{
 \item{data}{A dataset as \code{data.frame}.}

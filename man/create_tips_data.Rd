@@ -4,9 +4,14 @@
 \alias{create_tips_data}
 \title{Create episode dataset split by period, age group, and time preceding survey indicator (TIPS)}
 \usage{
-create_tips_data(dat, period = do.call(seq.int, as.list(range(dat$intvy) +
-  c(-16, 1))), agegr = 3:12 * 5, tips = 0:15, dobvar = "sibdob",
-  dodvar = "sibdod")
+create_tips_data(
+  dat,
+  period = do.call(seq.int, as.list(range(dat$intvy) + c(-16, 1))),
+  agegr = 3:12 * 5,
+  tips = 0:15,
+  dobvar = "sibdob",
+  dodvar = "sibdod"
+)
 }
 \description{
 Create episode dataset split by period, age group, and time preceding survey indicator (TIPS)

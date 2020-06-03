@@ -26,7 +26,7 @@ The goal of demogsurv is to:
 * Calculate sample covariance for indicators estimated from a single complex survey (e.g. time-series of child mortality estimates).
 * Default parameters are specified for analysis of [DHS recode datasets](https://dhsprogram.com/data/) without fuss, but funciton implementation is flexible for use with other survey data.
 
-For analysis of DHS data, the package interacts well with [`rdhs`](https://ojwatson.github.io/rdhs/). See the [vignette](https://github.com/mrc-ide/demogsurv/blob/master/vignettes/rdhs-integration.pdf) for an example.
+For analysis of DHS data, the package interacts well with [`rdhs`](https://docs.ropensci.org/rdhs/). See the [vignette](https://github.com/mrc-ide/demogsurv/blob/master/vignettes/rdhs-integration.pdf) for an example.
 
 ## Installation
 
