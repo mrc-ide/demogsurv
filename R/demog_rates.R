@@ -91,7 +91,9 @@ jackknife <- function(x, n, strataid = NULL, L = diag(nrow(x)), fn = function(x)
   lest <- drop(L %*% (xall / nall))
                
   ## array of rates with single cluster removed
-  lest_jack <- L %*% (xjack / njack)
+  ratio <- xjack / njack
+  ratio[njack == 0] <- 0
+  lest_jack <- L %*% ratio
 
   lresid <- lest_jack - lest
   lv <- lresid %*% ((h_n - 1) / h_n * t(lresid))
