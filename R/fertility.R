@@ -110,8 +110,9 @@ calc_asfr <- function(data,
                     id = id, weights = weights, dob = dob, intv = intv)
 
   if(is.null(bhdata)) {
-    births <- reshape(model.frame(paste("~", paste(bvars, collapse="+")),
-                                  data, na.action=na.pass, id=id),
+    births <- model.frame(paste("~", paste(bvars, collapse="+")),
+                          data, na.action=na.pass, id=id)
+    births <- reshape(births,
                       idvar="(id)", timevar="bidx",
                       varying=bvars, v.names="bcmc", direction="long")
   } else {
@@ -120,14 +121,18 @@ calc_asfr <- function(data,
     
     bhdata$id <- bhdata[[id]]
     bhdata$bcmc <- bhdata[[bvars]]
-    births <- model.frame(~bcmc, data = bhdata, id = id)
-    births$bidx <- ave(births$bcmc, births$`(id)`, FUN = seq_along)
+    births <- model.frame(~bcmc, data = bhdata, id = id)    
+    births$bidx <- ave(births$bcmc, births[["(id)"]], FUN = seq_along)
   }
   births <- births[!is.na(births$bcmc), ]
   births$bcmc <- births$bcmc + births$bidx * birth_displace
-  
-  epis <- tmerge(mf, mf, id=`(id)`, tstart=`(dob)`, tstop=`(intv)`)
-  epis <- tmerge(epis, births, id=`(id)`, birth = event(bcmc))
+
+  ## Rename for tmerge()
+  names(mf)[names(mf) == "(id)"] <- "id_"
+  names(births)[names(births) == "(id)"] <- "id_"
+
+  epis <- tmerge(mf, mf, id=id_, tstart=`(dob)`, tstop=`(intv)`)
+  epis <- tmerge(epis, births, id=id_, birth = event(bcmc))
   
   aggr <- demog_pyears(f, epis, period=period, agegr=agegr, cohort=cohort, tips=tips,
                        event="birth", weights="(weights)", origin=origin, scale=scale)$data

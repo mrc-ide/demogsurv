@@ -1,3 +1,8 @@
+# demogsurv 0.2.3
+
+* Internal fix `calc_asfr()` to address `tmerge()` error: `idname option must be a valid variable name`.
+
+
 # demogsurv 0.2.2
 
 * Patch to `jacknife()` function for case where person-years appear in only one
