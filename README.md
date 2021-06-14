@@ -1,8 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![Travis build
-status](https://travis-ci.org/mrc-ide/demogsurv.svg?branch=master)](https://travis-ci.org/mrc-ide/demogsurv)
+[![R-CMD-check](https://github.com/mrc-ide/demogsurv/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/demogsurv/actions)
 [![Coverage
 status](https://codecov.io/gh/mrc-ide/demogsurv/branch/master/graph/badge.svg)](https://codecov.io/github/mrc-ide/demogsurv?branch=master)
 
