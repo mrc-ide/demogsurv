@@ -2,12 +2,9 @@
 title: "Using `demogsurv` with `rdhs`"
 author: "Jeff Eaton, Bruno Masquelier, and OJ Watson"
 date: "`r Sys.Date()`"
-output:
-  html_document: 
-    smart: false
-    keep_md: true
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using demogsurv with rdhs}
+  %\VignetteIndexEntry{Using `demogsurv` with `rdhs`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,9 +13,13 @@ This vignette illustrates use of `demogsurv` and `rdhs` to calculate fertility a
 
 ## Install and load packages
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
 ```{r install}
 ## install.packages("devtools")
-## devtools::install_github("OJWatson/rdhs")
+## install.packages("rdhs")
 ## devtools::install_github("mrc-ide/demogsurv")
 
 library(rdhs)
@@ -33,12 +34,12 @@ Sys.setenv(rdhs_DATA_TABLE = "TRUE")
 
 ## Identify surveys and datasets
 
-Identify all DHS surveys conducted in sub-Saharan Africa since the year 2005.
+Identify all DHS surveys conducted in sub-Saharan Africa between 2015 and 2020
 
 ```{r dhs_surveys}
 countries <- dhs_countries()
 cc <- countries[RegionName == "Sub-Saharan Africa"]$DHS_CountryCode
-surveys <- dhs_surveys(countryIds = cc, surveyYearStart=2005, surveyType = "DHS")
+surveys <- dhs_surveys(countryIds = cc, surveyYearStart=2015, surveyYearEnd = 2020, surveyType = "DHS")
 ```
 
 Identify individual recode (IR) and births recode (BR) datasets corresponding to these surveys.
@@ -48,31 +49,35 @@ ird <- dhs_datasets(fileType = "IR", fileFormat = "flat")[SurveyId %in% surveys$
 brd <- dhs_datasets(fileType = "BR", fileFormat = "flat")[SurveyId %in% surveys$SurveyId]
 ```
 
-Use `rdhs` to retreive datasets, downloading them from DHS website if not already in the `rdhs` cache.
+Use `rdhs` to retrieve datasets, downloading them from DHS website if not already in the `rdhs` cache.
 
-```{r get_datasets, warning=FALSE, message=FALSE}
-ird$path <- unlist(get_datasets(ird$FileName))
-brd$path <- unlist(get_datasets(brd$FileName))
+```{r get_datasets, results=FALSE}
+get_datasets(ird$FileName)
+get_datasets(brd$FileName)
 ```
 
-Load all of the datasets into R as a list.
+Identify survey variables to extract from the datasets that will be required for fertility and mortality indicators
 
-```{r load datasets, results="hide", eval=FALSE}
-ir <- list()
-for(survid in ird$SurveyId){
-  print(survid)
-  dat <- readRDS(ird[SurveyId == survid]$path)
-  dat <- dat[grep("caseid|^v0|^v1|^b|^mm", names(dat))]
-  ir[[survid]] <- dat
-}
+```{r questions}
+ird_vars <- c("caseid", "v005", "v008", "v011", "v021", "v024", "v025")
+ird_questions <- search_variables(ird$FileName, variables = ird_vars)
 
-br <- list()
-for(survid in brd$SurveyId){
-  print(survid)
-  dat <- readRDS(brd[SurveyId == survid]$path)
-  dat <- dat[grep("caseid|^v0|^v1|^b", names(dat))]
-  br[[survid]] <- dat
-}
+# add child dob variables
+ird_br_questions <- search_variable_labels(ird$FileName, regex = "CMC")
+ird_br_questions <- ird_br_questions[grepl("^b3", ird_br_questions$variable),]
+# add sibling variables
+ird_sib_questions <- search_variable_labels(ird$FileName, regex = "sib")
+ird_questions <- rbind(ird_questions, ird_br_questions, ird_sib_questions)
+
+brd_vars <- c("caseid", "bidx", "b3", "b5", "b7", "v005", "v008", "v021", "v024", "v025")
+brd_questions <- search_variables(brd$FileName, variables = brd_vars)
+```
+
+Extract relevant survey variables from the downloaded datasets into a data.frame
+
+```{r extract_datasets, results="hide"}
+ir <- extract_dhs(ird_questions, add_geo = FALSE)
+br <- extract_dhs(brd_questions, add_geo = FALSE)
 
 ## Convert to factors (a bit inefficient)
 ir <- lapply(ir, haven::as_factor)
@@ -80,27 +85,24 @@ br <- lapply(br, haven::as_factor)
 
 ## Add survey-level variables
 ir <- Map(data.frame,
-          SurveyId = surveys$SurveyId,
-          CountryName = surveys$CountryName,
-          SurveyYear = surveys$SurveyYear,
+          SurveyId = haven::as_factor(surveys$SurveyId),
+          CountryName = haven::as_factor(surveys$CountryName),
+          SurveyYear = haven::as_factor(surveys$SurveyYear),
           ir)
 
 br <- Map(data.frame,
-          SurveyId = surveys$SurveyId,
-          CountryName = surveys$CountryName,
-          SurveyYear = surveys$SurveyYear,
+          SurveyId = haven::as_factor(surveys$SurveyId),
+          CountryName = haven::as_factor(surveys$CountryName),
+          SurveyYear = haven::as_factor(surveys$SurveyYear),
           br)
 ```
-
-Note that `rdhs` provides better tools to extract variables and pool datasets which haven't been fully embraced here.
-
 
 ## Use `demogsurv` to analyse demographic rate indicators
 
 ### Fertility
 
-Calcualte TFR and 15-19 ASFR for 3 year period preceding survey (default argument `tips=c(0, 3)`).
-```{r tfr, eval=FALSE}
+Calculate TFR and 15-19 ASFR for 3 year period preceding survey (default argument `tips=c(0, 3)`).
+```{r tfr}
 tfr <- lapply(ir, calc_tfr, by=~SurveyId+CountryName+SurveyYear, strata=NULL)
 tfr <- do.call(rbind, tfr)
 
@@ -114,8 +116,8 @@ asfr15to19 <- do.call(rbind, asfr15to19)
 
 Identify surveys that include sibling history model via querying the DHS API survery with "Maternal mortality" characteristic.
 
-```{r has sibling}
-survchar <- dhs_surveyCharacteristics()
+```{r has_sibling}
+survchar <- dhs_survey_characteristics()
 survchar[grepl("Maternal", SurveyCharacteristicName)]
 mm_surv <- dhs_surveys(surveyCharacteristicIds = 1)
 has_mm <- surveys$SurveyId %in% mm_surv$SurveyId
@@ -124,7 +126,7 @@ has_mm <- surveys$SurveyId %in% mm_surv$SurveyId
 Reshape IR datasets to one row per sibling episode, create a binary variable indicating sibling death, 
 and calculate ~35~q~15~ estimates by sexx.
 
-```{r sibmx, warning=FALSE, eval=FALSE}
+```{r sibmx}
 sib <- lapply(ir[has_mm], reshape_sib_data,
               widevars = c("SurveyId", "CountryName", "SurveyYear", "v005", "v008", "v021"))
 sib <- lapply(sib, function(x){x$death <- factor(x$mm2, c("dead", "alive")) == "dead"; x})
@@ -148,27 +150,19 @@ hazards over the age group 0-4 years and converted to probabilities to estimate 
 Add a binary indicator whether a death occurred and a date of death variable, placed 0.5 
 months in the month the death occurred.
 
-```{r deathvar, eval=FALSE}
+```{r deathvar}
 br <- lapply(br, function(x){x$death <- x$b5 == "no"; x})
 br <- lapply(br, function(x){x$dod <- x$b3 + x$b7 + 0.5; x})
 ```
 
 Calculate ~5~q~0~ for period 0-4, 5-9, and 10-14 years preceding the survey.
 
-```{r 5q0, eval=FALSE}
+```{r 5q0}
 u5mr <- lapply(br, calc_nqx, by=~SurveyId+CountryName+SurveyYear, strata=NULL)
 u5mr <- do.call(rbind, u5mr)
 ```
 
-
 ## Merge DHS StatCompiler indicators
-
-```{r sneaky load, echo=FALSE, results="hide"}
-tfr <- readRDS("rdhs-integration/tfr.rds")
-asfr15to19 <- readRDS("rdhs-integration/asfr15to19.rds")
-q3515 <- readRDS("rdhs-integration/q3515.rds")
-u5mr <- readRDS("rdhs-integration/u5mr.rds")
-```
 
 Identify the indicator IDs associated with TFR, ASFR 15-19, ~35~q~15~, and ~5~q~0~.
 
@@ -207,7 +201,7 @@ u5mr <- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])
 
 ## View estimates
 
-```{r review estimates, echo=FALSE}
+```{r review_estimates, echo=FALSE}
 knitr::kable(head(tfr), digits=c(rep(0, 4), 1, 3, 2),
              caption = "TFR")
 
@@ -230,7 +224,7 @@ Estimates for fertility rates and adult mortality rates should exactly match
 those produced as standard DHS indicators.
 
 
-```{r check match}
+```{r check_match}
 
 ## TFR matches exactly
 with(tfr, table(round(tfr, 1) == Value))

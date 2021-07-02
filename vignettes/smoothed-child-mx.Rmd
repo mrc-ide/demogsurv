@@ -2,9 +2,7 @@
 title: "Model-based smoothing of child mortality trends"
 author: "Jeff Eaton"
 date: "`r Sys.Date()`"
-output: 
-  rmarkdown::html_vignette:
-    keep_md: true
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Model-based smoothing of child mortality trends}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,7 +13,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   cache = TRUE,
-  comment = "#>"
+  comment = "#>",
+  message = FALSE
 )
 ```
 
@@ -42,9 +41,9 @@ We will use the R package [`mgcv`](https://cran.r-project.org/web/packages/mgcv/
 
 ## Load packages
 
-```{r load packages}
+```{r load_packages}
 ## install.packages("devtools")
-## devtools::install_github("OJWatson/rdhs")
+## install.packages("rdhs")
 ## devtools::install_github("mrc-ide/demogsurv")
 
 library(rdhs)
@@ -64,22 +63,19 @@ Sys.setenv(rdhs_DATA_TABLE = "TRUE")
 Use `rdhs` to identify and retrieve birth recode (BR) datasets for all DHS 
 surveys conducted in Ghana.
 
-```{r datasets}
+```{r datasets, results=FALSE}
 surveys <- dhs_surveys(countryIds = "GH", surveyType = "DHS")
 brd <- dhs_datasets(fileType = "BR", fileFormat = "flat")[SurveyId %in% surveys$SurveyId]
-brd$path <- unlist(get_datasets(brd$FileName))
+get_datasets(brd$FileName)
 ```
 
-Load the datasets into R as a list.
+Load the datasets into R as a list of data.frames for each survey.
 
-```{r load datasets, results="hide"}
-br <- list()
-for(survid in brd$SurveyId){
-  print(survid)
-  dat <- readRDS(brd[SurveyId == survid]$path)
-  dat <- dat[grep("caseid|^v0|^v1|^b", names(dat))]
-  br[[survid]] <- dat
-}
+```{r load_datasets, results="hide"}
+brd_vars <- c("caseid", "bidx", "b3", "b5", "b7", "v001", "v005", "v008", "v021", "v024", "v025")
+brd_questions <- search_variables(brd$FileName, variables = brd_vars)
+
+br <- extract_dhs(brd_questions, add_geo = FALSE)
 
 ## Remove any value labels from b7 (age at death in months)
 br <- lapply(br, function(x){x$b7 <- zap_labels(x$b7); x})
@@ -89,9 +85,9 @@ br <- lapply(br, haven::as_factor)
 
 ## Add survey-level variables
 br <- Map(data.frame,
-          SurveyId = surveys$SurveyId,
-          CountryName = surveys$CountryName,
-          SurveyYear = surveys$SurveyYear,
+          SurveyId = haven::as_factor(surveys$SurveyId),
+          CountryName = haven::as_factor(surveys$CountryName),
+          SurveyYear = haven::as_factor(surveys$SurveyYear),
           br)
 ```
 
