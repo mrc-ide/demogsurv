@@ -55,16 +55,16 @@
 #' tfr_ann <- calc_tfr(zzir, tips=0:9)
 #' 
 #' ## Sample covariance of annual TFR estimates arising from complex survey design
-#' cov2cor(vcov(tfr_ann$tfr)) 
-#' 
+#' cov2cor(vcov(tfr_ann))
+#'
 #' ## Alternately, calculate TFR estimates by calendar year
 #' tfr_cal <- calc_tfr(zzir, period = 2004:2015, tips=NULL)
 #' tfr_cal
 #' 
 #' ## sample covariance of annual TFR estimates arising from complex survey design
-#' cov2cor(vcov(tfr_cal$tfr))
-#' 
 #' ## Generate estimates split by period and TIPS 
+#' cov2cor(vcov(tfr_cal))
+#'
 #' calc_tfr(zzir, period = c(2010, 2013, 2015), tips=0:5)
 #' 
 #' ## ASFR estimates by birth cohort
