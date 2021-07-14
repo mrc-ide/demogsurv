@@ -2,14 +2,15 @@
 % Please edit documentation in R/sibling-survival.R
 \name{calc_dhs_mx}
 \alias{calc_dhs_mx}
-\title{Calculate age-specific mortality rates in period preceding survey.
-Interval 'period' defined in the months before the survey.
-Should replicate mortality rates reported in DHS reports.}
+\title{Calculate age-specific mortality rates in period preceding survey.}
 \usage{
 calc_dhs_mx(sib, period = c(0, 84))
 }
+\arguments{
+\item{sib}{A dataset as `data.frame`.}
+
+\item{period}{Interval 'period' defined in the months before the survey.}
+}
 \description{
-Calculate age-specific mortality rates in period preceding survey.
-Interval 'period' defined in the months before the survey.
 Should replicate mortality rates reported in DHS reports.
 }

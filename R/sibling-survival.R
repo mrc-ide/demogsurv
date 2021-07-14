@@ -169,8 +169,11 @@ create_mics_sib_data <- function(mm, country, survyear, strata=c("hh7", "hh6")){
 
 
 #' Calculate age-specific mortality rates in period preceding survey.
-#' Interval 'period' defined in the months before the survey.
+#'
 #' Should replicate mortality rates reported in DHS reports.
+#'
+#' @param sib A dataset as `data.frame`.
+#' @param period Interval 'period' defined in the months before the survey.
 #'
 #' @importFrom survival Surv
 #' @importFrom survival survSplit
@@ -209,6 +212,13 @@ calc_dhs_35q15 <- function(mx){
 
 
 #' Create episode dataset split by period, age group, and time preceding survey indicator (TIPS)
+#'
+#' @param dat A dataset as `data.frame`.
+#' @param period Numeric vector defining calendar periods to stratify analysis, use `NULL` for no periods.
+#' @param agegr Numeric vector defining ages *in years* for splits.
+#' @param tips Break points for TIme Preceding Survey.
+#' @param dobvar Variable name for date of birth (character string).
+#' @param dodvar Variable name for date of death (character string).
 #'
 #' @importFrom survival Surv
 #' @importFrom survival survSplit
