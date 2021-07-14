@@ -34,12 +34,12 @@ Sys.setenv(rdhs_DATA_TABLE = "TRUE")
 
 ## Identify surveys and datasets
 
-Identify all DHS surveys conducted in sub-Saharan Africa between 2015 and 2020
+Identify all DHS surveys conducted in sub-Saharan Africa in 2015
 
 ```{r dhs_surveys}
 countries <- dhs_countries()
 cc <- countries[RegionName == "Sub-Saharan Africa"]$DHS_CountryCode
-surveys <- dhs_surveys(countryIds = cc, surveyYearStart=2015, surveyYearEnd = 2020, surveyType = "DHS")
+surveys <- dhs_surveys(countryIds = cc, surveyYear = 2015, surveyType = "DHS")
 ```
 
 Identify individual recode (IR) and births recode (BR) datasets corresponding to these surveys.
