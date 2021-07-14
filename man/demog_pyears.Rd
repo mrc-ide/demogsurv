@@ -21,6 +21,58 @@ demog_pyears(
   weights = NULL
 )
 }
+\arguments{
+\item{formula}{
+    a formula object. 
+    The response variable will be a vector of follow-up times 
+    for each subject, or a \code{Surv} object containing the survival
+    time and an event indicator. 
+    The predictors consist of optional grouping variables 
+    separated by + operators (exactly as in \code{survfit}),
+    time-dependent grouping 
+    variables such as age (specified with \code{tcut}), and optionally a 
+    \code{ratetable} term. 
+    This latter matches each subject to his/her expected cohort. 
+  }
+
+\item{data}{
+    a data frame in which to interpret the variables named in 
+    the \code{formula}, or in the \code{subset} and the \code{weights}
+    argument. 
+  }
+
+\item{period}{Numeric vector defining calendar periods to stratify analysis, use \code{NULL} for no periods.}
+
+\item{agegr}{Numeric vector defining ages \emph{in years} for splits.}
+
+\item{cohort}{Numeric vector defining birth cohorts to stratify analysis, use \code{NULL} for no cohort stratification.}
+
+\item{tips}{Break points for TIme Preceding Survey.}
+
+\item{origin}{Origin year for date arguments. 1900 for CMC inputs.}
+
+\item{scale}{
+    a scaling for the results.  As most rate tables are in units/day, the 
+    default value of 365.25 causes the output to be reported in years. 
+  }
+
+\item{dob}{Variable name for date of birth (character string).}
+
+\item{intv}{Variable name for interview date (character string).}
+
+\item{tstart}{Variable name for the start of follow up time, example is date
+of birth. Default is 'tstart'.}
+
+\item{tstop}{Variable name for the end of follow up time, examples include
+interview date or date of death. Default is 'tend'.}
+
+\item{event}{Variable name for the event indicator, example is
+birth or death. Default is 'event'.}
+
+\item{weights}{
+    case weights. 
+  }
+}
 \description{
 This is a wrapper for the \code{\link[survival]{pyears}} function
 in the \code{survival} package with convenient stratifications for

@@ -8,7 +8,7 @@
 }
 
 #' Events and person-years from episode data for demographic analysis
-#' 
+#'
 #' This is a wrapper for the \code{\link[survival]{pyears}} function
 #' in the \code{survival} package with convenient stratifications for
 #' demographic analyses.
@@ -17,8 +17,17 @@
 #' of the \code{\link[survival]{pyears}()} function. The function could
 #' be updated to work around this stipulation.
 #'
+#' @inheritParams survival::pyears
+#' @inheritParams calc_nqx
+#' @param tstart Variable name for the start of follow up time, example is date
+#'   of birth. Default is 'tstart'.
+#' @param tstop Variable name for the end of follow up time, examples include
+#'   interview date or date of death. Default is 'tend'.
+#' @param event Variable name for the event indicator, example is
+#'   birth or death. Default is 'event'.
+#'
 #' @seealso \code{\link[survival]{pyears}}, \code{\link[survival]{tcut}}
-#' 
+#'
 #' @importFrom survival Surv
 #' @importFrom survival tcut
 #' @importFrom survival pyears

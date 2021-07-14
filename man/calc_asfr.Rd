@@ -29,25 +29,60 @@ calc_asfr(
 )
 }
 \arguments{
-\item{agegr}{break points for age groups in completed years of age.}
+\item{data}{A dataset (data.frame), for example a DHS individual recode (IR) dataset.}
 
-\item{period}{break points for calendar year periods (possibly non-integer).}
+\item{by}{A formula specifying factor variables by which to stratify analysis.}
 
-\item{tips}{break points for TIme Preceding Survey.}
+\item{agegr}{Numeric vector defining ages \emph{in years} for splits.}
+
+\item{period}{Numeric vector defining calendar periods to stratify analysis, use \code{NULL} for no periods.}
+
+\item{cohort}{Numeric vector defining birth cohorts to stratify analysis, use \code{NULL} for no cohort stratification.}
+
+\item{tips}{Break points for TIme Preceding Survey.}
+
+\item{clusters}{Formula or data frame specifying cluster ids from largest level to smallest level, ‘~0’ or ‘~1’ is a formula for no clusters.}
+
+\item{strata}{Formula or vector specifying strata, use ‘NULL’ for no strata.}
+
+\item{id}{Variable name for identifying each individual respondent (character string).}
+
+\item{dob}{Variable name for date of birth of each individual (character string).}
+
+\item{intv}{Variable name for interview date (character string).}
+
+\item{weight}{Formula or vector specifying sampling weights.}
 
 \item{varmethod}{Method for variance calculation. Currently "lin" for Taylor
-linearisation, "jk1" for unstratified jackknife, "jkn" for stratified
-jackknife, or "none" for no variance estimate.}
+linearisation or "jk1" for unstratified jackknife, or "jkn", for stratified
+jackknife.}
 
 \item{bvars}{Names of variables giving child dates of birth. If \code{bhdata} is
 provided, then length(bvars) must equal 1.}
 
+\item{birth_displace}{Numeric value to displace multiple births date of birth
+by. Default is '1e-6'.}
+
+\item{origin}{Origin year for date arguments. 1900 for CMC inputs.}
+
+\item{scale}{Scale for dates inputs to calendar years. 12 for CMC inputs.}
+
 \item{bhdata}{A birth history dataset (\code{data.frame}) with child dates of birth
-in long format.}
+in long format, for example a DHS births recode (BR) dataset.}
+
+\item{counts}{Whether to include counts of births & person-years ('pys')
+in the returned \code{data.frame}. Default is 'FALSE'.}
+
+\item{clustcounts}{Whether to return additional attributes storing cluster
+specific counts of births \code{attr(val, 'events_clust')}, person-years
+\code{attr(val, 'pyears_clust')} & number of clusters in each strata
+\code{attr(val, 'strataid')}. Only applicable when using jacknife \code{varmethod}
+'jk1' or 'jkn'. 'strataid' is only included for 'jkn' \code{varmethod}. Default
+is 'FALSE'.}
 }
 \value{
 A \code{data.frame} consisting of estimates and standard errors. The full
-covariance matrix of the estimates can be retreived by \code{vcov(val)}.
+covariance matrix of the estimates can be retrieved by \code{vcov(val)}.
 }
 \description{
 Calculate age-specific fertility rate (ASFR) and total fertility rate (TFR)
@@ -64,15 +99,13 @@ specified in calendar years (possibly non-integer).
 Default values for \code{agegr}, \code{period}, and \code{tips} parameters returns
 age-specific fertility rates over the three-years preceding the survey,
 the standard fertility indicator produced in DHS reports.
-
-The return is a \code{data.frame}, but
 }
 \examples{
 data(zzir)
 
 ## Replicate DHS Table 5.1
 ## ASFR and TFR in 3 years preceding survey by residence
-calc_asfr(zzir, ~1, tips=c(0, 3)) 
+calc_asfr(zzir, ~1, tips=c(0, 3))
 reshape2::dcast(calc_asfr(zzir, ~v025, tips=c(0, 3)), agegr ~ v025, value.var = "asfr")
 calc_tfr(zzir, ~v025)
 calc_tfr(zzir, ~1)
@@ -96,9 +129,9 @@ tfr_cal <- calc_tfr(zzir, period = 2004:2015, tips=NULL)
 tfr_cal
 
 ## sample covariance of annual TFR estimates arising from complex survey design
+## Generate estimates split by period and TIPS
 cov2cor(vcov(tfr_cal))
 
-## Generate estimates split by period and TIPS 
 calc_tfr(zzir, period = c(2010, 2013, 2015), tips=0:5)
 
 ## ASFR estimates by birth cohort

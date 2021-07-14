@@ -40,6 +40,8 @@ calc_nqx(
 
 \item{strata}{Formula or vector specifying strata, use ‘NULL’ for no strata.}
 
+\item{weight}{Formula or vector specifying sampling weights.}
+
 \item{dob}{Variable name for date of birth (character string).}
 
 \item{dod}{Variable name for date of death (character string).}
@@ -55,8 +57,6 @@ jackknife.}
 \item{origin}{Origin year for date arguments. 1900 for CMC inputs.}
 
 \item{scale}{Scale for dates inputs to calendar years. 12 for CMC inputs.}
-
-\item{weights}{Formula or vector specifying sampling weights.}
 }
 \description{
 Default arguments are configured to calculate under 5 mortality
