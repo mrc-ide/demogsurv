@@ -72,9 +72,27 @@ jobs:
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
+          RDHS_EMAIL: ${{ secrets.RDHS_EMAIL }}
+          RDHS_PROJECT: ${{ secrets.RDHS_PROJECT }}
+          RDHS_USER_PASS: ${{ secrets.RDHS_USER_PASS }}
         run: |
           options(crayon.enabled = TRUE)
+
+          options("rappdir_permission" = TRUE)
+          rdhs::set_rdhs_config(
+            email = Sys.getenv("RDHS_EMAIL"),
+            project = Sys.getenv("RDHS_PROJECT"),
+            data_frame = "data.table::as.data.table",
+            password_prompt = FALSE,
+            global = TRUE,
+            config_path = "~/.rdhs.json",
+            cache_path = tempdir()
+          )
+
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+
+          unlink("~/.rdhs.json")
+
         shell: Rscript {0}
 
       - name: Upload check results
