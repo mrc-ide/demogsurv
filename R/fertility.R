@@ -7,6 +7,9 @@
 #' @param agegr break points for age groups in completed years of age.
 #' @param period break points for calendar year periods (possibly non-integer).
 #' @param tips break points for TIme Preceding Survey.
+#' @param awfact Variable name for all women factor (character string).
+#' @param awfact_scale Scale for `awfact` variable values. Default is 100
+#'   as is used in DHS recode files.
 #' @param bhdata A birth history dataset (`data.frame`) with child dates of birth
 #'   in long format.
 #' @param varmethod Method for variance calculation. Currently "lin" for Taylor
@@ -87,27 +90,36 @@ calc_asfr <- function(data,
                       dob="v011",
                       intv = "v008",
                       weight= "v005",
+                      awfact = NULL,
                       varmethod = "lin",
                       bvars = grep("^b3\\_[0-9]*", names(data), value=TRUE),
                       birth_displace = 1e-6,
                       origin=1900,
                       scale=12,
+                      awfact_scale = 100,
                       bhdata = NULL,
                       counts=FALSE,
                       clustcounts = FALSE){
-  
+
   data$id <- data[[id]]
   data$dob <- data[[dob]]
   data$intv <- data[[intv]]
   data$weights <- data[[weight]] / mean(data[[weight]])
 
+  if (!is.null(awfact)) {
+    data$awfact <- data[[awfact]] / awfact_scale
+  } else {
+    data$awfact <- 1
+  }
+
   if(is.null(by))
     by <- ~1
-  
+
   vars <- unique(unlist(lapply(c(by, strata, clusters), all.vars)))
   f <- formula(paste("~", paste(vars, collapse = "+")))
   mf <- model.frame(formula = f, data = data, na.action = na.pass,
-                    id = id, weights = weights, dob = dob, intv = intv)
+                    id = id, weights = weights, dob = dob, intv = intv,
+                    awfact = awfact)
 
   if(is.null(bhdata)) {
     births <- model.frame(paste("~", paste(bvars, collapse="+")),
@@ -133,10 +145,26 @@ calc_asfr <- function(data,
 
   epis <- tmerge(mf, mf, id=id_, tstart=`(dob)`, tstop=`(intv)`)
   epis <- tmerge(epis, births, id=id_, birth = event(bcmc))
-  
-  aggr <- demog_pyears(f, epis, period=period, agegr=agegr, cohort=cohort, tips=tips,
-                       event="birth", weights="(weights)", origin=origin, scale=scale)$data
-  
+
+  pyears_args <- list(f, data=epis, period=period, agegr=agegr, cohort=cohort, tips=tips,
+                      event="birth", weights="(weights)", origin=origin, scale=scale)
+  aggr <- do.call(demog_pyears, args = pyears_args)$data
+
+  # replace 'pyears' (denominator) with 'pyears' accounting for awfact
+  if (length(unique(epis$`(awfact)`)) > 1) {
+    # calculate pyears using weights * awfact
+    # https://dhsprogram.com/data/Guide-to-DHS-Statistics/Analyzing_DHS_Data.htm
+    epis$`(weights)` <- epis$`(weights)` * epis$`(awfact)`
+    pyears_args$data <- epis
+    aggr_pyears <- do.call(demog_pyears, args = pyears_args)$data
+
+    # replace pyears with recalculation using weights * awfacct
+    aggr_id_vars <- setdiff(names(aggr), c("pyears", "n", "event"))
+    aggr_pyears[c("n", "event")] <- NULL
+    aggr[c("pyears")] <- NULL
+    aggr <- merge(aggr, aggr_pyears, by = aggr_id_vars, all = TRUE)
+  }
+
   ## construct interaction of all factor levels that appear
   byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
                      names(aggr))
@@ -230,13 +258,15 @@ calc_tfr <- function(data,
                      dob = "v011",
                      intv = "v008",
                      weight = "v005",
+                     awfact = NULL,
                      varmethod = "lin",
                      bvars = grep("^b3\\_[0-9]*", names(data), value=TRUE),
                      birth_displace = 1e-6,
                      origin = 1900,
                      scale = 12,
+                     awfact_scale = 100,
                      bhdata = NULL){
-  
+
   g <- match.call()
   g[[1]] <- quote(calc_asfr)
   g$data <- data

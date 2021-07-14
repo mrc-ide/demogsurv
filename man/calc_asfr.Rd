@@ -18,11 +18,13 @@ calc_asfr(
   dob = "v011",
   intv = "v008",
   weight = "v005",
+  awfactt = NULL,
   varmethod = "lin",
   bvars = grep("^b3\\\\_[0-9]*", names(data), value = TRUE),
   birth_displace = 1e-06,
   origin = 1900,
   scale = 12,
+  awfactt_scale = 100,
   bhdata = NULL,
   counts = FALSE,
   clustcounts = FALSE
@@ -35,12 +37,17 @@ calc_asfr(
 
 \item{tips}{break points for TIme Preceding Survey.}
 
+\item{awfactt}{Variable name for all women factor (character string).}
+
 \item{varmethod}{Method for variance calculation. Currently "lin" for Taylor
 linearisation, "jk1" for unstratified jackknife, "jkn" for stratified
 jackknife, or "none" for no variance estimate.}
 
 \item{bvars}{Names of variables giving child dates of birth. If \code{bhdata} is
 provided, then length(bvars) must equal 1.}
+
+\item{awfactt_scale}{Scale for \code{awfactt} variable values. Default is 100
+as is used in DHS recode files.}
 
 \item{bhdata}{A birth history dataset (\code{data.frame}) with child dates of birth
 in long format.}
