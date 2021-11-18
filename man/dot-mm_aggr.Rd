@@ -9,7 +9,7 @@
 \arguments{
 \item{mf}{Model frame for predicted rates}
 
-\item{agegr}{break points for age groups in completed years of age.}
+\item{agegr}{Numeric vector defining ages \emph{in years} for splits.}
 }
 \description{
 Construct a model matrix for aggregating over age groups

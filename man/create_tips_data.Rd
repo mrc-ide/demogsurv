@@ -13,6 +13,19 @@ create_tips_data(
   dodvar = "sibdod"
 )
 }
+\arguments{
+\item{dat}{A dataset as `data.frame`.}
+
+\item{period}{Numeric vector defining calendar periods to stratify analysis, use `NULL` for no periods.}
+
+\item{agegr}{Numeric vector defining ages *in years* for splits.}
+
+\item{tips}{Break points for TIme Preceding Survey.}
+
+\item{dobvar}{Variable name for date of birth (character string).}
+
+\item{dodvar}{Variable name for date of death (character string).}
+}
 \description{
 Create episode dataset split by period, age group, and time preceding survey indicator (TIPS)
 }

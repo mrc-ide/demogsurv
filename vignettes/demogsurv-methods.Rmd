@@ -2,12 +2,9 @@
 title: "Demographic indicator calcultions using `demogsurv`"
 author: "Jeff Eaton and Bruno Masquelier"
 date: "`r Sys.Date()`"
-output:
-  html_document: 
-    smart: false
-    keep_md: true
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Demographic indicator calcultions using `demogsurv`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

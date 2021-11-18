@@ -11,7 +11,7 @@
 #' @param tips Break points for TIme Preceding Survey.
 #' @param clusters Formula or data frame specifying cluster ids from largest level to smallest level, ‘~0’ or ‘~1’ is a formula for no clusters.
 #' @param strata Formula or vector specifying strata, use ‘NULL’ for no strata.
-#' @param weights Formula or vector specifying sampling weights.
+#' @param weight Formula or vector specifying sampling weights.
 #' @param dob Variable name for date of birth (character string).
 #' @param dod Variable name for date of death (character string).
 #' @param death Variable name for event variable (character string).
@@ -33,29 +33,29 @@
 #' ## See calc_dhs_u5mr().
 #' u5mr <- calc_nqx(zzbr)
 #' u5mr
-#' 
+#'
 #' ## Retrieve sample covariance and correlation
 #' vcov(u5mr)  # sample covariance
 #' cov2cor(vcov(u5mr))  # sample correlation
-#' 
+#'
 #' ## 5q0 by sociodemographic characteristics
 #' calc_nqx(zzbr, by=~v102) # by urban/rural residence
 #' calc_nqx(zzbr, by=~v190, tips=c(0, 10)) # by wealth quintile, 0-9 years before
 #' calc_nqx(zzbr, by=~v101+v102, tips=c(0, 10)) # by region and residence
-#' 
+#'
 #' ## Compare unstratified standard error estiamtes for linearization and jackknife
 #' calc_nqx(zzbr, varmethod = "lin")  # unstratified design
 #' calc_nqx(zzbr, strata=NULL, varmethod = "lin")  # unstratified design
 #' calc_nqx(zzbr, strata=NULL, varmethod = "jk1")  # unstratififed jackknife
 #' calc_nqx(zzbr, varmethod = "jkn")  # stratififed jackknife
-#' 
+#'
 #' ## Calculate various child mortality indicators (neonatal, infant, etc.)
 #' calc_nqx(zzbr, agegr=c(0, 1)/12)  # neonatal
 #' calc_nqx(zzbr, agegr=c(1, 3, 5, 12)/12) # postneonatal
 #' calc_nqx(zzbr, agegr=c(0, 1, 3, 5, 12)/12) # infant (1q0)
 #' calc_nqx(zzbr, agegr=c(12, 24, 36, 48, 60)/12) # child (4q1)
 #' calc_nqx(zzbr, agegr=c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12) # u5mr (5q0)
-#' 
+#'
 #' ## Calculate annaul 5q0 by calendar year
 #' calc_nqx(zzbr, period=2005:2015, tips=NULL)
 #'

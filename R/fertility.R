@@ -2,47 +2,53 @@
 #'
 #' @aliases calc_tfr
 #'
+#' @inheritParams calc_nqx
+#' @param data A dataset (data.frame), for example a DHS individual recode (IR) dataset.
+#' @param id Variable name for identifying each individual respondent (character string).
+#' @param dob Variable name for date of birth of each individual (character string).
 #' @param bvars Names of variables giving child dates of birth. If `bhdata` is
 #'   provided, then length(bvars) must equal 1.
-#' @param agegr break points for age groups in completed years of age.
-#' @param period break points for calendar year periods (possibly non-integer).
-#' @param tips break points for TIme Preceding Survey.
 #' @param bhdata A birth history dataset (`data.frame`) with child dates of birth
-#'   in long format.
-#' @param varmethod Method for variance calculation. Currently "lin" for Taylor
-#'   linearisation, "jk1" for unstratified jackknife, "jkn" for stratified
-#'   jackknife, or "none" for no variance estimate. 
+#'   in long format, for example a DHS births recode (BR) dataset.
+#' @param birth_displace Numeric value to displace multiple births date of birth
+#'   by. Default is '1e-6'.
+#' @param counts Whether to include counts of births & person-years ('pys')
+#'   in the returned `data.frame`. Default is 'FALSE'.
+#' @param clustcounts Whether to return additional attributes storing cluster
+#'   specific counts of births `attr(val, 'events_clust')`, person-years
+#'   `attr(val, 'pyears_clust')` & number of clusters in each strata
+#'   `attr(val, 'strataid')`. Only applicable when using jacknife `varmethod`
+#'   'jk1' or 'jkn'. 'strataid' is only included for 'jkn' `varmethod`. Default
+#'   is 'FALSE'.
 #'
 #' @return A `data.frame` consisting of estimates and standard errors. The full
-#' covariance matrix of the estimates can be retreived by `vcov(val)`.
+#' covariance matrix of the estimates can be retrieved by `vcov(val)`.
 #'
 #' @details
 #' Events and person-years are calculated using normalized weights. Unweighted
 #' aggregations may be output by specifying `weights=NULL` (default) or
 #' `weights=~1`.
-#' 
+#'
 #' The assumption is that all dates in the data are specified in the same
 #' format, typically century month code (CMC). The `period` argument is
 #' specified in calendar years (possibly non-integer).
 #'
-#' Default values for `agegr`, `period`, and `tips` parameters returns 
+#' Default values for `agegr`, `period`, and `tips` parameters returns
 #' age-specific fertility rates over the three-years preceding the survey,
 #' the standard fertility indicator produced in DHS reports.
 #'
-#' The return is a `data.frame`, but 
-#'
 #' @seealso [demog_pyears()]
-#' 
+#'
 #' @examples
 #' data(zzir)
-#' 
+#'
 #' ## Replicate DHS Table 5.1
 #' ## ASFR and TFR in 3 years preceding survey by residence
-#' calc_asfr(zzir, ~1, tips=c(0, 3)) 
+#' calc_asfr(zzir, ~1, tips=c(0, 3))
 #' reshape2::dcast(calc_asfr(zzir, ~v025, tips=c(0, 3)), agegr ~ v025, value.var = "asfr")
 #' calc_tfr(zzir, ~v025)
 #' calc_tfr(zzir, ~1)
-#' 
+#'
 #' ## Replicate DHS Table 5.2
 #' ## TFR by resdience, region, education, and wealth quintile
 #' calc_tfr(zzir, ~v102)  # residence
@@ -50,27 +56,27 @@
 #' calc_tfr(zzir, ~v106)  # education
 #' calc_tfr(zzir, ~v190)  # wealth
 #' calc_tfr(zzir)         # total
-#' 
+#'
 #' ## Calculate annual TFR estimates for 10 years preceding survey
 #' tfr_ann <- calc_tfr(zzir, tips=0:9)
-#' 
+#'
 #' ## Sample covariance of annual TFR estimates arising from complex survey design
-#' cov2cor(vcov(tfr_ann$tfr)) 
-#' 
+#' cov2cor(vcov(tfr_ann))
+#'
 #' ## Alternately, calculate TFR estimates by calendar year
 #' tfr_cal <- calc_tfr(zzir, period = 2004:2015, tips=NULL)
 #' tfr_cal
-#' 
+#'
 #' ## sample covariance of annual TFR estimates arising from complex survey design
-#' cov2cor(vcov(tfr_cal$tfr))
-#' 
-#' ## Generate estimates split by period and TIPS 
+#' ## Generate estimates split by period and TIPS
+#' cov2cor(vcov(tfr_cal))
+#'
 #' calc_tfr(zzir, period = c(2010, 2013, 2015), tips=0:5)
-#' 
+#'
 #' ## ASFR estimates by birth cohort
 #' asfr_coh <- calc_asfr(zzir, cohort=c(1980, 1985, 1990, 1995), tips=NULL)
 #' reshape2::dcast(asfr_coh, agegr ~ cohort, value.var = "asfr")
-#' 
+#'
 #' @importFrom survival tmerge
 #' @import stats
 #' @export

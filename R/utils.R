@@ -1,4 +1,4 @@
 #' @export
-vcov.data.frame <- function(x) {
-  attr(x, "var")
+vcov.data.frame <- function(object, ...) {
+  attr(object, "var")
 }
