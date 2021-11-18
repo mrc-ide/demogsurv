@@ -1,6 +1,6 @@
 Package: demogsurv
 Title: Demographic analysis of DHS and other household surveys
-Version: 0.2.4
+Version: 0.2.5
 Authors@R: c(person("Jeff", "Eaton", email = "jeffrey.eaton@imperial.ac.uk", role = c("aut", "cre")),
              person("Bruno", "Masquelier", email = "bruno.masquelier@uclouvain.be", role = "aut"))
 Description: This package includes tools for calculating demographic indicators from household
