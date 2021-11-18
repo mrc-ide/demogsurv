@@ -50,11 +50,7 @@ library(rdhs)
 library(demogsurv)
 library(mgcv)
 library(ggplot2)
-library(data.table)
 library(haven)
-
-## return rdhs API requests as data.table
-Sys.setenv(rdhs_DATA_TABLE = "TRUE")
 ```
 
 
@@ -65,7 +61,8 @@ surveys conducted in Ghana.
 
 ```{r datasets, results=FALSE}
 surveys <- dhs_surveys(countryIds = "GH", surveyType = "DHS")
-brd <- dhs_datasets(fileType = "BR", fileFormat = "flat")[SurveyId %in% surveys$SurveyId]
+brd <- dhs_datasets(fileType = "BR", fileFormat = "flat")
+brd <- brd[brd$SurveyId %in% surveys$SurveyId, ]
 get_datasets(brd$FileName)
 ```
 
