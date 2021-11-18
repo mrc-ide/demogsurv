@@ -1,3 +1,8 @@
+# demogsurve 0.2.5
+
+* Lots of cleanup on package elements and documentation to pass R CMD CHECK (thanks @chacalle).
+* Remove `data.table` from vignettes and Suggests.
+
 # demogsurv 0.2.4
 
 * Bugfix in `calc_nqx()` to allow user-specified column name for death outcome variable (issue #11; thanks @JoseAntonioOrtega).

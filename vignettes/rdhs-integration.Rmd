@@ -25,11 +25,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(rdhs)
 library(demogsurv)
 library(ggplot2)
-library(data.table)
 library(haven)
-
-## a little nugget to return API requests as data.table rather than data.frame.
-Sys.setenv(rdhs_DATA_TABLE = "TRUE")
 ```
 
 ## Identify surveys and datasets
@@ -38,15 +34,17 @@ Identify all DHS surveys conducted in sub-Saharan Africa in 2015
 
 ```{r dhs_surveys}
 countries <- dhs_countries()
-cc <- countries[RegionName == "Sub-Saharan Africa"]$DHS_CountryCode
+cc <- countries[countries$RegionName == "Sub-Saharan Africa", ]$DHS_CountryCode
 surveys <- dhs_surveys(countryIds = cc, surveyYear = 2015, surveyType = "DHS")
 ```
 
 Identify individual recode (IR) and births recode (BR) datasets corresponding to these surveys.
 
 ```{r dhs_datasets}
-ird <- dhs_datasets(fileType = "IR", fileFormat = "flat")[SurveyId %in% surveys$SurveyId]
-brd <- dhs_datasets(fileType = "BR", fileFormat = "flat")[SurveyId %in% surveys$SurveyId]
+ird <- dhs_datasets(fileType = "IR", fileFormat = "flat")
+ird <- ird[ird$SurveyId %in% surveys$SurveyId, ]
+brd <- dhs_datasets(fileType = "BR", fileFormat = "flat")
+brd <- brd[brd$SurveyId %in% surveys$SurveyId, ]
 ```
 
 Use `rdhs` to retrieve datasets, downloading them from DHS website if not already in the `rdhs` cache.
@@ -64,7 +62,7 @@ ird_questions <- search_variables(ird$FileName, variables = ird_vars)
 
 # add child dob variables
 ird_br_questions <- search_variable_labels(ird$FileName, regex = "CMC")
-ird_br_questions <- ird_br_questions[grepl("^b3", ird_br_questions$variable),]
+ird_br_questions <- ird_br_questions[grepl("^b3", ird_br_questions$variable), ]
 # add sibling variables
 ird_sib_questions <- search_variable_labels(ird$FileName, regex = "sib")
 ird_questions <- rbind(ird_questions, ird_br_questions, ird_sib_questions)
@@ -118,7 +116,7 @@ Identify surveys that include sibling history model via querying the DHS API sur
 
 ```{r has_sibling}
 survchar <- dhs_survey_characteristics()
-survchar[grepl("Maternal", SurveyCharacteristicName)]
+survchar[grepl("Maternal", survchar$SurveyCharacteristicName), ]
 mm_surv <- dhs_surveys(surveyCharacteristicIds = 1)
 has_mm <- surveys$SurveyId %in% mm_surv$SurveyId
 ```
@@ -169,10 +167,10 @@ Identify the indicator IDs associated with TFR, ASFR 15-19, ~35~q~15~, and ~5~q~
 ```{r dhs_indicators}
 indic <- dhs_indicators()
 
-indic[grepl("TFR 15-49", ShortName), .(IndicatorId, ShortName, Label)]
-indic[grepl("ASFR 15-19", ShortName), .(IndicatorId, ShortName, Label)]
-indic[grepl("Probability of dying", ShortName), .(IndicatorId, Definition)]
-indic[grepl("Under-five mortality", ShortName), .(IndicatorId, Label)]
+indic[grepl("TFR 15-49", indic$ShortName), c("IndicatorId", "ShortName", "Label")]
+indic[grepl("ASFR 15-19", indic$ShortName), c("IndicatorId", "ShortName", "Label")]
+indic[grepl("Probability of dying", indic$ShortName), c("IndicatorId", "Definition")]
+indic[grepl("Under-five mortality", indic$ShortName), c("IndicatorId", "Label")]
 ```
 
 Query estimates from DHS API and merge with calculated estimates.
@@ -181,22 +179,23 @@ Query estimates from DHS API and merge with calculated estimates.
 
 tfr_dhs <- dhs_data(indicatorIds = "FE_FRTR_W_TFR",
                     surveyId = tfr$SurveyId)
-tfr <- merge(tfr, tfr_dhs[ , .(SurveyId, Value)])
+tfr <- merge(tfr, tfr_dhs[ , c("SurveyId", "Value")])
 
 asfr15to19_dhs <- dhs_data(indicatorIds = "FE_FRTR_W_A15",
                            surveyId = asfr15to19$SurveyId)
-asfr15to19 <- merge(asfr15to19, asfr15to19_dhs[ , .(SurveyId, Value)])
+asfr15to19 <- merge(asfr15to19, asfr15to19_dhs[ , c("SurveyId", "Value")])
 
 q3515_dhs <- dhs_data(indicatorIds = c("MM_AMPB_W_AMP", "MM_AMPB_M_AMP"),
                       surveyId = q3515$SurveyId)
 q3515_dhs$mm1 <- c(MM_AMPB_M_AMP = "male", MM_AMPB_W_AMP = "female")[q3515_dhs$IndicatorId]
-q3515 <- merge(q3515, q3515_dhs[ , .(SurveyId, mm1, Value)])
+q3515 <- merge(q3515, q3515_dhs[ , c("SurveyId", "Value")])
 
 u5mr_dhs <- dhs_data(indicatorIds = "CM_ECMT_C_U5M",
                      surveyYearStart = 2005,
-                     breakdown = "all")[SurveyId %in% u5mr$SurveyId]
+                     breakdown = "all")
+u5mr_dhs <- u5mr_dhs[u5mr_dhs$SurveyId %in% u5mr$SurveyId, ]
 u5mr_dhs$tips <- u5mr_dhs$CharacteristicLabel
-u5mr <- merge(u5mr, u5mr_dhs[, .(SurveyId, tips, Value)])
+u5mr <- merge(u5mr, u5mr_dhs[, c("SurveyId", "tips", "Value")])
 ```
 
 ## View estimates
