@@ -1,3 +1,7 @@
+# demogsurv 0.2.4
+
+* Bugfix in `calc_nqx()` to allow user-specified column name for death outcome variable (issue #11; thanks @JoseAntonioOrtega).
+
 # demogsurv 0.2.3
 
 * Internal fix `calc_asfr()` to address `tmerge()` error: `idname option must be a valid variable name`.

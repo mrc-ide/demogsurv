@@ -81,6 +81,7 @@ calc_nqx <- function(data,
   data$tstop <- ifelse(data[[death]], data[[dod]], data[[intv]])
 
   data$dob <- data[[dob]]
+  data$death <- data[[death]]
   data$intv <- data[[intv]]
   data$weights <- data[[weight]] / mean(data[[weight]])
 
