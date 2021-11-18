@@ -22,7 +22,25 @@ test_that("child mortality calculations work", {
   expect_equal(round(c(calc_nqx(zzbr, by=~v102, tips=c(0, 5))$est), 3),
                c(0.153, 0.135))
 })
- 
+
+test_that("user can specify arbitrary variable names for event args", {
+
+  ## Rename death variable "d"
+  zzbr$death <- NULL
+  zzbr$d <- zzbr$b5 == "no"
+
+  zzbr$dod <- NULL
+  zzbr$dod_approx <- zzbr$b3 + zzbr$b7 + 0.5
+
+  zzbr$DOB <- zzbr$b3
+  zzbr$b3 <- NULL
+
+  zzbr$intv_cmc <- zzbr$v008
+  zzbr$v008 <- NULL
+
+  u5mr <- calc_nqx(zzbr, dob = "DOB", dod = "dod_approx", death = "d", intv = "intv_cmc")
+  expect_equal(round(u5mr$est, 3), c(0.221, 0.194, 0.141))
+})
 
 test_that("adult mortality calculation reproduce DHS tables", {
   zzsib <- reshape_sib_data(zzir)
