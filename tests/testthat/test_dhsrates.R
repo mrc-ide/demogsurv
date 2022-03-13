@@ -91,3 +91,8 @@ test_that("variance calculation options work", {
     expect_error(calc_nqx(zzbr, varmethod = "jibberish"))
 })
     
+test_that("calc_asfr() throws error if bvars not found", {
+  zzir_nobvars <- zzir[-grep("^b3_", names(zzir))]
+  expect_error(calc_asfr(zzir_nobvars),
+               "`bvars' must specified as variable or list of variables containing child DOB.")
+})

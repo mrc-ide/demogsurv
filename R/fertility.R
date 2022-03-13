@@ -115,6 +115,11 @@ calc_asfr <- function(data,
   mf <- model.frame(formula = f, data = data, na.action = na.pass,
                     id = id, weights = weights, dob = dob, intv = intv)
 
+  if (!is.character(bvars) || length(bvars) == 0) {
+    stop("`bvars' must specified as variable or list of variables containing child DOB.\n",
+         "  DHS default values b3_01, b3_02, ... were not found.")
+  }
+  
   if(is.null(bhdata)) {
     births <- model.frame(paste("~", paste(bvars, collapse="+")),
                           data, na.action=na.pass, id=id)
@@ -152,7 +157,7 @@ calc_asfr <- function(data,
   pred <- data.frame(aggr[c(byvar, "byf")])[!duplicated(aggr$byf),]
   pred <- pred[order(pred$byf), ]
   
-  if(counts || varmethod == "none"){
+  if (counts || varmethod == "none") {
     mc <- model.matrix(~-1+byf, aggr)
     clong <- aggr[c("event", "pyears")]
     pred[c("births", "pys")] <- t(mc) %*% as.matrix(clong)
