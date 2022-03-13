@@ -11,6 +11,27 @@ test_that("fertility calculations match DHS tables", {
   expect_equal(round(1000*as.numeric(calc_asfr(zzir)$asfr)),
                c(119, 207, 216, 188, 125, 60, 28))
 })
+
+test_that("fertility varmethod produce different results", {
+
+  tfr_default <- calc_tfr(zzir)
+  tfr_lin <- calc_tfr(zzir, varmethod = "lin")
+  tfr_jk1 <- calc_tfr(zzir, varmethod = "jk1")
+  tfr_jkn <- calc_tfr(zzir, varmethod = "jkn")
+  tfr_none <- calc_tfr(zzir, varmethod = "none")
+
+  expect_equal(tfr_default, tfr_lin)
+  expect_equal(tfr_lin$tfr, tfr_jk1$tfr)
+  expect_equal(tfr_jk1$tfr, tfr_jkn$tfr)
+  expect_equal(tfr_default$tfr, tfr_none$tfr)
+  
+  expect_false(isTRUE(all.equal(tfr_lin$se_tfr, tfr_jk1$se_tfr)))
+  expect_false(isTRUE(all.equal(tfr_jk1$se_tfr, tfr_jkn$se_tfr)))
+  expect_null(tfr_none$se_tfr)
+
+  expect_error(calc_tfr(zzir, varmethod = "jibberish"),
+               'varmethod = "jibberish" is not recognized.')
+})
  
 
 test_that("child mortality calculations work", {

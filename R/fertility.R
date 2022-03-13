@@ -175,7 +175,7 @@ calc_asfr <- function(data,
            event ~ offset(log(pyears))
          else
            event ~ -1 + byf + offset(log(pyears))
-    
+
     mod <- survey::svyglm(f, des, family=quasipoisson)
     
     ## prediction for all factor levels that appear
@@ -274,8 +274,11 @@ calc_tfr <- function(data,
     val$tfr <- estdf$est
     val$se_tfr <- estdf$se
     attr(val, "var") <- vcov(estdf)
-  } else
+  } else if(varmethod  == "none") {
+    val$tfr <- drop(asfr$asfr %*% dfmm$mm)
+  } else {
     stop(paste0("varmethod = \"", varmethod, "\" is not recognized."))
+  }
 
   rownames(val) <- NULL
   

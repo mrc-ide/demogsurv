@@ -1,3 +1,7 @@
+# demogsurve 0.2.6
+
+* Add option `varmethod = "none"` for `calc_tfr()`.
+
 # demogsurve 0.2.5
 
 * Lots of cleanup on package elements and documentation to pass R CMD CHECK (thanks @chacalle).
