@@ -77,6 +77,105 @@ calc_nqx <- function(data,
                      varmethod = "lin",
                      origin=1900,
                      scale=12){
+  g <- match.call()
+  g[[1]] <- quote(calc_nmx)
+  if(varmethod %in% c("jk1", "jkn"))
+    g$clustcounts <- TRUE
+  mx <- eval(g, envir=parent.frame())
+
+  mf <- mx[setdiff(names(mx), c("mx", "se_mx"))]
+  dfmm <- .mm_aggr(mf, agegr)
+
+  val <- dfmm$df
+
+  if(varmethod == "lin") {
+    mm <- dfmm$mm
+
+    lest <- drop(mx$mx %*% mm)
+    lv <- t(mm) %*% attr(mx, "var") %*% mm
+
+    dF <- diag(exp(-lest), length(lest))
+    v <- dF %*% lv %*% dF
+
+    val$qx <- 1 - exp(-lest)
+    val$se_qx <- sqrt(diag(v))
+    val$ci_l <- 1 - exp(-(lest - qnorm(0.975)*sqrt(diag(lv))))
+    val$ci_u <- 1 - exp(-(lest + qnorm(0.975)*sqrt(diag(lv))))
+    attr(val, "var") <- v
+
+  } else if(varmethod %in% c("jkn", "jk1")) {
+
+    estdf <- jackknife(attr(mx, "events_clust"),
+                       attr(mx, "pyears_clust"),
+                       attr(mx, "strataid"),
+                       L = t(dfmm$mm),
+                       fn = function(x) 1 - exp(-x))
+
+    val$qx <- estdf$est
+    val$se_qx <- estdf$se
+    attr(val, "var") <- vcov(estdf)
+  } else
+    stop(paste0("varmethod = \"", varmethod, "\" is not recognized."))
+
+  # to keep existing column names
+  colnames(val)[colnames(val) == 'qx'] <- 'est'
+  colnames(val)[colnames(val) == 'se_qx'] <- 'se'
+
+
+  rownames(val) <- NULL
+
+  return(val)
+}
+
+#' Calculate the mortality rate between age x and x+n (nmx)
+#'
+#' Default arguments are configured to calculate under 5 mortality rate (nmx)
+#' from a DHS Births Recode file.
+#'
+#' @inheritParams calc_nqx
+#' @param counts Whether to include counts of deaths & person-years ('pys')
+#'   in the returned `data.frame`. Default is 'FALSE'.
+#' @param clustcounts Whether to return additional attributes storing cluster
+#'   specific counts of deaths `attr(val, 'events_clust')`, person-years
+#'   `attr(val, 'pyears_clust')` & number of clusters in each strata
+#'   `attr(val, 'strataid')`. Only applicable when using jacknife `varmethod`
+#'   'jk1' or 'jkn'. 'strataid' is only included for 'jkn' `varmethod`. Default
+#'   is 'FALSE'.
+#'
+#' @examples
+#'
+#' # Calculate age specific nmx from birth history dataset.
+#' data(zzbr)
+#' zzbr$death <- zzbr$b5 == "no"  # b5: child still alive ("yes"/"no")
+#' zzbr$dod <- zzbr$b3 + zzbr$b7 + 0.5
+#' child_mx <- calc_nmx(zzbr)
+#'
+#' # Calculate age specific nmx from individual recode.
+#' data(zzir)
+#' zzsib <- reshape_sib_data(zzir)
+#' zzsib$death <- factor(zzsib$mm2, c("dead", "alive")) == "dead"
+#' zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
+#' adult_mx <- calc_nmx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 7), dob="mm4", dod="mm8")
+#'
+#' @export
+calc_nmx <- function(data,
+                     by = NULL,
+                     agegr = c(0, 1, 3, 5, 12, 24, 36, 48, 60)/12,
+                     period = NULL,
+                     cohort = NULL,
+                     tips = c(0, 5, 10, 15),
+                     clusters=~v021,
+                     strata=~v024+v025,
+                     weight= "v005",
+                     dob="b3",
+                     dod="dod",
+                     death="death",
+                     intv = "v008",
+                     varmethod = "lin",
+                     origin=1900,
+                     scale=12,
+                     counts=FALSE,
+                     clustcounts = FALSE){
 
   data$tstop <- ifelse(data[[death]], data[[dod]], data[[intv]])
 
@@ -97,67 +196,10 @@ calc_nqx <- function(data,
                        tstart="(dob)", tstop="(tstop)", weights="(weights)",
                        origin=origin, scale=scale)$data
 
-  ## All values of factor combinations that appear
-  byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
-                     names(aggr))
-  aggr$byf <- interaction(aggr[byvar], drop=TRUE)
-  
-  ## prediction for all factor levels that appear
-  pred <- data.frame(aggr[c(byvar, "byf")])[!duplicated(aggr$byf),]
-  pred <- pred[order(pred$byf), ]
-  pred$pyears <- 1
-  
-  ## Matrix to aggregate piecewise-constant rates to cumulative hazards
-  dfmm <- .mm_aggr(pred[byvar], agegr)
-  mm <- dfmm$mm
+  pred <- demog_pred_rate(aggr, by=by, clusters=clusters, strata=strata,
+                          varmethod=varmethod, counts=counts, clustcounts=clustcounts)
+  colnames(pred)[colnames(pred) == 'rate'] <- 'mx'
+  colnames(pred)[colnames(pred) == 'se_rate'] <- 'se_mx'
 
-  if(varmethod == "lin") {
-    des <- survey::svydesign(ids=clusters, strata=strata, data=aggr, weights=~1)
-
-    ## fit model
-    f <- if(length(levels(aggr$byf)) == 1)
-           event ~ offset(log(pyears))
-         else
-           event ~ -1 + byf + offset(log(pyears))
-
-    mod <- survey::svyglm(f, des, family=quasipoisson)
-
-    mx <- predict(mod, pred, type="response", vcov=TRUE)
-
-    lest <- drop(mx %*% mm)
-    lv <- t(mm) %*% vcov(mx) %*% mm
-    est <- 
-    dF <- diag(exp(-lest), length(lest))
-    v <- dF %*% lv %*% dF
-
-    estdf <- data.frame(est  = 1 - exp(-lest),
-                        se   = sqrt(diag(v)),
-                        ci_l = 1 - exp(-(lest - qnorm(0.975)*sqrt(diag(lv)))),
-                        ci_u = 1 - exp(-(lest + qnorm(0.975)*sqrt(diag(lv)))))
-    attr(estdf, "var") <- v
-    
-  } else if(varmethod %in% c("jkn", "jk1")) {
-
-    ## Convert to array with events and PYs for each cluster
-    ## reshape2::acast is MUCH faster than stats::reshape
-    events_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="event")
-    pyears_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="pyears")
-
-    if(varmethod == "jkn"){
-      aggr$strataid <- as.integer(interaction(aggr[all.vars(strata)], drop=TRUE))
-      strataid <- drop(reshape2::acast(unique(aggr[c(all.vars(clusters), "strataid")]),
-                                       update(clusters,  1 ~ .), value.var="strataid"))
-    } else
-      strataid <- NULL
-
-    estdf <- jackknife(events_clust, pyears_clust, strataid, t(dfmm$mm), function(x) 1 - exp(-x))
-  } else
-    stop(paste0("varmethod = \"", varmethod, "\" is not recognized."))
-
-  val <- data.frame(dfmm$df, estdf)
-  attr(val, "var") <- vcov(estdf)
-
-  rownames(val) <- NULL
-  
-  val
+  return(pred)
 }

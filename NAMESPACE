@@ -2,6 +2,7 @@
 
 S3method(vcov,data.frame)
 export(calc_asfr)
+export(calc_nmx)
 export(calc_nqx)
 export(calc_tfr)
 export(demog_pyears)
