@@ -97,7 +97,7 @@ demog_pred_rate <- function(aggr,
 
   if(varmethod == "none") {
 
-    pred$asfr <- pred$event / pred$pys
+    pred$rate <- pred$event / pred$pys
     pred$byf <- NULL
     if(!counts)
       pred[c("event", "pys")] <- NULL
