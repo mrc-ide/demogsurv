@@ -20,7 +20,8 @@ calc_nqx(
   intv = "v008",
   varmethod = "lin",
   origin = 1900,
-  scale = 12
+  scale = 12,
+  batch_size = 1e+05
 )
 }
 \arguments{
@@ -57,6 +58,10 @@ jackknife.}
 \item{origin}{Origin year for date arguments. 1900 for CMC inputs.}
 
 \item{scale}{Scale for dates inputs to calendar years. 12 for CMC inputs.}
+
+\item{batch_size}{Maximum number of data rows to to process at one time
+in \code{demog_pyears()}. Default value 100,000. This avoids memory allocation
+error when processing for very large data set (e.g. India DHS).}
 }
 \description{
 Default arguments are configured to calculate under 5 mortality

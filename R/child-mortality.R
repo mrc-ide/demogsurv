@@ -21,6 +21,9 @@
 #'   jackknife.
 #' @param origin Origin year for date arguments. 1900 for CMC inputs.
 #' @param scale Scale for dates inputs to calendar years. 12 for CMC inputs.
+#' @param batch_size Maximum number of data rows to to process at one time
+#'   in `demog_pyears()`. Default value 100,000. This avoids memory allocation
+#'   error when processing for very large data set (e.g. India DHS).
 #'
 #' @examples
 #'
@@ -76,7 +79,8 @@ calc_nqx <- function(data,
                      intv = "v008",
                      varmethod = "lin",
                      origin=1900,
-                     scale=12){
+                     scale=12,
+                     batch_size = 100000){
 
   data$tstop <- ifelse(data[[death]], data[[dod]], data[[intv]])
 
@@ -93,10 +97,21 @@ calc_nqx <- function(data,
   mf <- model.frame(f, data=data, na.action=na.pass, death=death,
                     weights=weights, dob=dob, intv=intv, tstop=tstop)
 
-  aggr <- demog_pyears(f, mf, period=period, agegr=agegr, tips=tips, event="(death)",
-                       tstart="(dob)", tstop="(tstop)", weights="(weights)",
-                       origin=origin, scale=scale)$data
 
+  mf_spl <- split(mf, ceiling(seq_len(nrow(mf)) / batch_size))
+
+  aggr_spl <- lapply(mf_spl, demog_pyears,
+                     formula = f, period=period, agegr=agegr, tips=tips, event="(death)",
+                     tstart="(dob)", tstop="(tstop)", weights="(weights)",
+                     origin=origin, scale=scale)
+  aggr <- lapply(aggr_spl, "[[", "data")
+  aggr <- do.call(rbind, aggr)
+
+  byvar <- setdiff(names(aggr), c("pyears", "n", "event"))
+  byform <- as.formula(paste0("cbind(pyears, n, event) ~ ", paste(byvar, collapse = " + ")))
+  aggr <- aggregate(formula = byform, data = aggr, FUN = sum)
+  
+  
   ## All values of factor combinations that appear
   byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
                      names(aggr))
