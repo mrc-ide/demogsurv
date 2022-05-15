@@ -1,4 +1,9 @@
-# demogsurve 0.2.6
+# demogsurv 0.2.7
+
+* Add argument `calc_nqx(..., batch_size = 100000)` to split data set into batches. This avoids memory allocation error in `survival::pyears()` when the data set is very large (e.g. India DHS, see #15).
+
+
+# demogsurv 0.2.6
 
 * Add option `varmethod = "none"` for `calc_tfr()`.
 
