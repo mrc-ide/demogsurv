@@ -101,7 +101,7 @@ calc_asfr <- function(data,
                       bhdata = NULL,
                       counts=FALSE,
                       clustcounts = FALSE){
-  
+
   data$id <- data[[id]]
   data$dob <- data[[dob]]
   data$intv <- data[[intv]]
@@ -109,7 +109,7 @@ calc_asfr <- function(data,
 
   if(is.null(by))
     by <- ~1
-  
+
   vars <- unique(unlist(lapply(c(by, strata, clusters), all.vars)))
   f <- formula(paste("~", paste(vars, collapse = "+")))
   mf <- model.frame(formula = f, data = data, na.action = na.pass,
@@ -119,7 +119,7 @@ calc_asfr <- function(data,
     stop("`bvars' must specified as variable or list of variables containing child DOB.\n",
          "  DHS default values b3_01, b3_02, ... were not found.")
   }
-  
+
   if(is.null(bhdata)) {
     births <- model.frame(paste("~", paste(bvars, collapse="+")),
                           data, na.action=na.pass, id=id)
@@ -129,10 +129,10 @@ calc_asfr <- function(data,
   } else {
     if(length(bvars) > 1)
       stop("If `bhdata' is provided, bvars must provide a single variable name (length(bvars) = 1)")
-    
+
     bhdata$id <- bhdata[[id]]
     bhdata$bcmc <- bhdata[[bvars]]
-    births <- model.frame(~bcmc, data = bhdata, id = id)    
+    births <- model.frame(~bcmc, data = bhdata, id = id)
     births$bidx <- ave(births$bcmc, births[["(id)"]], FUN = seq_along)
   }
   births <- births[!is.na(births$bcmc), ]
@@ -144,87 +144,15 @@ calc_asfr <- function(data,
 
   epis <- tmerge(mf, mf, id=id_, tstart=`(dob)`, tstop=`(intv)`)
   epis <- tmerge(epis, births, id=id_, birth = event(bcmc))
-  
+
   aggr <- demog_pyears(f, epis, period=period, agegr=agegr, cohort=cohort, tips=tips,
                        event="birth", weights="(weights)", origin=origin, scale=scale)$data
-  
-  ## construct interaction of all factor levels that appear
-  byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
-                     names(aggr))
-  aggr$byf <- interaction(aggr[byvar], drop=TRUE)
-  
-  ## prediction for all factor levels that appear
-  pred <- data.frame(aggr[c(byvar, "byf")])[!duplicated(aggr$byf),]
-  pred <- pred[order(pred$byf), ]
-  
-  if (counts || varmethod == "none") {
-    mc <- model.matrix(~-1+byf, aggr)
-    clong <- aggr[c("event", "pyears")]
-    pred[c("births", "pys")] <- t(mc) %*% as.matrix(clong)
-  }
 
-  if(varmethod == "none") {
+  pred <- demog_pred_rate(aggr, by=by, clusters=clusters, strata=strata,
+                          varmethod=varmethod, counts=counts, clustcounts=clustcounts)
+  colnames(pred)[colnames(pred) == 'rate'] <- 'asfr'
+  colnames(pred)[colnames(pred) == 'se_rate'] <- 'se_asfr'
 
-    pred$asfr <- pred$births / pred$pys
-    pred$byf <- NULL
-    if(!counts)
-      pred[c("births", "pys")] <- NULL
-
-  } else if(varmethod == "lin") {
-
-    des <- survey::svydesign(ids=clusters, strata=strata, data=aggr, weights=~1)
-    class(des) <- c("svypyears", class(des))
-    
-    ## fit model
-    f <- if(length(levels(aggr$byf)) == 1)
-           event ~ offset(log(pyears))
-         else
-           event ~ -1 + byf + offset(log(pyears))
-
-    mod <- survey::svyglm(f, des, family=quasipoisson)
-    
-    ## prediction for all factor levels that appear
-    pred$pyears <- 1
-  
-    asfr <- predict(mod, pred, type="response", vcov=TRUE)
-    v <- vcov(asfr)
-    dimnames(v) <- list(pred$byf, pred$byf)
-
-    pred$asfr <- as.numeric(asfr)
-    pred$se_asfr <- sqrt(diag(v))
-    pred[c("byf", "pyears")] <- NULL
-    attr(pred, "var") <- v
-  } else if(varmethod %in% c("jkn", "jk1")) {
-    
-    ## Convert to array with events and PYs for each cluster
-    ## reshape2::acast is MUCH faster than stats::reshape
-    events_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="event")
-    pyears_clust <- reshape2::acast(aggr, update(clusters, byf ~ .), value.var="pyears")
-    
-    if(varmethod == "jkn"){
-      aggr$strataid <- as.integer(interaction(aggr[all.vars(strata)], drop=TRUE))
-      strataid <- drop(reshape2::acast(unique(aggr[c(all.vars(clusters), "strataid")]),
-                                       update(clusters,  1 ~ .), value.var="strataid"))
-    } else
-      strataid <- NULL
-    
-    estdf <- jackknife(events_clust, pyears_clust, strataid)
-
-    pred$asfr <- estdf$est
-    pred$se_asfr <- estdf$se
-    attr(pred, "var") <- vcov(estdf)
-    pred$byf <- NULL
-    if(clustcounts){
-      attr(pred, "events_clust") <- events_clust
-      attr(pred, "pyears_clust") <- pyears_clust
-      attr(pred, "strataid") <- strataid
-    }
-  } else
-    stop(paste0("varmethod = \"", varmethod, "\" is not recognized."))
-
-
-  rownames(pred) <- NULL
-  
   return(pred)
 }
 
@@ -247,7 +175,7 @@ calc_tfr <- function(data,
                      origin = 1900,
                      scale = 12,
                      bhdata = NULL){
-  
+
   g <- match.call()
   g[[1]] <- quote(calc_asfr)
   g$data <- data
@@ -258,12 +186,12 @@ calc_tfr <- function(data,
 
   mf <- asfr[setdiff(names(asfr), c("asfr", "se_asfr"))]
   dfmm <- .mm_aggr(mf, agegr)
-      
+
   val <- dfmm$df
 
   if(varmethod == "lin") {
     mm <- dfmm$mm
-    
+
     mu <- drop(asfr$asfr %*% mm)
     v <- t(mm) %*% attr(asfr, "var") %*% mm
 
@@ -286,6 +214,6 @@ calc_tfr <- function(data,
   }
 
   rownames(val) <- NULL
-  
+
   val
 }

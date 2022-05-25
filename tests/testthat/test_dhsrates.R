@@ -67,6 +67,21 @@ test_that("adult mortality calculation reproduce DHS tables", {
   zzsib <- reshape_sib_data(zzir)
   zzsib$death <- factor(zzsib$mm2, c("dead", "alive")) == "dead"
   zzsib$sex <- factor(zzsib$mm1, c("female", "male"))  # drop mm2 = 3: "missing"
+
+  # Table MM.1 Adult mortality rates
+  adult_nmx <- calc_nmx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 7),
+                        dob="mm4", dod="mm8", counts = TRUE)
+  expect_equal(round(1000*c(adult_nmx$mx), 2),
+               c(5.46, 3.88,
+                 6.74, 4.94,
+                 4.54, 3.87,
+                 5.21, 5.70,
+                 5.11, 4.43,
+                 6.29, 8.97,
+                 6.15, 7.05),
+               tolerance = 0.01)
+
+  # Table MM.2 Adult mortality probabilities
   q3515 <- calc_nqx(zzsib, by=~sex, agegr=seq(15, 50, 5), tips=c(0, 7),
                     dob="mm4", dod="mm8")
   expect_equal(round(1000*c(q3515$est)), c(179, 177))
