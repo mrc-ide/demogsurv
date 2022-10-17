@@ -106,7 +106,7 @@ The mortality rate $mu_a$ within each age group is estimated as the number
 of observed deaths divided by the number of person-years.
 
 ```{r mx}
-mx <- aggr$data
+mx <- aggr
 mx$agegr <- paste(c(0, "1-2", "3-5", "6-11", "12-23", "24-35", "36-47", "48-59"), "months")
 mx$mx <- mx$event / mx$pyears
 knitr::kable(mx)

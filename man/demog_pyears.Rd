@@ -18,7 +18,8 @@ demog_pyears(
   tstart = "tstart",
   tstop = "tstop",
   event = "event",
-  weights = NULL
+  weights = NULL,
+  batch_size = 1e+05
 )
 }
 \arguments{
@@ -72,6 +73,10 @@ birth or death. Default is 'event'.}
 \item{weights}{
     case weights. 
   }
+
+\item{batch_size}{Maximum number of data rows to process at one time
+in \code{demog_pyears()}. Default value 100,000. This avoids memory allocation
+error when processing for very large data set (e.g. India DHS).}
 }
 \description{
 This is a wrapper for the \code{\link[survival]{pyears}} function

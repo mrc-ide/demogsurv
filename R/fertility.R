@@ -98,10 +98,11 @@ calc_asfr <- function(data,
                       birth_displace = 1e-6,
                       origin=1900,
                       scale=12,
+                      batch_size = 100000,
                       bhdata = NULL,
                       counts=FALSE,
                       clustcounts = FALSE){
-  
+
   data$id <- data[[id]]
   data$dob <- data[[dob]]
   data$intv <- data[[intv]]
@@ -146,8 +147,9 @@ calc_asfr <- function(data,
   epis <- tmerge(epis, births, id=id_, birth = event(bcmc))
   
   aggr <- demog_pyears(f, epis, period=period, agegr=agegr, cohort=cohort, tips=tips,
-                       event="birth", weights="(weights)", origin=origin, scale=scale)$data
-  
+                       event="birth", weights="(weights)",
+                       origin=origin, scale=scale, batch_size=batch_size)
+
   ## construct interaction of all factor levels that appear
   byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
                      names(aggr))
@@ -246,8 +248,9 @@ calc_tfr <- function(data,
                      birth_displace = 1e-6,
                      origin = 1900,
                      scale = 12,
+                     batch_size = 100000,
                      bhdata = NULL){
-  
+
   g <- match.call()
   g[[1]] <- quote(calc_asfr)
   g$data <- data

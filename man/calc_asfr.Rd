@@ -23,6 +23,7 @@ calc_asfr(
   birth_displace = 1e-06,
   origin = 1900,
   scale = 12,
+  batch_size = 1e+05,
   bhdata = NULL,
   counts = FALSE,
   clustcounts = FALSE
@@ -66,6 +67,10 @@ by. Default is '1e-6'.}
 \item{origin}{Origin year for date arguments. 1900 for CMC inputs.}
 
 \item{scale}{Scale for dates inputs to calendar years. 12 for CMC inputs.}
+
+\item{batch_size}{Maximum number of data rows to process at one time
+in \code{demog_pyears()}. Default value 100,000. This avoids memory allocation
+error when processing for very large data set (e.g. India DHS).}
 
 \item{bhdata}{A birth history dataset (\code{data.frame}) with child dates of birth
 in long format, for example a DHS births recode (BR) dataset.}
