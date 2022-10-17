@@ -21,7 +21,7 @@
 #'   jackknife.
 #' @param origin Origin year for date arguments. 1900 for CMC inputs.
 #' @param scale Scale for dates inputs to calendar years. 12 for CMC inputs.
-#' @param batch_size Maximum number of data rows to to process at one time
+#' @param batch_size Maximum number of data rows to process at one time
 #'   in `demog_pyears()`. Default value 100,000. This avoids memory allocation
 #'   error when processing for very large data set (e.g. India DHS).
 #'
@@ -97,31 +97,20 @@ calc_nqx <- function(data,
   mf <- model.frame(f, data=data, na.action=na.pass, death=death,
                     weights=weights, dob=dob, intv=intv, tstop=tstop)
 
+  aggr <- demog_pyears(f, mf, period=period, agegr=agegr, tips=tips, event="(death)",
+                       tstart="(dob)", tstop="(tstop)", weights="(weights)",
+                       origin=origin, scale=scale, batch_size=batch_size)
 
-  mf_spl <- split(mf, ceiling(seq_len(nrow(mf)) / batch_size))
-
-  aggr_spl <- lapply(mf_spl, demog_pyears,
-                     formula = f, period=period, agegr=agegr, tips=tips, event="(death)",
-                     tstart="(dob)", tstop="(tstop)", weights="(weights)",
-                     origin=origin, scale=scale)
-  aggr <- lapply(aggr_spl, "[[", "data")
-  aggr <- do.call(rbind, aggr)
-
-  byvar <- setdiff(names(aggr), c("pyears", "n", "event"))
-  byform <- as.formula(paste0("cbind(pyears, n, event) ~ ", paste(byvar, collapse = " + ")))
-  aggr <- aggregate(formula = byform, data = aggr, FUN = sum)
-  
-  
   ## All values of factor combinations that appear
   byvar <- intersect(c(all.vars(by), "agegr", "period", "cohort", "tips"),
                      names(aggr))
   aggr$byf <- interaction(aggr[byvar], drop=TRUE)
-  
+
   ## prediction for all factor levels that appear
   pred <- data.frame(aggr[c(byvar, "byf")])[!duplicated(aggr$byf),]
   pred <- pred[order(pred$byf), ]
   pred$pyears <- 1
-  
+
   ## Matrix to aggregate piecewise-constant rates to cumulative hazards
   dfmm <- .mm_aggr(pred[byvar], agegr)
   mm <- dfmm$mm

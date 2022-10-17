@@ -59,7 +59,7 @@ jackknife.}
 
 \item{scale}{Scale for dates inputs to calendar years. 12 for CMC inputs.}
 
-\item{batch_size}{Maximum number of data rows to to process at one time
+\item{batch_size}{Maximum number of data rows to process at one time
 in \code{demog_pyears()}. Default value 100,000. This avoids memory allocation
 error when processing for very large data set (e.g. India DHS).}
 }

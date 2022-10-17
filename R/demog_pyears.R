@@ -33,7 +33,8 @@
 #' @importFrom survival pyears
 #' @export
 demog_pyears <- function(formula, data, period=NULL, agegr=NULL, cohort=NULL, tips=NULL, origin=1900, scale=12,
-                         dob="(dob)", intv="(intv)", tstart="tstart", tstop="tstop", event="event", weights=NULL){
+                         dob="(dob)", intv="(intv)", tstart="tstart", tstop="tstop", event="event", weights=NULL,
+                         batch_size=100000){
 
   if(!is.null(period)){
     data$period <- tcut(data[[tstart]], (period-origin)*scale, .epis_labels(period))
@@ -51,7 +52,7 @@ demog_pyears <- function(formula, data, period=NULL, agegr=NULL, cohort=NULL, ti
                        include.lowest=TRUE, right=FALSE)
     formula <- update(formula, ~. + cohort)
   }
-  
+
   if(!is.null(tips)){
     data$tips <- tcut(data[[tstart]] - data[[intv]], -rev(tips)*scale, rev(.epis_labels(tips)))
     formula <- update(formula, ~. + tips)
@@ -64,6 +65,16 @@ demog_pyears <- function(formula, data, period=NULL, agegr=NULL, cohort=NULL, ti
     data$weights <- data[[weights]]
   else
     data$weights <- 1
-  
-  pyears(formula, data, scale=scale, data.frame=TRUE, weights=weights)
+
+  data_spl <- split(data, ceiling(seq_len(nrow(data)) / batch_size))
+  aggr_spl <- lapply(data_spl, function(d) {
+    pyears(formula=formula, data = d, scale=scale, weights=weights,
+           data.frame=TRUE)$data
+  })
+  aggr <- Reduce(rbind, aggr_spl)
+
+  byvar <- setdiff(names(aggr), c("pyears", "n", "event"))
+  byform <- as.formula(paste0("cbind(pyears, n, event) ~ ", paste(byvar, collapse = " + ")))
+  aggr <- aggregate(x = byform, data = aggr, FUN = sum)
+  return(aggr)
 }
